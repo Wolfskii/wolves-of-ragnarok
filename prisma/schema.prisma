@@ -1,0 +1,258 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  runtime             = "nodejs"
+  moduleFormat        = "esm"
+  importFileExtension = "ts"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  MODERATOR
+  ADMIN
+}
+
+enum PublicationStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum Game {
+  VALHEIM
+  MINECRAFT
+  TERRARIA
+  ARK
+  OTHER
+}
+
+enum ServerAdapter {
+  GAMEDIG
+  MOCK
+}
+
+enum MediaKind {
+  IMAGE
+  AVATAR
+  NEWS_COVER
+  BACKGROUND
+}
+
+enum ActivityType {
+  JOINED
+  PROFILE_UPDATED
+  NEWS_PUBLISHED
+  SERVER_JOINED
+}
+
+model User {
+  id             String             @id @default(uuid()) @db.Uuid
+  email          String             @unique @db.VarChar(320)
+  username       String             @unique @db.VarChar(32)
+  displayName    String?            @db.VarChar(80)
+  passwordHash   String             @db.VarChar(255)
+  role           Role               @default(USER)
+  bio            String?            @db.Text
+  avatarMediaId  String?            @db.Uuid
+  isActive       Boolean            @default(true)
+  lastSeenAt     DateTime?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  avatarMedia    Media?             @relation("UserAvatar", fields: [avatarMediaId], references: [id], onDelete: SetNull)
+  sessions       Session[]
+  newsPosts      NewsPost[]         @relation("NewsAuthor")
+  pages          Page[]             @relation("PageAuthor")
+  mediaUploads   Media[]            @relation("MediaUploader")
+  games          UserGame[]
+  memberships    ServerMembership[]
+  activities     Activity[]
+
+  @@index([role, isActive])
+  @@index([lastSeenAt])
+}
+
+model Session {
+  id        String    @id @default(uuid()) @db.Uuid
+  tokenHash String    @unique @db.Char(64)
+  userId    String    @db.Uuid
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  lastUsedAt DateTime @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model NewsPost {
+  id             String            @id @default(uuid()) @db.Uuid
+  slug           String            @unique @db.VarChar(160)
+  title          String            @db.VarChar(180)
+  excerpt        String?           @db.VarChar(320)
+  body           String            @db.Text
+  status         PublicationStatus @default(DRAFT)
+  publishedAt    DateTime?
+  authorId       String            @db.Uuid
+  coverMediaId   String?           @db.Uuid
+  seoTitle       String?           @db.VarChar(70)
+  seoDescription String?           @db.VarChar(170)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  author         User              @relation("NewsAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  coverMedia     Media?            @relation("NewsCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
+  featuredBy     SiteSettings[]
+
+  @@index([status, publishedAt(sort: Desc)])
+  @@index([authorId])
+}
+
+model Page {
+  id             String            @id @default(uuid()) @db.Uuid
+  slug           String            @unique @db.VarChar(120)
+  title          String            @db.VarChar(180)
+  body           String            @db.Text
+  status         PublicationStatus @default(DRAFT)
+  publishedAt    DateTime?
+  authorId       String            @db.Uuid
+  seoTitle       String?           @db.VarChar(70)
+  seoDescription String?           @db.VarChar(170)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  author         User              @relation("PageAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@index([status, publishedAt(sort: Desc)])
+}
+
+model Server {
+  id                   String             @id @default(uuid()) @db.Uuid
+  name                 String             @db.VarChar(100)
+  game                 Game
+  adapter              ServerAdapter      @default(GAMEDIG)
+  host                 String             @db.VarChar(253)
+  gamePort             Int
+  queryPort            Int?
+  description          String?            @db.Text
+  addressVisible       Boolean            @default(false)
+  enabled              Boolean            @default(true)
+  displayOrder         Int                @default(0)
+  queryTimeoutMs       Int                @default(3000)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  statusSnapshots      ServerStatusSnapshot[]
+  memberships          ServerMembership[]
+
+  @@unique([host, gamePort])
+  @@index([enabled, displayOrder])
+}
+
+model ServerStatusSnapshot {
+  id             String   @id @default(uuid()) @db.Uuid
+  serverId       String   @db.Uuid
+  online         Boolean
+  playerCount    Int?
+  maxPlayers     Int?
+  playerNames    Json?
+  pingMs         Int?
+  worldName      String?  @db.VarChar(160)
+  version        String?  @db.VarChar(80)
+  errorCode      String?  @db.VarChar(50)
+  queriedAt      DateTime @default(now())
+  server         Server   @relation(fields: [serverId], references: [id], onDelete: Cascade)
+
+  @@index([serverId, queriedAt(sort: Desc)])
+}
+
+model ServerMembership {
+  userId    String   @db.Uuid
+  serverId  String   @db.Uuid
+  joinedAt  DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  server    Server   @relation(fields: [serverId], references: [id], onDelete: Cascade)
+
+  @@id([userId, serverId])
+}
+
+model UserGame {
+  userId       String   @db.Uuid
+  game         Game
+  displayOrder Int      @default(0)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, game])
+  @@index([userId, displayOrder])
+}
+
+model SiteSettings {
+  id                    String    @id @default("default")
+  siteTitle             String    @default("Wolves of Ragnarok") @db.VarChar(100)
+  tagline               String    @default("Where Wolves Gather, Ragnarok Begins.") @db.VarChar(180)
+  heroHeading           String    @default("Stand with the pack") @db.VarChar(180)
+  heroBody              String    @db.Text
+  communityIntroduction String    @db.Text
+  seoDescription        String    @db.VarChar(170)
+  featuredNewsId        String?   @db.Uuid
+  updatedAt             DateTime  @updatedAt
+  featuredNews          NewsPost? @relation(fields: [featuredNewsId], references: [id], onDelete: SetNull)
+}
+
+model HomepageFeature {
+  id           String  @id @default(uuid()) @db.Uuid
+  title        String  @db.VarChar(100)
+  body         String  @db.VarChar(300)
+  href         String? @db.VarChar(500)
+  icon         String? @db.VarChar(50)
+  imageMediaId String? @db.Uuid
+  enabled      Boolean @default(true)
+  displayOrder Int     @default(0)
+  imageMedia   Media?  @relation("FeatureImage", fields: [imageMediaId], references: [id], onDelete: SetNull)
+
+  @@index([enabled, displayOrder])
+}
+
+model CommunityLink {
+  id           String  @id @default(uuid()) @db.Uuid
+  label        String  @db.VarChar(80)
+  url          String  @db.VarChar(500)
+  kind         String  @db.VarChar(30)
+  enabled      Boolean @default(true)
+  displayOrder Int     @default(0)
+
+  @@index([enabled, displayOrder])
+}
+
+model Media {
+  id           String            @id @default(uuid()) @db.Uuid
+  kind         MediaKind         @default(IMAGE)
+  filename     String            @db.VarChar(255)
+  storagePath  String            @unique @db.VarChar(500)
+  mimeType     String            @db.VarChar(100)
+  sizeBytes    Int
+  width        Int?
+  height       Int?
+  altText      String?           @db.VarChar(300)
+  uploadedById String            @db.Uuid
+  createdAt    DateTime          @default(now())
+  uploadedBy   User              @relation("MediaUploader", fields: [uploadedById], references: [id], onDelete: Restrict)
+  avatarFor    User[]            @relation("UserAvatar")
+  newsCovers   NewsPost[]        @relation("NewsCover")
+  features     HomepageFeature[] @relation("FeatureImage")
+
+  @@index([kind, createdAt(sort: Desc)])
+  @@index([uploadedById])
+}
+
+model Activity {
+  id        String       @id @default(uuid()) @db.Uuid
+  userId    String       @db.Uuid
+  type      ActivityType
+  summary   String       @db.VarChar(240)
+  metadata  Json?
+  createdAt DateTime     @default(now())
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+}
