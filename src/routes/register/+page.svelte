@@ -74,7 +74,6 @@
 		border-left: 2px solid var(--danger-400);
 		background: rgba(101, 27, 19, 0.28);
 		color: #f1b1a5;
-		font-size: 0.72rem;
 	}
 
 	form {
@@ -107,7 +106,7 @@
 	input {
 		width: 100%;
 		height: 2.7rem;
-		border: 1px solid rgba(111, 133, 140, 0.45);
+		border: 1px solid rgba(168, 59, 67, 0.42);
 		border-radius: 0;
 		background: rgba(0, 3, 4, 0.84);
 		box-shadow: inset 0 1px 8px #000;
@@ -120,7 +119,7 @@
 		margin-top: 0.4rem;
 		border: 1px solid var(--brass-600);
 		border-radius: 0;
-		background: linear-gradient(180deg, #354449, #10181a 54%, #1d2c2f);
+		background: var(--glass-button);
 		color: var(--frost-100);
 		font-family: var(--display);
 		font-size: 0.66rem;

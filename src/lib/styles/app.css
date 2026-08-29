@@ -76,6 +76,7 @@ h3 {
 	font-family: var(--display);
 	letter-spacing: 0;
 	line-height: 1.15;
+	text-shadow: var(--heading-glow);
 }
 
 :focus-visible {

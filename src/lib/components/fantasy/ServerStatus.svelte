@@ -238,7 +238,7 @@
 	.meter i {
 		display: block;
 		height: 100%;
-		background: linear-gradient(90deg, #2b8a83, var(--rune-400));
+		background: linear-gradient(90deg, #68232d, var(--rune-400));
 		box-shadow: 0 0 8px var(--rune-500);
 	}
 

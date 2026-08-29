@@ -11,6 +11,9 @@
 	--rune-500: #681f29;
 	--rune-400: #a83b43;
 	--rune-300: #dc8178;
+	--rune-glass: rgba(112, 40, 48, 0.72);
+	--rune-glass-dark: rgba(24, 10, 14, 0.96);
+	--rune-glass-light: rgba(133, 54, 58, 0.82);
 	--ember-600: #a63d1d;
 	--ember-500: #e36c2f;
 	--brass-600: #897345;
@@ -21,10 +24,24 @@
 	--text-muted: #94a7a7;
 	--display: 'GR Read One', Georgia, serif;
 	--body: 'Libre Baskerville', Georgia, serif;
-	--panel-fill: rgba(5, 11, 14, 0.9);
+	--panel-fill: rgba(8, 8, 11, 0.92);
 	--panel-fill-soft: rgba(8, 16, 19, 0.82);
 	--panel-line: rgba(156, 190, 188, 0.27);
 	--panel-highlight: rgba(207, 235, 226, 0.16);
+	--glass-button: linear-gradient(
+		180deg,
+		var(--rune-glass-light),
+		var(--rune-glass-dark) 56%,
+		var(--rune-glass)
+	);
+	--glass-metal: linear-gradient(
+		180deg,
+		rgba(77, 37, 41, 0.92),
+		rgba(12, 8, 10, 0.98) 48%,
+		rgba(48, 22, 27, 0.96)
+	);
+	--heading-glow:
+		0 0 1px var(--rune-300), 0 0 12px rgba(168, 59, 67, 0.42), 0 0 26px rgba(104, 31, 41, 0.24);
 	--shadow-deep: 0 24px 70px rgba(0, 0, 0, 0.72);
 	--glow-rune: 0 0 18px rgba(168, 59, 67, 0.3);
 	--portal-width: 75rem;

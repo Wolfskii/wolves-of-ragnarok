@@ -28,8 +28,8 @@
 		position: relative;
 		z-index: 3;
 		padding: 1.4rem 1.2rem 1.2rem;
-		border: 1px solid rgba(137, 115, 69, 0.56);
-		background: linear-gradient(180deg, rgba(8, 17, 20, 0.72), rgba(3, 8, 10, 0.96));
+		border: 1px solid rgba(168, 59, 67, 0.42);
+		background: var(--glass-metal);
 		clip-path: polygon(
 			0.75rem 0,
 			calc(100% - 0.75rem) 0,
@@ -98,7 +98,7 @@
 		width: 100%;
 		min-height: 2.4rem;
 		border: 1px solid var(--brass-600);
-		background: linear-gradient(180deg, #334347, #11191c 55%, #1c292c);
+		background: var(--glass-button);
 		color: var(--frost-100);
 		font-family: var(--display);
 		font-size: 0.6rem;

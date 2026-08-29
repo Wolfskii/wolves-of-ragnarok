@@ -10,6 +10,9 @@ test('renders the fantasy portal without broken artwork or overflow', async ({
 	await expect(page.getByRole('heading', { level: 1, name: 'Wolves of Ragnarok' })).toBeVisible();
 	await expect(page.getByRole('navigation', { name: 'Primary navigation' })).toBeVisible();
 	await expect(page.getByRole('heading', { name: "The Wolves' Den" })).toBeVisible();
+	await expect(page.locator('.brand-title')).toHaveCSS('font-family', /GR Read One/);
+	await expect(page.locator('.login-shrine .guardian')).toHaveCount(0);
+	await expect(page.locator('.brand-title')).toHaveCSS('text-shadow', /168, 59, 67/);
 	await page.locator('footer').scrollIntoViewIfNeeded();
 	await page.waitForFunction(() =>
 		[...document.images].every((image) => image.complete && image.naturalWidth > 0)

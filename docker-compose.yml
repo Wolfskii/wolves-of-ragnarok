@@ -25,8 +25,11 @@ services:
       HOST_HEADER: ${HOST_HEADER:-x-forwarded-host}
       ADDRESS_HEADER: ${ADDRESS_HEADER:-x-forwarded-for}
       XFF_DEPTH: ${XFF_DEPTH:-1}
-    ports:
-      - '127.0.0.1:${WEB_PORT:-3000}:3000'
+    expose:
+      - '3000'
+    networks:
+      - app-network
+      - dokploy-network
     volumes:
       - uploads:/app/uploads
     healthcheck:
@@ -52,6 +55,8 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-wolves}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-wolves}
+    networks:
+      - app-network
 
   postgres:
     image: postgres:17-alpine
@@ -60,8 +65,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-wolves}
       POSTGRES_USER: ${POSTGRES_USER:-wolves}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
-    ports:
-      - '127.0.0.1:${POSTGRES_PORT:-5432}:5432'
+    networks:
+      - app-network
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
@@ -73,3 +78,10 @@ services:
 volumes:
   postgres-data:
   uploads:
+
+networks:
+  app-network:
+    driver: bridge
+    internal: true
+  dokploy-network:
+    external: true

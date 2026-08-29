@@ -41,21 +41,7 @@
 		width: min(100%, 66rem);
 		margin: -0.25rem auto 0;
 		border-block: 1px solid rgba(184, 197, 198, 0.32);
-		background:
-			linear-gradient(
-				90deg,
-				transparent,
-				rgba(168, 59, 67, 0.16) 12%,
-				transparent 18% 82%,
-				rgba(168, 59, 67, 0.16) 88%,
-				transparent
-			),
-			linear-gradient(
-				180deg,
-				rgba(46, 59, 62, 0.94),
-				rgba(8, 14, 17, 0.98) 48%,
-				rgba(20, 29, 32, 0.96)
-			);
+		background: var(--glass-metal);
 		box-shadow:
 			0 2px 0 #020405,
 			0 8px 24px rgba(0, 0, 0, 0.74),

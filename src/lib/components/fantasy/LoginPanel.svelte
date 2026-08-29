@@ -44,10 +44,8 @@
 		position: relative;
 		z-index: 3;
 		padding: 1.4rem 1.2rem 1.2rem;
-		border: 1px solid rgba(137, 115, 69, 0.56);
-		background:
-			linear-gradient(180deg, rgba(8, 17, 20, 0.72), rgba(3, 8, 10, 0.96)),
-			repeating-linear-gradient(90deg, transparent 0 5px, rgba(255, 255, 255, 0.01) 5px 6px);
+		border: 1px solid rgba(168, 59, 67, 0.42);
+		background: var(--glass-metal);
 		clip-path: polygon(
 			0.75rem 0,
 			calc(100% - 0.75rem) 0,
@@ -145,7 +143,7 @@
 		margin-top: 0.35rem;
 		border: 1px solid var(--brass-600);
 		border-radius: 0;
-		background: linear-gradient(180deg, #334347, #11191c 55%, #1c292c);
+		background: var(--glass-button);
 		box-shadow:
 			inset 0 1px rgba(255, 255, 255, 0.13),
 			0 0 12px rgba(168, 59, 67, 0.16);

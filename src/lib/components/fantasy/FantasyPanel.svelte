@@ -34,8 +34,8 @@
 		gap: 0.75rem;
 		height: 2rem;
 		padding-inline: 1rem;
-		border: 1px solid rgba(139, 163, 163, 0.48);
-		background: linear-gradient(180deg, #354247, #111a1d 45%, #05090b 48%, #202d31);
+		background: var(--glass-metal);
+		border: 1px solid rgba(168, 59, 67, 0.48);
 		clip-path: polygon(
 			0.75rem 0,
 			calc(100% - 0.75rem) 0,
@@ -105,7 +105,7 @@
 		font-size: 1.15rem;
 		font-weight: 600;
 		text-transform: uppercase;
-		text-shadow: 0 0 15px rgba(168, 59, 67, 0.25);
+		text-shadow: var(--heading-glow);
 	}
 
 	.panel-foot {
@@ -113,7 +113,7 @@
 		height: 1rem;
 		margin-inline: 0.35rem;
 		border-top: 1px solid rgba(184, 197, 198, 0.36);
-		background: linear-gradient(180deg, #111a1d, #050809);
+		background: var(--glass-metal);
 		clip-path: polygon(0 0, 100% 0, calc(100% - 1rem) 100%, 1rem 100%);
 	}
 

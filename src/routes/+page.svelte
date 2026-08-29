@@ -305,7 +305,7 @@
 
 	.primary-action {
 		border: 1px solid var(--brass-600);
-		background: linear-gradient(180deg, #354449, #10181a 54%, #1d2c2f);
+		background: var(--glass-button);
 		box-shadow:
 			inset 0 1px rgba(255, 255, 255, 0.14),
 			var(--glow-rune);

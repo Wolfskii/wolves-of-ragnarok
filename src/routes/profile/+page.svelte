@@ -38,7 +38,6 @@
 		<label
 			>Current password<input
 				name="currentPassword"
-				type="password"
 				autocomplete="current-password"
 				required
 			/></label
@@ -103,7 +102,7 @@
 	input,
 	textarea {
 		width: 100%;
-		border: 1px solid rgba(111, 133, 140, 0.45);
+		border: 1px solid rgba(168, 59, 67, 0.42);
 		border-radius: 0;
 		background: rgba(0, 3, 4, 0.84);
 		box-shadow: inset 0 1px 8px #000;
@@ -123,7 +122,7 @@
 		min-height: 2.7rem;
 		border: 1px solid var(--brass-600);
 		border-radius: 0;
-		background: linear-gradient(180deg, #354449, #10181a 54%, #1d2c2f);
+		background: var(--glass-button);
 		color: var(--frost-100);
 		font-family: var(--display);
 		font-size: 0.64rem;

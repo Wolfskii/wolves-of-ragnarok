@@ -46,6 +46,6 @@ Set at minimum `POSTGRES_PASSWORD`, `AUTH_SECRET`, and `ORIGIN`, then run:
 docker compose up --build -d
 ```
 
-The app binds to loopback on port 3000 by default and is intended to run behind Caddy, Nginx, or Traefik. PostgreSQL also binds only to loopback for local tooling. Production data lives in named `postgres-data` and `uploads` volumes.
+The production app exposes container port 3000 to Dokploy's reverse proxy through the shared `dokploy-network` and does not bind host port 3000. PostgreSQL is internal-only. Production data lives in named `postgres-data` and `uploads` volumes.
 
 See [docs/development.md](docs/development.md), [docs/deployment.md](docs/deployment.md), and [AGENTS.md](AGENTS.md) before changing architecture or security behavior.
