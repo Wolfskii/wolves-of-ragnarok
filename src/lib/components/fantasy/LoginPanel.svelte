@@ -6,14 +6,6 @@
 </script>
 
 <section class="login-shrine" aria-labelledby="login-heading">
-	<img
-		class="guardian"
-		src="/images/creatures/login-wolf-guardian.webp"
-		alt=""
-		width="1024"
-		height="1024"
-		aria-hidden="true"
-	/>
 	<div class="login-slab">
 		<p class="rune" aria-hidden="true">ᛉ ᛟ ᚱ</p>
 		<h2 id="login-heading">Enter the Hall</h2>
@@ -46,26 +38,12 @@
 <style>
 	.login-shrine {
 		position: relative;
-		padding-top: 7rem;
-	}
-
-	.guardian {
-		position: absolute;
-		z-index: 2;
-		top: -4.4rem;
-		left: 50%;
-		width: 15rem;
-		height: auto;
-		max-width: none;
-		transform: translateX(-50%);
-		filter: drop-shadow(0 0 16px rgba(87, 215, 206, 0.24)) drop-shadow(0 20px 18px #000);
-		pointer-events: none;
 	}
 
 	.login-slab {
 		position: relative;
 		z-index: 3;
-		padding: 5.8rem 1.2rem 1.2rem;
+		padding: 1.4rem 1.2rem 1.2rem;
 		border: 1px solid rgba(137, 115, 69, 0.56);
 		background:
 			linear-gradient(180deg, rgba(8, 17, 20, 0.72), rgba(3, 8, 10, 0.96)),
@@ -81,7 +59,7 @@
 			0 0.75rem
 		);
 		box-shadow:
-			inset 0 0 28px rgba(87, 215, 206, 0.08),
+			inset 0 0 28px rgba(168, 59, 67, 0.1),
 			var(--shadow-deep);
 	}
 
@@ -170,7 +148,7 @@
 		background: linear-gradient(180deg, #334347, #11191c 55%, #1c292c);
 		box-shadow:
 			inset 0 1px rgba(255, 255, 255, 0.13),
-			0 0 12px rgba(87, 215, 206, 0.12);
+			0 0 12px rgba(168, 59, 67, 0.16);
 		color: var(--frost-100);
 		cursor: pointer;
 	}
@@ -191,12 +169,6 @@
 		.login-shrine {
 			width: min(100%, 24rem);
 			margin-inline: auto;
-			padding-top: 6rem;
-		}
-
-		.guardian {
-			top: -4.8rem;
-			width: 14rem;
 		}
 	}
 </style>

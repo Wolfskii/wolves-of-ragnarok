@@ -122,7 +122,7 @@
 		width: 9.5rem;
 		aspect-ratio: 1;
 		transform: translateX(-50%);
-		filter: drop-shadow(0 0 16px rgba(87, 215, 206, 0.32));
+		filter: drop-shadow(0 0 16px rgba(168, 59, 67, 0.34));
 	}
 
 	.shield-wrap img {
@@ -152,7 +152,7 @@
 		padding: 5rem 1.3rem 1.2rem;
 		border: 1px solid rgba(137, 115, 69, 0.62);
 		background:
-			linear-gradient(135deg, rgba(87, 215, 206, 0.08), transparent 30%),
+			linear-gradient(135deg, rgba(168, 59, 67, 0.1), transparent 30%),
 			repeating-linear-gradient(90deg, transparent 0 5px, rgba(255, 255, 255, 0.009) 5px 6px),
 			rgba(4, 10, 13, 0.94);
 		clip-path: polygon(
@@ -166,7 +166,7 @@
 			0 0.75rem
 		);
 		box-shadow:
-			inset 0 0 24px rgba(87, 215, 206, 0.08),
+			inset 0 0 24px rgba(168, 59, 67, 0.1),
 			var(--shadow-deep);
 		text-align: center;
 	}

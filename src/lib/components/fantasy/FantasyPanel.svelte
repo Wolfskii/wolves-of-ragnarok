@@ -105,7 +105,7 @@
 		font-size: 1.15rem;
 		font-weight: 600;
 		text-transform: uppercase;
-		text-shadow: 0 0 15px rgba(87, 215, 206, 0.25);
+		text-shadow: 0 0 15px rgba(168, 59, 67, 0.25);
 	}
 
 	.panel-foot {

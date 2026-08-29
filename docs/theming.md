@@ -4,7 +4,7 @@ Global tokens live in `src/lib/styles/tokens.css`; global behavior and environme
 
 ## Visual Language
 
-Use charcoal, black, dark iron, steel, restrained cold teal, muted brass, and sparse ember accents. Cinzel is reserved for display/navigation labels and Libre Baskerville for readable content. Avoid modern rounded rectangles, one-note blue palettes, excessive gradients, and generic fantasy clipart.
+Use charcoal, black, dark iron, steel, oxblood red, muted brass, and sparse ember accents. GR Read One is reserved for display/navigation labels and Libre Baskerville for readable content. Avoid modern rounded rectangles, turquoise-led palettes, excessive gradients, and generic fantasy clipart.
 
 Panels should read as forged iron or carved stone through sharp silhouettes, thin metallic highlights, rivets, knotwork, and controlled texture. Cards are for repeated records only; sections remain connected parts of the portal.
 

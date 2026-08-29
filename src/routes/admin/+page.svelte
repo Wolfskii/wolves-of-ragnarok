@@ -55,7 +55,7 @@
 
 	a:hover {
 		color: var(--rune-300);
-		box-shadow: inset 0 0 22px rgba(87, 215, 206, 0.11);
+		box-shadow: inset 0 0 22px rgba(168, 59, 67, 0.14);
 	}
 
 	@media (max-width: 36rem) {

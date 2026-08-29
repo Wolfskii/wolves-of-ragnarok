@@ -7,14 +7,6 @@
 </script>
 
 <section class="user-shrine" aria-labelledby="user-heading">
-	<img
-		class="guardian"
-		src="/images/creatures/login-wolf-guardian.webp"
-		alt=""
-		width="1024"
-		height="1024"
-		aria-hidden="true"
-	/>
 	<div class="user-slab">
 		<div class="avatar" aria-hidden="true">{user.username.slice(0, 1).toUpperCase()}</div>
 		<p class="role"><Shield size={13} />{user.role}</p>
@@ -30,26 +22,12 @@
 <style>
 	.user-shrine {
 		position: relative;
-		padding-top: 7rem;
-	}
-
-	.guardian {
-		position: absolute;
-		z-index: 2;
-		top: -4.4rem;
-		left: 50%;
-		width: 15rem;
-		height: auto;
-		max-width: none;
-		transform: translateX(-50%);
-		filter: drop-shadow(0 0 16px rgba(87, 215, 206, 0.24)) drop-shadow(0 20px 18px #000);
-		pointer-events: none;
 	}
 
 	.user-slab {
 		position: relative;
 		z-index: 3;
-		padding: 5.4rem 1.2rem 1.2rem;
+		padding: 1.4rem 1.2rem 1.2rem;
 		border: 1px solid rgba(137, 115, 69, 0.56);
 		background: linear-gradient(180deg, rgba(8, 17, 20, 0.72), rgba(3, 8, 10, 0.96));
 		clip-path: polygon(
@@ -63,7 +41,7 @@
 			0 0.75rem
 		);
 		box-shadow:
-			inset 0 0 28px rgba(87, 215, 206, 0.08),
+			inset 0 0 28px rgba(168, 59, 67, 0.1),
 			var(--shadow-deep);
 		text-align: center;
 	}

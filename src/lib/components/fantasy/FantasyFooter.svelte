@@ -43,12 +43,12 @@
 	img {
 		width: 3.5rem;
 		height: auto;
-		margin: 1rem auto 0;
+		margin: 1.5rem auto 0;
 		opacity: 0.72;
 	}
 
 	p {
-		margin: -0.5rem 0 0;
+		margin: 0.85rem 0 0;
 		color: var(--steel-300);
 		font-family: var(--display);
 		font-size: 0.78rem;

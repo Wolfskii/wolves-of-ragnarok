@@ -51,8 +51,8 @@
 		place-items: center;
 		width: 3.8rem;
 		aspect-ratio: 1;
-		border: 1px solid rgba(87, 215, 206, 0.42);
-		background: radial-gradient(circle, rgba(87, 215, 206, 0.2), rgba(5, 10, 13, 0.86) 65%);
+		border: 1px solid rgba(168, 59, 67, 0.48);
+		background: radial-gradient(circle, rgba(168, 59, 67, 0.2), rgba(5, 10, 13, 0.86) 65%);
 		clip-path: polygon(50% 0, 90% 18%, 100% 64%, 74% 100%, 26% 100%, 0 64%, 10% 18%);
 		color: var(--rune-300);
 		font-family: var(--display);

@@ -45,9 +45,9 @@
 			linear-gradient(
 				90deg,
 				transparent,
-				rgba(87, 215, 206, 0.16) 12%,
+				rgba(168, 59, 67, 0.16) 12%,
 				transparent 18% 82%,
-				rgba(87, 215, 206, 0.16) 88%,
+				rgba(168, 59, 67, 0.16) 88%,
 				transparent
 			),
 			linear-gradient(
@@ -126,7 +126,7 @@
 
 	a:hover,
 	a:focus-visible {
-		background: linear-gradient(180deg, transparent, rgba(87, 215, 206, 0.12), transparent);
+		background: linear-gradient(180deg, transparent, rgba(168, 59, 67, 0.12), transparent);
 		color: var(--frost-100);
 		text-shadow: 0 0 12px var(--rune-400);
 	}

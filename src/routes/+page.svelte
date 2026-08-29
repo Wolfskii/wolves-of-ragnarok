@@ -241,7 +241,7 @@
 		border: 1px solid var(--brass-600);
 		background: rgba(5, 10, 12, 0.94);
 		box-shadow:
-			inset 0 0 12px rgba(87, 215, 206, 0.18),
+			inset 0 0 12px rgba(168, 59, 67, 0.18),
 			var(--glow-rune);
 		transform: rotate(45deg);
 	}
@@ -433,7 +433,7 @@
 		font-size: clamp(2rem, 5vw, 3.25rem);
 		text-shadow:
 			0 4px 18px #000,
-			0 0 22px rgba(87, 215, 206, 0.28);
+			0 0 22px rgba(168, 59, 67, 0.28);
 	}
 
 	.serpent-content > p:not(.section-kicker) {

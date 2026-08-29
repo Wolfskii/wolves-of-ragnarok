@@ -3,5 +3,5 @@
   <path d="M120 28 198 58v68c0 54-30 94-78 120-48-26-78-66-78-120V58l78-30Z" stroke="#ad9459" stroke-width="4"/>
   <path d="M120 40v194M46 88h148" stroke="#556b70" stroke-width="4"/>
   <circle cx="120" cy="104" r="28" fill="#1c2a2e" stroke="#b49b60" stroke-width="5"/>
-  <circle cx="120" cy="104" r="8" fill="#57d7ce"/>
+  <circle cx="120" cy="104" r="8" fill="#a83b43"/>
 </svg>
