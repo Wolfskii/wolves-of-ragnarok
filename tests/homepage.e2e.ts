@@ -74,6 +74,8 @@ test('shows the map-only live world chart on the servers page', async ({
 	await expect(page.getByText('valheim.webble.se:2456')).toBeVisible();
 	await expect(page.getByText('4 / 10 players')).toBeVisible();
 	await expect(page.locator('.population strong')).toHaveCount(0);
+	await expect(page.getByText('Player names unavailable')).toHaveCount(0);
+	await expect(page.getByRole('link', { name: 'Open live map' })).toHaveCount(0);
 	await expect(page.getByText('Reported version')).toBeVisible();
 	await expect(page.locator('.health strong')).toHaveText('Live');
 	await expect(page.locator('.health strong')).toHaveCSS('color', 'rgb(128, 215, 162)');

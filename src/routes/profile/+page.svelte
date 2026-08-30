@@ -12,15 +12,23 @@
 	eyebrow={`${data.profile.role} since ${new Date(data.profile.createdAt).getFullYear()}`}
 >
 	<div class="identity">
-		<strong>{data.profile.displayName ?? data.profile.username}</strong><span
-			>@{data.profile.username} · {data.profile.email}</span
-		>
+		<strong>@{data.profile.username}</strong>
+		<span>{data.profile.email}</span>
+		{#if data.profile.steamUsername}<small>Steam: {data.profile.steamUsername}</small>{/if}
 	</div>
 
 	{#if form?.profileError}<p class="error" role="alert">{form.profileError}</p>{/if}
 	{#if form?.profileSuccess}<p class="success" role="status">Profile updated.</p>{/if}
 	<form method="POST" action="?/profile">
-		<label>Display name<input name="displayName" value={data.profile.displayName ?? ''} /></label>
+		<label
+			>Steam profile link <span>(optional, fetches Steam name and avatar)</span><input
+				name="steamProfileUrl"
+				type="url"
+				inputmode="url"
+				placeholder="https://steamcommunity.com/id/..."
+				value={data.profile.steamProfileUrl ?? ''}
+			/></label
+		>
 		<label
 			>Bio<textarea name="bio" rows="6" maxlength="1000">{data.profile.bio ?? ''}</textarea></label
 		>
@@ -79,6 +87,11 @@
 	.identity span {
 		color: var(--text-muted);
 		font-size: 0.7rem;
+	}
+
+	.identity small {
+		color: var(--brass-400);
+		font-size: 0.65rem;
 	}
 
 	form,

@@ -18,6 +18,18 @@
 		let tileLayer: TileLayer | null = null;
 		let tileUrl: string | null = null;
 		let resizeObserver: ResizeObserver | null = null;
+		let retryTimer: number | undefined;
+		let retryIndex = 0;
+		const retryDelays = [500, 1000, 2000, 5000];
+
+		const scheduleRetry = () => {
+			if (!active || retryTimer || retryIndex >= retryDelays.length) return;
+			const delay = retryDelays[retryIndex++];
+			retryTimer = window.setTimeout(() => {
+				retryTimer = undefined;
+				void refresh();
+			}, delay);
+		};
 
 		const renderMap = async (result: ServerStatusResult) => {
 			if (!result.mapTileUrl) return;
@@ -70,22 +82,35 @@
 				tileLayer.once('load', () => {
 					if (active) mapReady = true;
 				});
+				tileLayer.once('tileerror', scheduleRetry);
 				tileLayer.addTo(map);
 				map.fitBounds(worldBounds, { animate: false, padding: [8, 8] });
+				if (immersive) {
+					map.setZoom(Math.min(maximumZoom, map.getZoom() + 1), { animate: false });
+				}
 			}
 		};
 
 		const refresh = async () => {
 			try {
 				const response = await fetch('/api/servers/featured/status');
-				if (!response.ok) return;
+				if (!response.ok) {
+					scheduleRetry();
+					return;
+				}
 				const result = (await response.json()) as ServerStatusResult;
 				if (!active) return;
+				if (!result.mapTileUrl) {
+					scheduleRetry();
+					return;
+				}
+				retryIndex = 0;
 				mapImageUrl = result.mapImageUrl;
 				worldName = result.worldName ?? result.name;
 				await renderMap(result);
 			} catch {
 				// Keep the last rendered chart when a refresh fails.
+				scheduleRetry();
 			}
 		};
 
@@ -94,6 +119,7 @@
 		return () => {
 			active = false;
 			window.clearInterval(timer);
+			if (retryTimer) window.clearTimeout(retryTimer);
 			resizeObserver?.disconnect();
 			map?.remove();
 		};

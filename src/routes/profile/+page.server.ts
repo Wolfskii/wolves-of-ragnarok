@@ -4,9 +4,11 @@ import { z } from 'zod';
 import { getDatabase } from '$lib/server/db';
 import { createSession } from '$lib/server/auth/session';
 import { hashPassword, verifyPassword } from '$lib/server/auth/crypto';
+import { optionalSteamProfileUrl } from '$lib/server/auth/schemas';
+import { fetchSteamProfile } from '$lib/server/steam';
 
 const profileSchema = z.object({
-	displayName: z.string().trim().max(80),
+	steamProfileUrl: optionalSteamProfileUrl,
 	bio: z.string().trim().max(1000)
 });
 
@@ -27,7 +29,9 @@ export const load: PageServerLoad = async ({ locals }) => ({
 		select: {
 			username: true,
 			email: true,
-			displayName: true,
+			steamProfileUrl: true,
+			steamUsername: true,
+			steamAvatarUrl: true,
 			bio: true,
 			role: true,
 			createdAt: true
@@ -39,15 +43,20 @@ export const actions = {
 	profile: async ({ request, locals }) => {
 		const formData = await request.formData();
 		const parsed = profileSchema.safeParse({
-			displayName: formData.get('displayName'),
+			steamProfileUrl: formData.get('steamProfileUrl'),
 			bio: formData.get('bio')
 		});
 		if (!parsed.success) return fail(400, { profileError: parsed.error.issues[0]?.message });
+		const steamProfile = parsed.data.steamProfileUrl
+			? await fetchSteamProfile(parsed.data.steamProfileUrl)
+			: { username: null, avatarUrl: null };
 
 		await getDatabase().user.update({
 			where: { id: locals.user!.id },
 			data: {
-				displayName: parsed.data.displayName || null,
+				steamProfileUrl: parsed.data.steamProfileUrl ?? null,
+				steamUsername: steamProfile.username,
+				steamAvatarUrl: steamProfile.avatarUrl,
 				bio: parsed.data.bio || null,
 				lastSeenAt: new Date(),
 				activities: { create: { type: 'PROFILE_UPDATED', summary: 'Updated their guild profile.' } }

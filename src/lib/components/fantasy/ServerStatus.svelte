@@ -1,7 +1,6 @@
 <script lang="ts">
-	/* eslint-disable svelte/no-navigation-without-resolve */
 	import { onMount } from 'svelte';
-	import { Check, Copy, ExternalLink, Eye, EyeOff } from '@lucide/svelte';
+	import { Check, Copy, Eye, EyeOff } from '@lucide/svelte';
 	import type { ServerStatusResult } from '$lib/server/server-status/types';
 
 	let {
@@ -13,7 +12,6 @@
 		playerNames = [],
 		joinAddress = 'valheim.webble.se',
 		joinPort = 2456,
-		mapUrl = 'https://valheim-map.webble.se',
 		worldName = 'Yggdrasil',
 		day = null,
 		version = null,
@@ -30,7 +28,6 @@
 		playerNames?: string[];
 		joinAddress?: string;
 		joinPort?: number;
-		mapUrl?: string;
 		worldName?: string | null;
 		day?: number | null;
 		version?: string | null;
@@ -49,7 +46,6 @@
 		playerNames: [] as string[],
 		joinAddress: 'valheim.webble.se',
 		joinPort: 2456,
-		mapUrl: 'https://valheim-map.webble.se',
 		worldName: 'Yggdrasil' as string | null,
 		day: null as number | null,
 		version: null as string | null,
@@ -128,7 +124,6 @@
 				playerNames,
 				joinAddress,
 				joinPort,
-				mapUrl,
 				worldName,
 				day,
 				version,
@@ -155,7 +150,6 @@
 					playerNames: result.playerNames,
 					joinAddress: result.joinAddress,
 					joinPort: result.joinPort,
-					mapUrl: result.mapUrl,
 					worldName: result.worldName,
 					day: result.day,
 					version: result.version,
@@ -208,13 +202,13 @@
 			></i>
 		</div>
 
-		{#if current.online && current.playerNames.length}
+		{#if current.online && current.players > 0 && current.playerNames.length}
 			<ul aria-label="Online players">
 				{#each current.playerNames as player (player)}
 					<li><span aria-hidden="true">ᚢ</span>{player}</li>
 				{/each}
 			</ul>
-		{:else if current.online}
+		{:else if current.online && current.players > 0}
 			<p class="no-names">Player names unavailable</p>
 		{/if}
 
@@ -313,12 +307,6 @@
 				</div>
 				{#if passwordError}<p class="password-error" role="alert">{passwordError}</p>{/if}
 			</div>
-		{/if}
-
-		{#if current.mapUrl}
-			<a class="map-link" href={current.mapUrl} target="_blank" rel="noreferrer">
-				<ExternalLink size={13} aria-hidden="true" /> Open live map
-			</a>
 		{/if}
 	</div>
 </section>
@@ -659,19 +647,6 @@
 		margin: 0;
 		color: var(--danger-400);
 		font-size: 0.62rem;
-	}
-
-	.map-link {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		gap: 0.35rem;
-		margin-top: 0.75rem;
-		color: var(--brass-400);
-		font-family: var(--display);
-		font-size: 0.62rem;
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
 	}
 
 	@media (max-width: 47.99rem) {

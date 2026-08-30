@@ -8,9 +8,13 @@
 
 <section class="user-shrine" aria-labelledby="user-heading">
 	<div class="user-slab">
-		<div class="avatar" aria-hidden="true">{user.username.slice(0, 1).toUpperCase()}</div>
+		{#if user.steamAvatarUrl}
+			<img class="avatar avatar-image" src={user.steamAvatarUrl} alt="" width="48" height="48" />
+		{:else}
+			<div class="avatar" aria-hidden="true">{user.username.slice(0, 1).toUpperCase()}</div>
+		{/if}
 		<p class="role"><Shield size={13} />{user.role}</p>
-		<h2 id="user-heading">{user.displayName ?? user.username}</h2>
+		<h2 id="user-heading">{user.username}</h2>
 		<p class="welcome">The longhouse remembers you.</p>
 		<a class="profile" href={resolve('/profile')}><Settings size={16} />View profile</a>
 		<form method="POST" action="/logout">
@@ -58,6 +62,11 @@
 		font-family: var(--display);
 		font-size: 1.2rem;
 		transform: rotate(45deg);
+	}
+
+	.avatar-image {
+		object-fit: cover;
+		transform: none;
 	}
 
 	.avatar::first-letter {

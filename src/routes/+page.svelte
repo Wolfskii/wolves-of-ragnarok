@@ -95,7 +95,7 @@
 					{#if data.user}
 						<UserPanel user={data.user} />
 					{:else}
-						<LoginPanel error={form?.loginError} email={form?.email} />
+						<LoginPanel error={form?.loginError} identifier={form?.identifier} />
 					{/if}
 					<FantasyPanel title="War Council" eyebrow="From the longhouse">
 						<ul class="brief-list">

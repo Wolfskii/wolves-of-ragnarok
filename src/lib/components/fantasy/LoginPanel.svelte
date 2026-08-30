@@ -2,7 +2,7 @@
 	import { LogIn, UserPlus } from '@lucide/svelte';
 	import { resolve } from '$app/paths';
 
-	let { error, email = '' }: { error?: string; email?: string } = $props();
+	let { error, identifier = '' }: { error?: string; identifier?: string } = $props();
 </script>
 
 <section class="login-shrine" aria-labelledby="login-heading">
@@ -14,8 +14,15 @@
 		{#if error}<p class="error" role="alert">{error}</p>{/if}
 
 		<form method="POST" action="?/login">
-			<label for="email">Email</label>
-			<input id="email" name="email" type="email" autocomplete="email" value={email} required />
+			<label for="identifier">Email or username</label>
+			<input
+				id="identifier"
+				name="identifier"
+				type="text"
+				autocomplete="username"
+				value={identifier}
+				required
+			/>
 
 			<label for="password">Password</label>
 			<input

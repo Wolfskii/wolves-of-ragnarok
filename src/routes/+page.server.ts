@@ -11,26 +11,30 @@ export const actions = {
 
 		const formData = await request.formData();
 		const parsed = loginSchema.safeParse({
-			email: formData.get('email'),
+			identifier: formData.get('identifier') ?? formData.get('email'),
 			password: formData.get('password')
 		});
 
 		if (!parsed.success) {
 			return fail(400, {
 				loginError: parsed.error.issues[0]?.message ?? 'Check your credentials.',
-				email: String(formData.get('email') ?? '')
+				identifier: String(formData.get('identifier') ?? formData.get('email') ?? '')
 			});
 		}
 
-		const user = await getDatabase().user.findUnique({ where: { email: parsed.data.email } });
+		const user = await getDatabase().user.findFirst({
+			where: {
+				OR: [{ email: parsed.data.identifier }, { username: parsed.data.identifier }]
+			}
+		});
 		if (
 			!user ||
 			!user.isActive ||
 			!(await verifyPassword(user.passwordHash, parsed.data.password))
 		) {
 			return fail(400, {
-				loginError: 'The email or password does not match our records.',
-				email: parsed.data.email
+				loginError: 'The email, username, or password does not match our records.',
+				identifier: parsed.data.identifier
 			});
 		}
 

@@ -26,11 +26,16 @@ const database = new PrismaClient({ adapter });
 try {
 	const admin = await database.user.upsert({
 		where: { email: adminEmail },
-		update: { role: 'ADMIN', isActive: true },
+		update: {
+			username: adminUsername,
+			passwordHash: await hashPassword(adminPassword),
+			role: 'ADMIN',
+			isActive: true,
+			lastSeenAt: new Date()
+		},
 		create: {
 			email: adminEmail,
 			username: adminUsername,
-			displayName: 'Jarl Wolfskii',
 			passwordHash: await hashPassword(adminPassword),
 			role: 'ADMIN',
 			bio: 'Keeper of the longhouse and first among the Wolves of Ragnarok.',

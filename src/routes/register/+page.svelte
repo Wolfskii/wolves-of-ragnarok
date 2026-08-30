@@ -32,9 +32,12 @@
 			>
 		</div>
 		<label
-			>Display name <span>(optional)</span><input
-				name="displayName"
-				value={form?.values?.displayName ?? ''}
+			>Steam profile link <span>(optional, fetches Steam name and avatar)</span><input
+				name="steamProfileUrl"
+				type="url"
+				inputmode="url"
+				placeholder="https://steamcommunity.com/id/..."
+				value={form?.values?.steamProfileUrl ?? ''}
 			/></label
 		>
 		<div class="field-row">
