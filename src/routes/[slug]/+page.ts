@@ -17,10 +17,10 @@ const pages = {
 	},
 	servers: {
 		title: 'Game Servers',
-		eyebrow: 'Realms under our banner',
+		eyebrow: 'Yggdrasil under our banner',
 		intro:
-			"The Wolves' Den is our primary Valheim world. Live status is displayed on the homepage.",
-		items: ['Valheim: The Wolves’ Den', 'More realms will be added by the war council']
+			'Yggdrasil is our Valheim world. Live health, current players, join address, and the world map are shown below.',
+		items: []
 	},
 	members: {
 		title: 'Guild Roster',

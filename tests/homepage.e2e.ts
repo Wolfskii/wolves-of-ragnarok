@@ -9,7 +9,7 @@ test('renders the fantasy portal without broken artwork or overflow', async ({
 	await expect(page).toHaveTitle(/Wolves of Ragnarok/);
 	await expect(page.getByRole('heading', { level: 1, name: 'Wolves of Ragnarok' })).toBeVisible();
 	await expect(page.getByRole('navigation', { name: 'Primary navigation' })).toBeVisible();
-	await expect(page.getByRole('heading', { name: "The Wolves' Den" })).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'Yggdrasil' })).toBeVisible();
 	await expect(page.locator('.brand-title')).toHaveCSS('font-family', /GR Read One/);
 	await expect(page.locator('.login-shrine .guardian')).toHaveCount(0);
 	await expect(page.locator('.brand-title')).toHaveCSS('text-shadow', /168, 59, 67/);
@@ -58,7 +58,7 @@ test('serves public destinations, auth entry, status data, and guards administra
 	const statusResponse = await request.get('/api/servers/featured/status');
 	expect(statusResponse.ok()).toBe(true);
 	await expect(statusResponse.json()).resolves.toMatchObject({
-		name: "The Wolves' Den",
+		name: 'Yggdrasil',
 		state: 'online',
 		playerCount: 4,
 		maxPlayers: 10

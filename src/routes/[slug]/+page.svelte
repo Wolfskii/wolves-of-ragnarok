@@ -1,5 +1,6 @@
 <script lang="ts">
 	import PortalPageShell from '$lib/components/fantasy/PortalPageShell.svelte';
+	import ServerStatus from '$lib/components/fantasy/ServerStatus.svelte';
 	import { resolve } from '$app/paths';
 	import type { PageData } from './$types';
 
@@ -13,11 +14,15 @@
 
 <PortalPageShell title={data.page.title} eyebrow={data.page.eyebrow}>
 	<p class="intro">{data.page.intro}</p>
-	<ul>
-		{#each data.page.items as item (item)}
-			<li><span aria-hidden="true">ᛟ</span>{item}</li>
-		{/each}
-	</ul>
+	{#if data.page.title === 'Game Servers'}
+		<div class="server-status"><ServerStatus /></div>
+	{:else}
+		<ul>
+			{#each data.page.items as item (item)}
+				<li><span aria-hidden="true">ᛟ</span>{item}</li>
+			{/each}
+		</ul>
+	{/if}
 	<p class="return"><a href={resolve('/')}>Return to the great hall</a></p>
 </PortalPageShell>
 
@@ -25,6 +30,11 @@
 	.intro {
 		color: #becbc8;
 		font-size: 0.88rem;
+	}
+
+	.server-status {
+		max-width: 24rem;
+		margin: 2rem auto;
 	}
 
 	ul {

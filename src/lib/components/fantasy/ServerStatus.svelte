@@ -1,35 +1,65 @@
 <script lang="ts">
+	/* eslint-disable svelte/no-navigation-without-resolve */
 	import { onMount } from 'svelte';
+	import { ExternalLink } from '@lucide/svelte';
 	import type { ServerStatusResult } from '$lib/server/server-status/types';
 
 	let {
-		name = "The Wolves' Den",
+		name = 'Yggdrasil',
 		online = true,
-		players = 4,
+		players = 0,
 		maxPlayers = 10,
-		ping = 42,
-		playerNames = ['Eirik', 'Freydis', 'Ulf', 'Sigrun']
+		ping = null,
+		playerNames = [],
+		joinAddress = 'valheim-map.webble.se',
+		joinPort = 2456,
+		mapUrl = 'https://valheim-map.webble.se',
+		worldName = 'Yggdrasil',
+		day = null
 	}: {
 		name?: string;
 		online?: boolean;
 		players?: number;
 		maxPlayers?: number;
-		ping?: number;
+		ping?: number | null;
 		playerNames?: string[];
+		joinAddress?: string;
+		joinPort?: number;
+		mapUrl?: string;
+		worldName?: string | null;
+		day?: number | null;
 	} = $props();
 
 	let current = $state({
-		name: "The Wolves' Den",
+		name: 'Yggdrasil',
 		online: true,
-		players: 4,
+		players: 0,
 		maxPlayers: 10,
-		ping: 42,
-		playerNames: ['Eirik', 'Freydis', 'Ulf', 'Sigrun']
+		ping: null as number | null,
+		playerNames: [] as string[],
+		joinAddress: 'valheim-map.webble.se',
+		joinPort: 2456,
+		mapUrl: 'https://valheim-map.webble.se',
+		worldName: 'Yggdrasil' as string | null,
+		day: null as number | null
 	});
 	let receivedLiveStatus = $state(false);
 
 	$effect(() => {
-		if (!receivedLiveStatus) current = { name, online, players, maxPlayers, ping, playerNames };
+		if (!receivedLiveStatus)
+			current = {
+				name,
+				online,
+				players,
+				maxPlayers,
+				ping,
+				playerNames,
+				joinAddress,
+				joinPort,
+				mapUrl,
+				worldName,
+				day
+			};
 	});
 
 	onMount(() => {
@@ -46,8 +76,13 @@
 					online: result.state === 'online',
 					players: result.playerCount ?? 0,
 					maxPlayers: result.maxPlayers ?? 0,
-					ping: result.pingMs ?? 0,
-					playerNames: result.playerNames
+					ping: result.pingMs,
+					playerNames: result.playerNames,
+					joinAddress: result.joinAddress,
+					joinPort: result.joinPort,
+					mapUrl: result.mapUrl,
+					worldName: result.worldName,
+					day: result.day
 				};
 			} catch {
 				// Retain the last known state when a refresh cannot reach the backend.
@@ -72,6 +107,11 @@
 	<div class="status-slab">
 		<p class="game">Valheim</p>
 		<h2 id="server-name">{current.name}</h2>
+		{#if current.worldName || current.day !== null}
+			<p class="world-details">
+				{current.worldName ?? 'Valheim world'}{current.day !== null ? ` · Day ${current.day}` : ''}
+			</p>
+		{/if}
 		<p class="state" class:offline={!current.online}>
 			<span aria-hidden="true"></span>{current.online ? 'Online' : 'Offline'}
 		</p>
@@ -100,10 +140,21 @@
 		{/if}
 
 		<p class="ping">
-			<span>Last rune signal</span><strong
-				>{current.online ? `${current.ping} ms` : 'No response'}</strong
-			>
+			<span>External health</span><strong>{current.online ? 'Live' : 'No response'}</strong>
 		</p>
+
+		{#if current.joinAddress}
+			<div class="join-details">
+				<span>Join address</span>
+				<code>{current.joinAddress}:{current.joinPort}</code>
+			</div>
+		{/if}
+
+		{#if current.mapUrl}
+			<a class="map-link" href={current.mapUrl} target="_blank" rel="noreferrer">
+				<ExternalLink size={13} aria-hidden="true" /> Open live map
+			</a>
+		{/if}
 	</div>
 </section>
 
@@ -185,6 +236,12 @@
 		color: var(--frost-100);
 		font-size: 1.05rem;
 		text-transform: uppercase;
+	}
+
+	.world-details {
+		margin: -0.35rem 0 0.65rem;
+		color: var(--text-muted);
+		font-size: 0.68rem;
 	}
 
 	.state {
@@ -282,6 +339,41 @@
 
 	.ping strong {
 		color: var(--steel-300);
+	}
+
+	.join-details {
+		display: grid;
+		gap: 0.25rem;
+		margin-top: 0.9rem;
+		padding-top: 0.7rem;
+		border-top: 1px solid rgba(137, 115, 69, 0.32);
+		text-align: left;
+	}
+
+	.join-details span {
+		color: var(--text-muted);
+		font-size: 0.62rem;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+	}
+
+	.join-details code {
+		overflow-wrap: anywhere;
+		color: var(--frost-100);
+		font-size: 0.72rem;
+	}
+
+	.map-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.35rem;
+		margin-top: 0.75rem;
+		color: var(--brass-400);
+		font-family: var(--display);
+		font-size: 0.62rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
 	}
 
 	@media (max-width: 47.99rem) {

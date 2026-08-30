@@ -23,6 +23,9 @@ export class ValheimGameDigAdapter implements GameServerAdapter {
 			return {
 				serverId: target.id,
 				name: target.name,
+				joinAddress: target.host,
+				joinPort: target.gamePort,
+				mapUrl: '',
 				state: 'online',
 				playerCount: state.numplayers,
 				maxPlayers: state.maxplayers,
@@ -32,6 +35,8 @@ export class ValheimGameDigAdapter implements GameServerAdapter {
 				pingMs: state.ping,
 				worldName: state.map || null,
 				version: state.version || null,
+				day: null,
+				snapshotAgeMs: null,
 				queriedAt: new Date().toISOString()
 			};
 		} catch (error) {
@@ -45,6 +50,9 @@ export class ValheimGameDigAdapter implements GameServerAdapter {
 			return {
 				serverId: target.id,
 				name: target.name,
+				joinAddress: target.host,
+				joinPort: target.gamePort,
+				mapUrl: '',
 				state: 'error',
 				playerCount: null,
 				maxPlayers: null,
@@ -52,6 +60,8 @@ export class ValheimGameDigAdapter implements GameServerAdapter {
 				pingMs: null,
 				worldName: null,
 				version: null,
+				day: null,
+				snapshotAgeMs: null,
 				queriedAt: new Date().toISOString(),
 				errorCode
 			};

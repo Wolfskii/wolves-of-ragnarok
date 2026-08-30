@@ -10,6 +10,9 @@ export type ServerQueryTarget = {
 export type ServerStatusResult = {
 	serverId: string;
 	name: string;
+	joinAddress: string;
+	joinPort: number;
+	mapUrl: string;
 	state: 'online' | 'offline' | 'error';
 	playerCount: number | null;
 	maxPlayers: number | null;
@@ -17,6 +20,8 @@ export type ServerStatusResult = {
 	pingMs: number | null;
 	worldName: string | null;
 	version: string | null;
+	day: number | null;
+	snapshotAgeMs: number | null;
 	queriedAt: string;
 	errorCode?: 'UNREACHABLE' | 'UNSAFE_TARGET' | 'QUERY_FAILED';
 };
