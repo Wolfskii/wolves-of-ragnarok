@@ -9,7 +9,6 @@ const authorSelect = {
 	steamAvatarUrl: true,
 	avatarMedia: { select: { id: true } },
 	discordUsername: true,
-	discordUserId: true,
 	role: true,
 	bio: true,
 	createdAt: true

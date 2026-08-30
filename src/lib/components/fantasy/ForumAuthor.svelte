@@ -1,6 +1,6 @@
 <script lang="ts">
 	/* eslint-disable svelte/no-navigation-without-resolve */
-	import { Gamepad2, MessageCircle } from '@lucide/svelte';
+	import { Check, Gamepad2, MessageCircle } from '@lucide/svelte';
 
 	let {
 		author
@@ -12,9 +12,16 @@
 			steamAvatarUrl: string | null;
 			avatarMedia: { id: string } | null;
 			discordUsername: string | null;
-			discordUserId: string | null;
 		};
 	} = $props();
+	let discordCopied = $state(false);
+
+	async function copyDiscordUsername() {
+		if (!author.discordUsername) return;
+		await navigator.clipboard.writeText(author.discordUsername);
+		discordCopied = true;
+		window.setTimeout(() => (discordCopied = false), 2000);
+	}
 </script>
 
 <div class="author">
@@ -43,16 +50,12 @@
 				{/if}
 			{/if}
 			{#if author.discordUsername}
-				{#if author.discordUserId}
-					<a
-						href={`https://discord.com/users/${author.discordUserId}`}
-						target="_blank"
-						rel="noreferrer"
-						><MessageCircle size={12} aria-hidden="true" />{author.discordUsername}</a
-					>
-				{:else}
-					<span><MessageCircle size={12} aria-hidden="true" />{author.discordUsername}</span>
-				{/if}
+				<button type="button" onclick={copyDiscordUsername} title="Copy Discord username">
+					{#if discordCopied}<Check size={12} aria-hidden="true" />{:else}<MessageCircle
+							size={12}
+							aria-hidden="true"
+						/>{/if}{author.discordUsername}
+				</button>
 			{/if}
 		</div>
 	</div>
@@ -112,12 +115,20 @@
 	}
 
 	.identity-links a,
-	.identity-links span {
+	.identity-links span,
+	.identity-links button {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.2rem;
 		color: var(--brass-400);
 		text-decoration: none;
+	}
+
+	.identity-links button {
+		border: 0;
+		background: transparent;
+		font: inherit;
+		cursor: pointer;
 	}
 
 	.identity-links a:hover,

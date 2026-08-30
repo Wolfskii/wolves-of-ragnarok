@@ -32,15 +32,6 @@ export const optionalDiscordUsername = z.preprocess(
 	z.string().trim().max(32, 'Discord username is too long.').optional()
 );
 
-export const optionalDiscordUserId = z.preprocess(
-	(value) => (typeof value === 'string' && !value.trim() ? undefined : value),
-	z
-		.string()
-		.trim()
-		.regex(/^\d{17,20}$/, 'Use the numeric Discord user ID.')
-		.optional()
-);
-
 export const registrationSchema = z
 	.object({
 		email: z.string().trim().toLowerCase().email('Enter a valid email address.'),
@@ -53,7 +44,6 @@ export const registrationSchema = z
 			.regex(/^[a-z0-9_-]+$/, 'Use letters, numbers, underscores, or hyphens only.'),
 		steamProfileUrl: optionalSteamProfileUrl,
 		discordUsername: optionalDiscordUsername,
-		discordUserId: optionalDiscordUserId,
 		password: z
 			.string()
 			.min(12, 'Password must contain at least 12 characters.')

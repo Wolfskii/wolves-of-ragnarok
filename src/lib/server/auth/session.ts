@@ -14,8 +14,7 @@ export type SessionUser = {
 	steamAvatarUrl: string | null;
 	avatarUrl: string | null;
 	discordUsername: string | null;
-	discordUserId: string | null;
-	role: 'USER' | 'MODERATOR' | 'ADMIN';
+	role: 'USER' | 'MODERATOR' | 'PUBLISHER' | 'ADMIN';
 	avatarMediaId: string | null;
 };
 
@@ -75,7 +74,6 @@ export async function validateSession(token: string | undefined): Promise<Sessio
 		steamAvatarUrl: session.user.steamAvatarUrl,
 		avatarUrl: session.user.avatarMediaId ? `/api/media/${session.user.avatarMediaId}` : null,
 		discordUsername: session.user.discordUsername,
-		discordUserId: session.user.discordUserId,
 		role: session.user.role,
 		avatarMediaId: session.user.avatarMediaId
 	};

@@ -13,6 +13,7 @@ datasource db {
 enum Role {
   USER
   MODERATOR
+  PUBLISHER
   ADMIN
 }
 
@@ -57,7 +58,6 @@ model User {
   steamUsername  String?            @db.VarChar(80)
   steamAvatarUrl String?            @db.VarChar(500)
   discordUsername String?           @db.VarChar(32)
-  discordUserId   String?           @db.VarChar(20)
   passwordHash   String             @db.VarChar(255)
   role           Role               @default(USER)
   bio            String?            @db.Text
@@ -221,7 +221,7 @@ model UserGame {
 model SiteSettings {
   id                    String    @id @default("default")
   siteTitle             String    @default("Wolves of Ragnarok") @db.VarChar(100)
-  tagline               String    @default("Where Wolves Gather, Ragnarok Begins.") @db.VarChar(180)
+  tagline               String    @default("Late nights. Good games. No empty seats.") @db.VarChar(180)
   heroHeading           String    @default("Stand with the pack") @db.VarChar(180)
   heroBody              String    @db.Text
   communityIntroduction String    @db.Text

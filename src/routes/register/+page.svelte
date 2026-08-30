@@ -53,18 +53,6 @@
 				value={form?.values?.discordUsername ?? ''}
 			/></label
 		>
-		<label>
-			<span class="field-label"
-				>Discord user ID <em>(optional, enables direct profile link)</em></span
-			>
-			<input
-				name="discordUserId"
-				inputmode="numeric"
-				maxlength="20"
-				placeholder="123456789012345678"
-				value={form?.values?.discordUserId ?? ''}
-			/>
-		</label>
 		<div class="field-row">
 			<label
 				>Password<input

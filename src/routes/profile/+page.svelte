@@ -69,18 +69,6 @@
 				value={data.profile.discordUsername ?? ''}
 			/></label
 		>
-		<label>
-			<span class="field-label"
-				>Discord user ID <em>(optional, enables direct profile link)</em></span
-			>
-			<input
-				name="discordUserId"
-				inputmode="numeric"
-				maxlength="20"
-				placeholder="123456789012345678"
-				value={data.profile.discordUserId ?? ''}
-			/>
-		</label>
 		<label
 			>Bio<RichTextEditor
 				name="bio"

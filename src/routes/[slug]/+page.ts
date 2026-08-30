@@ -41,21 +41,28 @@ const pages = {
 		]
 	},
 	rules: {
-		title: 'Oath and Law',
-		eyebrow: 'The code of the longhouse',
-		intro:
-			'Respect the community, protect the hall, and leave every world better than you found it.',
+		title: 'Rules & Guidelines',
+		eyebrow: 'Keep the hall welcoming',
+		intro: 'Please read these guidelines before joining the conversation or an event.',
 		items: [
-			'Treat every member with dignity',
-			'No harassment, cheating, or hate',
-			'Help new players find their footing'
+			'18+ only: the community hosts alcohol-related events and conversations.',
+			'Be respectful: harassment, hate speech, and discrimination are not welcome.',
+			'Voice chat etiquette: do not talk over people, use push-to-talk when useful, and keep background noise low.',
+			'No spamming: do not flood chat with excessive messages, links, or images.',
+			'No self-promotion without permission from an administrator or moderator.',
+			'Follow Discord Terms of Service and the rules of every game we play.',
+			'Drinking nights are for responsible adults. Know your limits and look after one another.',
+			'Need help or a private channel? Contact an administrator or moderator.'
 		]
 	},
 	contact: {
-		title: 'Send a Raven',
-		eyebrow: 'Contact the war council',
-		intro: 'Community contact details will be configured by the site administrators.',
-		items: ['Discord is the primary community channel']
+		title: 'Contact the Hall',
+		eyebrow: 'Find us online',
+		intro: 'Discord is where events are planned, games are started, and most conversations happen.',
+		items: [
+			'Join the Discord server for event announcements and community chat.',
+			'For account, moderation, or private-channel questions, contact an administrator or moderator.'
+		]
 	}
 } as const;
 

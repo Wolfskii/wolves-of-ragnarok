@@ -4,11 +4,7 @@ import { z } from 'zod';
 import { getDatabase } from '$lib/server/db';
 import { createSession } from '$lib/server/auth/session';
 import { hashPassword, verifyPassword } from '$lib/server/auth/crypto';
-import {
-	optionalDiscordUserId,
-	optionalDiscordUsername,
-	optionalSteamProfileUrl
-} from '$lib/server/auth/schemas';
+import { optionalDiscordUsername, optionalSteamProfileUrl } from '$lib/server/auth/schemas';
 import { fetchSteamProfile } from '$lib/server/steam';
 import { saveImageUpload } from '$lib/server/media';
 import { sanitizeRichText } from '$lib/server/rich-text';
@@ -16,7 +12,6 @@ import { sanitizeRichText } from '$lib/server/rich-text';
 const profileSchema = z.object({
 	steamProfileUrl: optionalSteamProfileUrl,
 	discordUsername: optionalDiscordUsername,
-	discordUserId: optionalDiscordUserId,
 	bio: z.string().trim().max(10_000)
 });
 
@@ -42,7 +37,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 			steamAvatarUrl: true,
 			avatarMediaId: true,
 			discordUsername: true,
-			discordUserId: true,
 			bio: true,
 			role: true,
 			createdAt: true
@@ -57,7 +51,6 @@ export const actions = {
 		const parsed = profileSchema.safeParse({
 			steamProfileUrl: formData.get('steamProfileUrl'),
 			discordUsername: formData.get('discordUsername'),
-			discordUserId: formData.get('discordUserId'),
 			bio: formData.get('bio')
 		});
 		if (!parsed.success) return fail(400, { profileError: parsed.error.issues[0]?.message });
@@ -90,7 +83,6 @@ export const actions = {
 				steamUsername: steamProfile.username,
 				steamAvatarUrl: steamProfile.avatarUrl,
 				discordUsername: parsed.data.discordUsername ?? null,
-				discordUserId: parsed.data.discordUserId ?? null,
 				bio: sanitizeRichText(parsed.data.bio) || null,
 				lastSeenAt: new Date(),
 				activities: { create: { type: 'PROFILE_UPDATED', summary: 'Updated their guild profile.' } }

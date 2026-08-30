@@ -2,6 +2,9 @@
 	import PortalPageShell from '$lib/components/fantasy/PortalPageShell.svelte';
 	import { resolve } from '$app/paths';
 	import { FileText, Images, Newspaper, Server, Settings, Users } from '@lucide/svelte';
+	import type { PageData } from './$types';
+
+	let { data }: { data: PageData } = $props();
 
 	const areas = [
 		{ label: 'News', icon: Newspaper, href: '/admin/news' },
@@ -19,10 +22,12 @@
 	<p class="intro">Manage the guild hall without editing source code.</p>
 	<div class="admin-grid">
 		{#each areas as area (area.href)}
-			<a href={resolve(area.href)}>
-				<area.icon size={22} aria-hidden="true" />
-				<span>{area.label}</span>
-			</a>
+			{#if data.user?.role === 'ADMIN' || area.label === 'News'}
+				<a href={resolve(area.href)}>
+					<area.icon size={22} aria-hidden="true" />
+					<span>{area.label}</span>
+				</a>
+			{/if}
 		{/each}
 	</div>
 </PortalPageShell>

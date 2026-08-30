@@ -14,8 +14,7 @@ const authorSelect = {
 	steamProfileUrl: true,
 	steamAvatarUrl: true,
 	avatarMedia: { select: { id: true } },
-	discordUsername: true,
-	discordUserId: true
+	discordUsername: true
 } as const;
 
 export const load: PageServerLoad = async ({ params, locals }) => {

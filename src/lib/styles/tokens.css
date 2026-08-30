@@ -11,9 +11,9 @@
 	--rune-500: #681f29;
 	--rune-400: #a83b43;
 	--rune-300: #dc8178;
-	--rune-glass: rgba(112, 40, 48, 0.72);
-	--rune-glass-dark: rgba(24, 10, 14, 0.96);
-	--rune-glass-light: rgba(133, 54, 58, 0.82);
+	--rune-glass: rgba(55, 64, 69, 0.72);
+	--rune-glass-dark: rgba(6, 9, 11, 0.98);
+	--rune-glass-light: rgba(68, 79, 84, 0.88);
 	--ember-600: #a63d1d;
 	--ember-500: #e36c2f;
 	--brass-600: #897345;
@@ -36,9 +36,9 @@
 	);
 	--glass-metal: linear-gradient(
 		180deg,
-		rgba(77, 37, 41, 0.92),
-		rgba(12, 8, 10, 0.98) 48%,
-		rgba(48, 22, 27, 0.96)
+		rgba(45, 53, 57, 0.94),
+		rgba(7, 10, 12, 0.99) 48%,
+		rgba(24, 30, 33, 0.98)
 	);
 	--heading-glow:
 		0 0 1px var(--rune-300), 0 0 12px rgba(168, 59, 67, 0.42), 0 0 26px rgba(104, 31, 41, 0.24);

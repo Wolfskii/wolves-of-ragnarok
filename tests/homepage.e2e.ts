@@ -71,7 +71,7 @@ test('shows the map-only live world chart on the servers page', async ({
 	await expect(liveMap).toBeVisible();
 	await expect.poll(() => liveMap.locator('.leaflet-tile-loaded').count()).toBeGreaterThan(0);
 	await expect(page.locator('iframe')).toHaveCount(0);
-	await expect(page.getByText('valheim.webble.se:2456')).toBeVisible();
+	await expect(page.getByText('valheim.webble.se', { exact: true })).toBeVisible();
 	await expect(page.getByText('4 / 10 players')).toBeVisible();
 	await expect(page.locator('.population strong')).toHaveCount(0);
 	await expect(page.getByText('Player names unavailable')).toHaveCount(0);
@@ -83,7 +83,7 @@ test('shows the map-only live world chart on the servers page', async ({
 	await expect(page.getByRole('button', { name: 'Join address copied' })).toBeVisible();
 	await expect
 		.poll(() => page.evaluate(() => navigator.clipboard.readText()))
-		.toBe('valheim.webble.se:2456');
+		.toBe('valheim.webble.se');
 	await page.screenshot({ path: testInfo.outputPath('servers-live-map.png'), fullPage: true });
 
 	await liveMap.hover();

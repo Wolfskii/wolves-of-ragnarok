@@ -8,7 +8,7 @@
 	</div>
 	<img src="/images/branding/logo-wolf-light.png" alt="" width="576" height="642" />
 	<p>Wolves of Ragnarok</p>
-	<small>Where Vikings Gather, Ragnarok Begins.</small>
+	<small>Late nights. Good games. No empty seats.</small>
 	<nav aria-label="Footer navigation">
 		<a href={resolve('/rules')}>Guild rules</a>
 		<a href={resolve('/contact')}>Contact</a>

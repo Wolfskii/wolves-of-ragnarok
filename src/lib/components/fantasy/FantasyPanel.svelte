@@ -35,7 +35,7 @@
 		height: 2rem;
 		padding-inline: 1rem;
 		background: var(--glass-metal);
-		border: 1px solid rgba(168, 59, 67, 0.48);
+		border: 1px solid rgba(111, 133, 140, 0.48);
 		clip-path: polygon(
 			0.75rem 0,
 			calc(100% - 0.75rem) 0,
@@ -63,12 +63,12 @@
 		padding: 1.25rem;
 		border-inline: 1px solid var(--panel-line);
 		background:
-			linear-gradient(135deg, rgba(255, 255, 255, 0.025), transparent 34%),
+			linear-gradient(135deg, rgba(185, 198, 201, 0.05), transparent 34%),
 			repeating-linear-gradient(0deg, transparent 0 4px, rgba(255, 255, 255, 0.008) 4px 5px),
 			var(--panel-fill);
 		box-shadow:
-			inset 14px 0 22px -20px var(--rune-400),
-			inset -14px 0 22px -20px var(--ember-500);
+			inset 14px 0 22px -20px rgba(111, 133, 140, 0.42),
+			inset -14px 0 22px -20px rgba(37, 45, 49, 0.72);
 	}
 
 	.panel-body::before,

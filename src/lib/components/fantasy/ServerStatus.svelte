@@ -63,7 +63,7 @@
 	let passwordCopyResetTimer: number | undefined;
 
 	async function copyJoinAddress() {
-		await navigator.clipboard.writeText(`${current.joinAddress}:${current.joinPort}`);
+		await navigator.clipboard.writeText(current.joinAddress);
 		addressCopied = true;
 		if (copyResetTimer) window.clearTimeout(copyResetTimer);
 		copyResetTimer = window.setTimeout(() => {
@@ -256,7 +256,7 @@
 			<div class="join-details">
 				<span>Join address</span>
 				<div class="join-code-box">
-					<code>{current.joinAddress}:{current.joinPort}</code>
+					<code>{current.joinAddress}</code>
 					<button
 						class="reveal-button"
 						type="button"
@@ -356,7 +356,7 @@
 		padding: 5rem 1.3rem 1.2rem;
 		border: 1px solid rgba(137, 115, 69, 0.62);
 		background:
-			linear-gradient(135deg, rgba(168, 59, 67, 0.1), transparent 30%),
+			linear-gradient(135deg, rgba(111, 133, 140, 0.09), transparent 30%),
 			repeating-linear-gradient(90deg, transparent 0 5px, rgba(255, 255, 255, 0.009) 5px 6px),
 			rgba(4, 10, 13, 0.94);
 		clip-path: polygon(
@@ -370,7 +370,7 @@
 			0 0.75rem
 		);
 		box-shadow:
-			inset 0 0 24px rgba(168, 59, 67, 0.1),
+			inset 0 0 24px rgba(111, 133, 140, 0.1),
 			var(--shadow-deep);
 		text-align: center;
 	}

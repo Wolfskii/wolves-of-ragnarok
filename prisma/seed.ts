@@ -152,9 +152,10 @@ try {
 
 	await database.siteSettings.upsert({
 		where: { id: 'default' },
-		update: { featuredNewsId: firstNews.id },
+		update: { featuredNewsId: firstNews.id, tagline: 'Late nights. Good games. No empty seats.' },
 		create: {
 			id: 'default',
+			tagline: 'Late nights. Good games. No empty seats.',
 			heroHeading: 'Stand with the pack',
 			heroBody: 'We are a fellowship of builders, raiders, wanderers, and storytellers.',
 			communityIntroduction: 'Many games. One longhouse.',

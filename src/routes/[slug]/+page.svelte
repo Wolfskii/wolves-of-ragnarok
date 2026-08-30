@@ -60,6 +60,19 @@
 			</section>
 		{:else if data.page.title === 'About Us'}
 			<div class="about-copy">{data.aboutBody ?? data.page.intro}</div>
+		{:else if data.page.title === 'Contact the Hall'}
+			<ul>
+				<li>
+					<span aria-hidden="true">ᛟ</span><a
+						href="https://discord.gg/CbjgD7WVfp"
+						target="_blank"
+						rel="noreferrer">Join the Wolves of Ragnarok Discord server</a
+					>
+				</li>
+				{#each data.page.items.slice(1) as item (item)}
+					<li><span aria-hidden="true">ᛟ</span>{item}</li>
+				{/each}
+			</ul>
 		{:else}
 			<ul>
 				{#each data.page.items as item (item)}

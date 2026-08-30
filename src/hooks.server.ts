@@ -6,7 +6,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const token = event.cookies.get(SESSION_COOKIE);
 	event.locals.user = token ? await validateSession(token) : null;
 
-	if (event.url.pathname.startsWith('/admin') && event.locals.user?.role !== 'ADMIN') {
+	if (
+		event.url.pathname.startsWith('/admin') &&
+		!['ADMIN', 'PUBLISHER'].includes(event.locals.user?.role ?? '')
+	) {
 		redirect(303, '/');
 	}
 

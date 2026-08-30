@@ -69,7 +69,7 @@
 					height="642"
 				/>
 				<h1 class="brand-title">Wolves of Ragnarok</h1>
-				<p class="brand-tagline">Where Vikings Gather, Ragnarok Begins.</p>
+				<p class="brand-tagline">Late nights. Good games. No empty seats.</p>
 			</header>
 
 			<FantasyNavigation />
