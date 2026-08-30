@@ -50,7 +50,8 @@ describe('server status adapters', () => {
 						players: 2,
 						maxPlayers: 10,
 						day: 42,
-						snapshotAgeMs: 1200
+						snapshotAgeMs: 1200,
+						map: { renderRevision: '5-12345' }
 					}),
 					{ status: 200 }
 				)
@@ -81,7 +82,8 @@ describe('server status adapters', () => {
 			worldName: 'Yggdrasil',
 			day: 42,
 			joinAddress: 'valheim.test',
-			joinPort: 2456
+			joinPort: 2456,
+			mapImageUrl: 'https://map.test/base.png?v=5-12345'
 		});
 		expect(fetchMock.mock.calls[1]?.[0]).toBe('https://map.test/api/players?token=secret-token');
 	});

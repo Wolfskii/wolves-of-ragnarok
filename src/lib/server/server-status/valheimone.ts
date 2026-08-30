@@ -17,6 +17,7 @@ type StatusPayload = {
 	maxPlayers?: unknown;
 	day?: unknown;
 	snapshotAgeMs?: unknown;
+	map?: unknown;
 };
 
 type PlayersPayload = {
@@ -39,6 +40,15 @@ function playersUrlWithToken(url: string, token: string): string {
 	const authenticatedUrl = new URL(url);
 	authenticatedUrl.searchParams.set('token', token);
 	return authenticatedUrl.toString();
+}
+
+function mapImageUrl(mapUrl: string, map: unknown): string {
+	const imageUrl = new URL('/base.png', mapUrl);
+	if (isRecord(map)) {
+		const revision = asString(map.renderRevision);
+		if (revision) imageUrl.searchParams.set('v', revision);
+	}
+	return imageUrl.toString();
 }
 
 async function fetchJson<T>(url: string, timeoutMs: number): Promise<T> {
@@ -71,6 +81,7 @@ function errorResult(
 		joinAddress: config.joinAddress,
 		joinPort: config.joinPort,
 		mapUrl: config.mapUrl,
+		mapImageUrl: null,
 		state: 'error',
 		playerCount: null,
 		maxPlayers: null,
@@ -122,6 +133,7 @@ export class ValheimOneAdapter implements GameServerAdapter {
 			joinAddress: this.config.joinAddress,
 			joinPort: this.config.joinPort,
 			mapUrl: this.config.mapUrl,
+			mapImageUrl: mapImageUrl(this.config.mapUrl, status.map),
 			state: 'online',
 			playerCount: asNumber(status.players),
 			maxPlayers: asNumber(status.maxPlayers),

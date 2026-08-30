@@ -13,6 +13,7 @@ export type ServerStatusResult = {
 	joinAddress: string;
 	joinPort: number;
 	mapUrl: string;
+	mapImageUrl: string | null;
 	state: 'online' | 'offline' | 'error';
 	playerCount: number | null;
 	maxPlayers: number | null;

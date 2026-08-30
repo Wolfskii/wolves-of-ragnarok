@@ -1,5 +1,6 @@
 <script lang="ts">
 	import PortalPageShell from '$lib/components/fantasy/PortalPageShell.svelte';
+	import ServerLiveMap from '$lib/components/fantasy/ServerLiveMap.svelte';
 	import ServerStatus from '$lib/components/fantasy/ServerStatus.svelte';
 	import { resolve } from '$app/paths';
 	import type { PageData } from './$types';
@@ -15,7 +16,10 @@
 <PortalPageShell title={data.page.title} eyebrow={data.page.eyebrow}>
 	<p class="intro">{data.page.intro}</p>
 	{#if data.page.title === 'Game Servers'}
-		<div class="server-status"><ServerStatus /></div>
+		<div class="server-overview">
+			<div class="server-status"><ServerStatus /></div>
+			<ServerLiveMap />
+		</div>
 	{:else}
 		<ul>
 			{#each data.page.items as item (item)}
@@ -32,9 +36,16 @@
 		font-size: 0.88rem;
 	}
 
-	.server-status {
-		max-width: 24rem;
+	.server-overview {
+		display: grid;
+		grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
+		align-items: start;
+		gap: 1.5rem;
 		margin: 2rem auto;
+	}
+
+	.server-status {
+		width: 100%;
 	}
 
 	ul {
@@ -66,5 +77,16 @@
 
 	.return a {
 		color: var(--brass-400);
+	}
+
+	@media (max-width: 47.99rem) {
+		.server-overview {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.server-status {
+			max-width: 24rem;
+			margin-inline: auto;
+		}
 	}
 </style>

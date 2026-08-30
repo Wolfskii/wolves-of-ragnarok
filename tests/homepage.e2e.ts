@@ -51,6 +51,31 @@ test('stacks the portal and exposes mobile navigation', async ({ page }, testInf
 	await page.screenshot({ path: testInfo.outputPath('homepage-mobile.png'), fullPage: true });
 });
 
+test('shows the map-only live world chart on the servers page', async ({ page }, testInfo) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await page.goto('/servers');
+
+	const liveMap = page.getByRole('img', { name: /^Live world map of / });
+	await expect(liveMap).toBeVisible();
+	await expect(liveMap).toHaveAttribute('src', /valheim-map\.webble\.se\/base\.png/);
+	await expect
+		.poll(() => liveMap.evaluate((image) => (image as HTMLImageElement).naturalWidth))
+		.toBe(2048);
+	await expect(page.locator('iframe')).toHaveCount(0);
+	await page.screenshot({ path: testInfo.outputPath('servers-live-map.png'), fullPage: true });
+
+	await page.setViewportSize({ width: 390, height: 844 });
+	await expect(liveMap).toBeVisible();
+	const hasHorizontalOverflow = await page.evaluate(
+		() => document.documentElement.scrollWidth > document.documentElement.clientWidth
+	);
+	expect(hasHorizontalOverflow).toBe(false);
+	await page.screenshot({
+		path: testInfo.outputPath('servers-live-map-mobile.png'),
+		fullPage: true
+	});
+});
+
 test('serves public destinations, auth entry, status data, and guards administration', async ({
 	page,
 	request
