@@ -83,7 +83,9 @@ describe('server status adapters', () => {
 			day: 42,
 			joinAddress: 'valheim.test',
 			joinPort: 2456,
-			mapImageUrl: 'https://map.test/base.png?v=5-12345'
+			mapImageUrl: 'https://map.test/base.png?v=5-12345',
+			mapTileUrl: 'https://map.test/tiles/{z}/{x}-{y}.png?v=5-12345',
+			mapMaxZoom: null
 		});
 		expect(fetchMock.mock.calls[1]?.[0]).toBe('https://map.test/api/players?token=secret-token');
 	});

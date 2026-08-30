@@ -9,6 +9,8 @@ export class MockServerAdapter implements GameServerAdapter {
 			joinPort: target.gamePort,
 			mapUrl: 'https://valheim-map.webble.se',
 			mapImageUrl: 'https://valheim-map.webble.se/base.png?v=mock',
+			mapTileUrl: 'https://valheim-map.webble.se/tiles/{z}/{x}-{y}.png?v=mock',
+			mapMaxZoom: 8,
 			state: 'online',
 			playerCount: 4,
 			maxPlayers: 10,

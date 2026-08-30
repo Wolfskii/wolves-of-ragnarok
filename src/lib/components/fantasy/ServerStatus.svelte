@@ -1,7 +1,7 @@
 <script lang="ts">
 	/* eslint-disable svelte/no-navigation-without-resolve */
 	import { onMount } from 'svelte';
-	import { ExternalLink } from '@lucide/svelte';
+	import { Check, Copy, ExternalLink, Eye, EyeOff } from '@lucide/svelte';
 	import type { ServerStatusResult } from '$lib/server/server-status/types';
 
 	let {
@@ -19,7 +19,8 @@
 		version = null,
 		snapshotAgeMs = null,
 		queriedAt = null,
-		detailed = false
+		detailed = false,
+		canRevealPassword = false
 	}: {
 		name?: string;
 		online?: boolean;
@@ -36,6 +37,7 @@
 		snapshotAgeMs?: number | null;
 		queriedAt?: string | null;
 		detailed?: boolean;
+		canRevealPassword?: boolean;
 	} = $props();
 
 	let current = $state({
@@ -55,6 +57,65 @@
 		queriedAt: null as string | null
 	});
 	let receivedLiveStatus = $state(false);
+	let serverPassword = $state('');
+	let passwordVisible = $state(false);
+	let passwordLoading = $state(false);
+	let passwordError = $state('');
+	let passwordCopied = $state(false);
+	let addressCopied = $state(false);
+	let copyResetTimer: number | undefined;
+	let passwordCopyResetTimer: number | undefined;
+
+	async function copyJoinAddress() {
+		await navigator.clipboard.writeText(`${current.joinAddress}:${current.joinPort}`);
+		addressCopied = true;
+		if (copyResetTimer) window.clearTimeout(copyResetTimer);
+		copyResetTimer = window.setTimeout(() => {
+			addressCopied = false;
+		}, 2000);
+	}
+
+	async function loadServerPassword(): Promise<string | null> {
+		if (serverPassword) return serverPassword;
+		passwordLoading = true;
+		passwordError = '';
+		try {
+			const response = await fetch('/api/servers/featured/password', { method: 'POST' });
+			const result = (await response.json()) as { password?: string; error?: string };
+			if (!response.ok || !result.password) {
+				passwordError = result.error ?? 'The server password could not be loaded.';
+				return null;
+			}
+			serverPassword = result.password;
+			return result.password;
+		} catch {
+			passwordError = 'The server password could not be loaded.';
+			return null;
+		} finally {
+			passwordLoading = false;
+		}
+	}
+
+	async function togglePassword() {
+		const password = await loadServerPassword();
+		if (password) passwordVisible = !passwordVisible;
+	}
+
+	async function copyServerPassword() {
+		const password = await loadServerPassword();
+		if (!password) return;
+
+		try {
+			await navigator.clipboard.writeText(password);
+			passwordCopied = true;
+			if (passwordCopyResetTimer) window.clearTimeout(passwordCopyResetTimer);
+			passwordCopyResetTimer = window.setTimeout(() => {
+				passwordCopied = false;
+			}, 2000);
+		} catch {
+			passwordError = 'The server password could not be copied.';
+		}
+	}
 
 	$effect(() => {
 		if (!receivedLiveStatus)
@@ -111,6 +172,8 @@
 		return () => {
 			active = false;
 			window.clearInterval(timer);
+			if (copyResetTimer) window.clearTimeout(copyResetTimer);
+			if (passwordCopyResetTimer) window.clearTimeout(passwordCopyResetTimer);
 		};
 	});
 </script>
@@ -198,7 +261,57 @@
 		{#if current.joinAddress}
 			<div class="join-details">
 				<span>Join address</span>
-				<code>{current.joinAddress}:{current.joinPort}</code>
+				<div class="join-code-box">
+					<code>{current.joinAddress}:{current.joinPort}</code>
+					<button
+						class="reveal-button"
+						type="button"
+						onclick={copyJoinAddress}
+						aria-label={addressCopied ? 'Join address copied' : 'Copy join address'}
+						title={addressCopied ? 'Copied' : 'Copy join address'}
+					>
+						{#if addressCopied}<Check size={15} />{:else}<Copy size={15} />{/if}
+					</button>
+				</div>
+			</div>
+		{/if}
+
+		{#if detailed && canRevealPassword}
+			<div class="password-details">
+				<label for="server-password">Server password</label>
+				<div class="password-field">
+					<input
+						id="server-password"
+						type={passwordVisible ? 'text' : 'password'}
+						value={serverPassword}
+						placeholder="Hidden"
+						readonly
+					/>
+					<button
+						type="button"
+						onclick={togglePassword}
+						disabled={passwordLoading}
+						aria-label={serverPassword && passwordVisible
+							? 'Hide server password'
+							: 'Reveal server password'}
+						title={serverPassword && passwordVisible
+							? 'Hide server password'
+							: 'Reveal server password'}
+					>
+						{#if passwordVisible}<EyeOff size={16} />{:else}<Eye size={16} />{/if}
+					</button>
+					<button
+						class="copy-button"
+						type="button"
+						onclick={copyServerPassword}
+						disabled={passwordLoading}
+						aria-label={passwordCopied ? 'Server password copied' : 'Copy server password'}
+						title={passwordCopied ? 'Copied' : 'Copy server password'}
+					>
+						{#if passwordCopied}<Check size={15} />{:else}<Copy size={15} />{/if}
+					</button>
+				</div>
+				{#if passwordError}<p class="password-error" role="alert">{passwordError}</p>{/if}
 			</div>
 		{/if}
 
@@ -453,10 +566,99 @@
 		letter-spacing: 0.12em;
 	}
 
-	.join-details code {
-		overflow-wrap: anywhere;
+	.join-code-box {
+		position: relative;
+		height: 2.25rem;
+		border: 1px solid rgba(137, 115, 69, 0.48);
+		background: rgba(0, 0, 0, 0.38);
+	}
+
+	.join-code-box code {
+		display: block;
+		overflow: hidden;
+		padding: 0.62rem 2.65rem 0.62rem 0.55rem;
 		color: var(--frost-100);
 		font-size: 0.72rem;
+		line-height: 1;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.join-code-box button {
+		position: absolute;
+		top: 0;
+		right: 0;
+		display: grid;
+		place-items: center;
+		width: 2.25rem;
+		height: 2.2rem;
+		border: 0;
+		border-left: 1px solid rgba(137, 115, 69, 0.48);
+		background: var(--glass-button);
+		color: var(--brass-400);
+		cursor: pointer;
+	}
+
+	.join-code-box button:hover,
+	.join-code-box button:focus-visible {
+		color: var(--frost-100);
+	}
+
+	.password-details {
+		display: grid;
+		gap: 0.3rem;
+		margin-top: 0.75rem;
+		text-align: left;
+	}
+
+	.password-details label {
+		color: var(--text-muted);
+		font-size: 0.62rem;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+	}
+
+	.password-field {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 2.25rem 2.25rem;
+		height: 2.25rem;
+		border: 1px solid rgba(137, 115, 69, 0.48);
+		background: rgba(0, 0, 0, 0.38);
+	}
+
+	.password-field input {
+		min-width: 0;
+		border: 0;
+		background: transparent;
+		color: var(--frost-100);
+		font-family: monospace;
+		font-size: 0.72rem;
+		padding-inline: 0.55rem;
+	}
+
+	.password-field button {
+		display: grid;
+		place-items: center;
+		border: 0;
+		border-left: 1px solid rgba(137, 115, 69, 0.48);
+		background: var(--glass-button);
+		color: var(--brass-400);
+		cursor: pointer;
+	}
+
+	.password-field button:disabled {
+		cursor: wait;
+		opacity: 0.55;
+	}
+
+	.password-field .copy-button {
+		border-left-color: rgba(137, 115, 69, 0.3);
+	}
+
+	.password-error {
+		margin: 0;
+		color: var(--danger-400);
+		font-size: 0.62rem;
 	}
 
 	.map-link {

@@ -44,13 +44,17 @@ function playersUrlWithToken(url: string, token: string): string {
 	return authenticatedUrl.toString();
 }
 
-function mapImageUrl(mapUrl: string, map: unknown): string {
-	const imageUrl = new URL('/base.png', mapUrl);
+function versionedMapUrl(mapUrl: string, path: string, map: unknown): string {
+	const assetUrl = new URL(path, mapUrl);
 	if (isRecord(map)) {
 		const revision = asString(map.renderRevision);
-		if (revision) imageUrl.searchParams.set('v', revision);
+		if (revision) assetUrl.searchParams.set('v', revision);
 	}
-	return imageUrl.toString();
+	return assetUrl
+		.toString()
+		.replaceAll('%7Bz%7D', '{z}')
+		.replaceAll('%7Bx%7D', '{x}')
+		.replaceAll('%7By%7D', '{y}');
 }
 
 async function fetchJson<T>(url: string, timeoutMs: number): Promise<T> {
@@ -84,6 +88,8 @@ function errorResult(
 		joinPort: config.joinPort,
 		mapUrl: config.mapUrl,
 		mapImageUrl: null,
+		mapTileUrl: null,
+		mapMaxZoom: null,
 		state: 'error',
 		playerCount: null,
 		maxPlayers: null,
@@ -135,7 +141,9 @@ export class ValheimOneAdapter implements GameServerAdapter {
 			joinAddress: this.config.joinAddress,
 			joinPort: this.config.joinPort,
 			mapUrl: this.config.mapUrl,
-			mapImageUrl: mapImageUrl(this.config.mapUrl, status.map),
+			mapImageUrl: versionedMapUrl(this.config.mapUrl, '/base.png', status.map),
+			mapTileUrl: versionedMapUrl(this.config.mapUrl, '/tiles/{z}/{x}-{y}.png', status.map),
+			mapMaxZoom: isRecord(status.map) ? asNumber(status.map.maxZoom) : null,
 			state: 'online',
 			playerCount: asNumber(status.players),
 			maxPlayers: asNumber(status.maxPlayers),

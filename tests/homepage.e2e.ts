@@ -9,10 +9,18 @@ test('renders the fantasy portal without broken artwork or overflow', async ({
 	await expect(page).toHaveTitle(/Wolves of Ragnarok/);
 	await expect(page.getByRole('heading', { level: 1, name: 'Wolves of Ragnarok' })).toBeVisible();
 	await expect(page.getByRole('navigation', { name: 'Primary navigation' })).toBeVisible();
-	await expect(page.getByRole('heading', { name: 'Yggdrasil' })).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'Yggdrasil', exact: true })).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'Map of Yggdrasil' })).toBeVisible();
+	await expect(page.locator('.serpent')).toHaveCSS('pointer-events', 'none');
+	await expect(page.locator('.shieldmaiden')).toHaveCSS('pointer-events', 'none');
 	await expect(page.locator('.brand-title')).toHaveCSS('font-family', /GR Read One/);
 	await expect(page.locator('.login-shrine .guardian')).toHaveCount(0);
 	await expect(page.locator('.brand-title')).toHaveCSS('text-shadow', /168, 59, 67/);
+	const discordLinks = page.getByRole('link', { name: 'Discord' });
+	await expect(discordLinks).toHaveCount(2);
+	for (const link of await discordLinks.all()) {
+		await expect(link).toHaveAttribute('href', 'https://discord.gg/CbjgD7WVfp');
+	}
 	await page.locator('footer').scrollIntoViewIfNeeded();
 	await page.waitForFunction(() =>
 		[...document.images].every((image) => image.complete && image.naturalWidth > 0)
@@ -51,16 +59,17 @@ test('stacks the portal and exposes mobile navigation', async ({ page }, testInf
 	await page.screenshot({ path: testInfo.outputPath('homepage-mobile.png'), fullPage: true });
 });
 
-test('shows the map-only live world chart on the servers page', async ({ page }, testInfo) => {
+test('shows the map-only live world chart on the servers page', async ({
+	page,
+	context
+}, testInfo) => {
+	await context.grantPermissions(['clipboard-read', 'clipboard-write']);
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto('/servers');
 
-	const liveMap = page.getByRole('img', { name: /^Live world map of / });
+	const liveMap = page.getByRole('region', { name: /^Interactive world map of / });
 	await expect(liveMap).toBeVisible();
-	await expect(liveMap).toHaveAttribute('src', /valheim-map\.webble\.se\/base\.png/);
-	await expect
-		.poll(() => liveMap.evaluate((image) => (image as HTMLImageElement).naturalWidth))
-		.toBe(2048);
+	await expect.poll(() => liveMap.locator('.leaflet-tile-loaded').count()).toBeGreaterThan(0);
 	await expect(page.locator('iframe')).toHaveCount(0);
 	await expect(page.getByText('valheim.webble.se:2456')).toBeVisible();
 	await expect(page.getByText('4 / 10 players')).toBeVisible();
@@ -68,7 +77,24 @@ test('shows the map-only live world chart on the servers page', async ({ page },
 	await expect(page.getByText('Reported version')).toBeVisible();
 	await expect(page.locator('.health strong')).toHaveText('Live');
 	await expect(page.locator('.health strong')).toHaveCSS('color', 'rgb(128, 215, 162)');
+	await page.getByRole('button', { name: 'Copy join address' }).click();
+	await expect(page.getByRole('button', { name: 'Join address copied' })).toBeVisible();
+	await expect
+		.poll(() => page.evaluate(() => navigator.clipboard.readText()))
+		.toBe('valheim.webble.se:2456');
 	await page.screenshot({ path: testInfo.outputPath('servers-live-map.png'), fullPage: true });
+
+	await liveMap.hover();
+	await page.mouse.wheel(0, -600);
+	const mapPane = liveMap.locator('.leaflet-map-pane');
+	const beforeDrag = await mapPane.getAttribute('style');
+	const mapBox = await liveMap.boundingBox();
+	expect(mapBox).not.toBeNull();
+	await page.mouse.move(mapBox!.x + mapBox!.width / 2, mapBox!.y + mapBox!.height / 2);
+	await page.mouse.down();
+	await page.mouse.move(mapBox!.x + mapBox!.width / 2 + 70, mapBox!.y + mapBox!.height / 2 + 40);
+	await page.mouse.up();
+	await expect.poll(() => mapPane.getAttribute('style')).not.toBe(beforeDrag);
 
 	await page.setViewportSize({ width: 390, height: 844 });
 	await expect(liveMap).toBeVisible();
@@ -94,6 +120,9 @@ test('serves public destinations, auth entry, status data, and guards administra
 		playerCount: 4,
 		maxPlayers: 10
 	});
+	const passwordResponse = await request.post('/api/servers/featured/password');
+	expect(passwordResponse.status()).toBe(401);
+	expect(passwordResponse.headers()['cache-control']).toContain('no-store');
 
 	for (const path of [
 		'/news',
@@ -110,6 +139,8 @@ test('serves public destinations, auth entry, status data, and guards administra
 
 	await page.goto('/admin');
 	await expect(page).toHaveURL('/');
+	await page.goto('/servers');
+	await expect(page.getByRole('button', { name: 'Reveal server password' })).toHaveCount(0);
 	await page.goto('/register');
 	await expect(page.getByRole('heading', { name: 'Join the Guild' })).toBeVisible();
 });

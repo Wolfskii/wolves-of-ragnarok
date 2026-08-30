@@ -12,7 +12,7 @@
 	<nav aria-label="Footer navigation">
 		<a href={resolve('/rules')}>Guild rules</a>
 		<a href={resolve('/contact')}>Contact</a>
-		<a href="#discord">Discord</a>
+		<a href="https://discord.gg/CbjgD7WVfp" target="_blank" rel="noreferrer">Discord</a>
 	</nav>
 </footer>
 

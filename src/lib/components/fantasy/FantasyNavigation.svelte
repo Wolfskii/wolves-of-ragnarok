@@ -30,7 +30,9 @@
 		{#each links as link (link.href)}
 			<li><a href={resolve(link.href)}>{link.label}</a></li>
 		{/each}
-		<li class="discord"><a href="#discord">Discord</a></li>
+		<li class="discord">
+			<a href="https://discord.gg/CbjgD7WVfp" target="_blank" rel="noreferrer">Discord</a>
+		</li>
 	</ul>
 </nav>
 

@@ -11,7 +11,7 @@ The live adapter reads ValheimOne's `/api/status` endpoint for health, world, an
 - `SERVER_STATUS_MODE=mock`: deterministic local data, no database or network required
 - `SERVER_STATUS_MODE=live`: loads the first enabled server from PostgreSQL, queries ValheimOne, and persists a status snapshot
 
-Live configuration uses `VALHEIM_STATUS_URL`, `VALHEIM_PLAYERS_URL`, `VALHEIM_PLAYERS_TOKEN`, `VALHEIM_MAP_URL`, `VALHEIM_JOIN_ADDRESS`, and `VALHEIM_JOIN_PORT`. Keep the player token in the server environment only.
+Live configuration uses `VALHEIM_STATUS_URL`, `VALHEIM_PLAYERS_URL`, `VALHEIM_PLAYERS_TOKEN`, `VALHEIM_MAP_URL`, `VALHEIM_JOIN_ADDRESS`, `VALHEIM_JOIN_PORT`, and `VALHEIM_SERVER_PASSWORD`. Keep the player token and server password in the server environment only. The password endpoint accepts authenticated `POST` requests only and disables response caching.
 
 Results use an in-memory TTL and single-flight deduplication. `/api/servers/featured/status` exposes the normalized featured status and the homepage polls every 30 seconds.
 

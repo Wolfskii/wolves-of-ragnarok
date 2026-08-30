@@ -4,10 +4,11 @@
 	import FantasyPanel from '$lib/components/fantasy/FantasyPanel.svelte';
 	import LoginPanel from '$lib/components/fantasy/LoginPanel.svelte';
 	import NewsCard from '$lib/components/fantasy/NewsCard.svelte';
+	import ServerLiveMap from '$lib/components/fantasy/ServerLiveMap.svelte';
 	import ServerStatus from '$lib/components/fantasy/ServerStatus.svelte';
 	import UserPanel from '$lib/components/fantasy/UserPanel.svelte';
 	import { resolve } from '$app/paths';
-	import { ArrowRight, Flame, Shield, Swords, UsersRound } from '@lucide/svelte';
+	import { ArrowRight, Shield, Swords, UsersRound } from '@lucide/svelte';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -154,43 +155,23 @@
 			</div>
 		</div>
 
-		<section class="serpent-band" aria-labelledby="community-heading">
+		<section class="serpent-band" aria-labelledby="world-map-heading">
+			<div class="map-heading">
+				<p class="section-kicker">The realm beneath our banner</p>
+				<h2 id="world-map-heading">Map of Yggdrasil</h2>
+			</div>
+			<div class="serpent-map">
+				<ServerLiveMap immersive title="Live world chart" />
+			</div>
 			<img
 				class="serpent"
 				src="/images/creatures/world-serpent.webp"
-				alt="The World Serpent rising over a frozen Norse settlement"
+				alt=""
 				width="1536"
 				height="1024"
 				loading="lazy"
+				aria-hidden="true"
 			/>
-			<div class="serpent-content">
-				<p class="section-kicker">Beyond a single world</p>
-				<h2 id="community-heading">Many games. One longhouse.</h2>
-				<p>
-					From quiet building nights to full war parties, the guild is held together by respect,
-					curiosity, and the stories we bring back.
-				</p>
-				<div class="oath-grid">
-					<div>
-						<Flame aria-hidden="true" /><strong>Gather</strong><span
-							>Find your people by the fire.</span
-						>
-					</div>
-					<div>
-						<Shield aria-hidden="true" /><strong>Defend</strong><span
-							>Make the hall safe for every member.</span
-						>
-					</div>
-					<div>
-						<Swords aria-hidden="true" /><strong>Venture</strong><span
-							>Face difficult worlds together.</span
-						>
-					</div>
-				</div>
-				<a class="primary-action" href={resolve('/community')}
-					>Enter the longhouse <ArrowRight size={16} /></a
-				>
-			</div>
 			<img
 				class="shieldmaiden"
 				src="/images/characters/shieldmaiden-left.webp"
@@ -387,7 +368,7 @@
 
 	.serpent-band {
 		position: relative;
-		min-height: 46rem;
+		min-height: 50rem;
 		margin-top: 1rem;
 		overflow: hidden;
 		background: linear-gradient(180deg, #030608, transparent 12%, transparent 72%, #030608 100%);
@@ -397,13 +378,13 @@
 		content: '';
 		position: absolute;
 		inset: 0;
-		z-index: 1;
+		z-index: 2;
 		background: linear-gradient(
 			90deg,
-			rgba(2, 5, 7, 0.9),
-			rgba(2, 5, 7, 0.28) 30%,
-			rgba(2, 5, 7, 0.58) 70%,
-			rgba(2, 5, 7, 0.94)
+			rgba(2, 5, 7, 0.72),
+			transparent 28%,
+			transparent 72%,
+			rgba(2, 5, 7, 0.74)
 		);
 		pointer-events: none;
 	}
@@ -411,76 +392,53 @@
 	.serpent {
 		position: absolute;
 		inset: 0;
+		z-index: 3;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
 		object-position: center 42%;
-		opacity: 0.75;
+		mix-blend-mode: screen;
+		opacity: 0.16;
+		pointer-events: none;
+		user-select: none;
 	}
 
-	.serpent-content {
+	.map-heading {
 		position: relative;
-		z-index: 3;
-		width: min(calc(100% - 3rem), 38rem);
+		z-index: 5;
+		width: min(calc(100% - 3rem), 72rem);
 		margin-inline: auto;
-		padding: 10rem 2rem 8rem;
+		padding-top: 5rem;
 		text-align: center;
+		pointer-events: none;
 	}
 
-	.serpent-content h2 {
-		margin: 0 0 1rem;
+	.map-heading h2 {
+		margin: 0 0 1.5rem;
 		color: var(--frost-100);
-		font-size: clamp(2rem, 5vw, 3.25rem);
+		font-size: clamp(1.8rem, 4vw, 2.8rem);
 		text-shadow:
 			0 4px 18px #000,
 			0 0 22px rgba(168, 59, 67, 0.28);
 	}
 
-	.serpent-content > p:not(.section-kicker) {
-		color: #c5d2cf;
-		text-shadow: 0 2px 8px #000;
-	}
-
-	.oath-grid {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 1px;
-		margin: 2rem 0;
-		border-block: 1px solid rgba(184, 197, 198, 0.2);
-		background: rgba(184, 197, 198, 0.18);
-	}
-
-	.oath-grid div {
-		display: grid;
-		justify-items: center;
-		gap: 0.3rem;
-		padding: 1.1rem 0.6rem;
-		background: rgba(3, 8, 10, 0.84);
-	}
-
-	.oath-grid :global(svg) {
-		color: var(--rune-400);
-	}
-
-	.oath-grid strong {
-		font-family: var(--display);
-		font-size: 0.73rem;
-		text-transform: uppercase;
-	}
-
-	.oath-grid span {
-		color: var(--text-muted);
-		font-size: 0.58rem;
+	.serpent-map {
+		position: relative;
+		z-index: 1;
+		width: min(calc(100% - 3rem), 72rem);
+		margin-inline: auto;
 	}
 
 	.shieldmaiden {
 		position: absolute;
-		z-index: 2;
+		z-index: 4;
 		left: max(calc(50% - 42rem), -10rem);
-		bottom: -8rem;
+		bottom: -7rem;
 		width: clamp(18rem, 27vw, 28rem);
 		height: auto;
 		filter: drop-shadow(0 20px 28px #000);
+		pointer-events: none;
+		user-select: none;
 	}
 
 	@media (max-width: 75rem) {
@@ -523,27 +481,23 @@
 		}
 
 		.serpent-band {
-			min-height: 43rem;
+			min-height: 46rem;
 		}
 
 		.serpent {
 			object-position: 49% center;
-			opacity: 0.52;
+			opacity: 0.12;
 		}
 
-		.serpent-content {
-			padding: 7rem 1rem 6rem;
-		}
-
-		.oath-grid {
-			grid-template-columns: minmax(0, 1fr);
+		.map-heading {
+			padding-top: 3.5rem;
 		}
 
 		.shieldmaiden {
-			left: -8rem;
+			left: -7rem;
 			bottom: -6rem;
 			width: 20rem;
-			opacity: 0.38;
+			opacity: 0.52;
 		}
 	}
 </style>

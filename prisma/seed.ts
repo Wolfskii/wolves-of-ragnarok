@@ -106,11 +106,11 @@ try {
 
 	await database.communityLink.upsert({
 		where: { id: '00000000-0000-0000-0000-000000000001' },
-		update: {},
+		update: { url: 'https://discord.gg/CbjgD7WVfp' },
 		create: {
 			id: '00000000-0000-0000-0000-000000000001',
 			label: 'Discord',
-			url: 'https://discord.com/',
+			url: 'https://discord.gg/CbjgD7WVfp',
 			kind: 'discord',
 			displayOrder: 0
 		}

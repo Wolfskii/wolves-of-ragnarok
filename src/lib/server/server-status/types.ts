@@ -14,6 +14,8 @@ export type ServerStatusResult = {
 	joinPort: number;
 	mapUrl: string;
 	mapImageUrl: string | null;
+	mapTileUrl: string | null;
+	mapMaxZoom: number | null;
 	state: 'online' | 'offline' | 'error';
 	playerCount: number | null;
 	maxPlayers: number | null;
