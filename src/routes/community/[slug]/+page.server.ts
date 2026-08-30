@@ -16,19 +16,26 @@ const authorSelect = {
 	discordUserId: true
 } as const;
 
-export const load: PageServerLoad = async ({ params }) => {
-	const thread = await getDatabase().forumThread.findUnique({
-		where: { slug: params.slug },
-		include: {
-			author: { select: authorSelect },
-			posts: {
-				orderBy: { createdAt: 'asc' },
-				include: { author: { select: authorSelect } }
+export const load: PageServerLoad = async ({ params, locals }) => {
+	if (!locals.user) return { thread: null, requiresLogin: true };
+
+	try {
+		const thread = await getDatabase().forumThread.findUnique({
+			where: { slug: params.slug },
+			include: {
+				author: { select: authorSelect },
+				posts: {
+					orderBy: { createdAt: 'asc' },
+					include: { author: { select: authorSelect } }
+				}
 			}
-		}
-	});
-	if (!thread) error(404, 'This thread has been lost beyond the Bifröst.');
-	return { thread };
+		});
+		if (!thread) error(404, 'This thread has been lost beyond the Bifröst.');
+		return { thread };
+	} catch (caught) {
+		if (caught instanceof Error && caught.message.includes('lost beyond')) throw caught;
+		return { thread: null, requiresLogin: true };
+	}
 };
 
 export const actions = {

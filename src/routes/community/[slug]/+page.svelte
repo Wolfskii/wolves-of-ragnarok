@@ -10,28 +10,35 @@
 </script>
 
 <svelte:head>
-	<title>{data.thread.title} | The Longhouse Forum</title>
-	<meta name="description" content={`Discussion thread: ${data.thread.title}`} />
+	<title>{data.thread?.title ?? 'Sign in to view this thread'} | The Longhouse Forum</title>
+	<meta name="description" content="A discussion thread in the Wolves of Ragnarok forum." />
 </svelte:head>
 
-<PortalPageShell title={data.thread.title} eyebrow="The Longhouse Forum">
+<PortalPageShell title={data.thread?.title ?? 'Thread access'} eyebrow="The Longhouse Forum">
 	<p class="back"><a href={resolve('/community')}>Back to all threads</a></p>
-	<section class="posts" aria-label="Thread posts">
-		{#each data.thread.posts as post, index (post.id)}
-			<article class="post">
-				<header>
-					<ForumAuthor author={post.author} />
-					<time datetime={post.createdAt.toISOString()}
-						>{new Date(post.createdAt).toLocaleString()}</time
-					>
-				</header>
-				<div class="post-body">{post.body}</div>
-				<span class="post-number">#{index + 1}</span>
-			</article>
-		{/each}
-	</section>
+	{#if data.requiresLogin}
+		<section class="login-required" aria-labelledby="login-required-heading">
+			<h2 id="login-required-heading">Sign in to read this thread</h2>
+			<p>Forum conversations are reserved for registered members.</p>
+			<a href={resolve('/')}>Return to login</a>
+			<a href={resolve('/register')}>Create an account</a>
+		</section>
+	{:else if data.thread}
+		<section class="posts" aria-label="Thread posts">
+			{#each data.thread.posts as post, index (post.id)}
+				<article class="post">
+					<header>
+						<ForumAuthor author={post.author} />
+						<time datetime={post.createdAt.toISOString()}>
+							{new Date(post.createdAt).toLocaleString()}
+						</time>
+					</header>
+					<div class="post-body">{post.body}</div>
+					<span class="post-number">#{index + 1}</span>
+				</article>
+			{/each}
+		</section>
 
-	{#if data.user}
 		<section class="reply" aria-labelledby="reply-heading">
 			<h2 id="reply-heading">Add a reply</h2>
 			{#if form?.replyError}<p class="error" role="alert">{form.replyError}</p>{/if}
@@ -44,22 +51,36 @@
 				<button type="submit">Post reply</button>
 			</form>
 		</section>
-	{:else}
-		<p class="sign-in">Sign in to reply. <a href={resolve('/register')}>Create an account</a>.</p>
 	{/if}
 </PortalPageShell>
 
 <style>
-	.back,
-	.sign-in {
+	.back {
 		margin: 0 0 1.25rem;
 		color: var(--text-muted);
 		font-size: 0.72rem;
 	}
 
 	.back a,
-	.sign-in a {
+	.login-required a {
 		color: var(--brass-400);
+	}
+
+	.login-required {
+		display: grid;
+		gap: 0.65rem;
+		max-width: 28rem;
+		margin: 2rem auto;
+		padding: 1.5rem;
+		border: 1px solid rgba(137, 115, 69, 0.45);
+		background: rgba(0, 3, 4, 0.42);
+		text-align: center;
+	}
+
+	.login-required p {
+		margin: 0;
+		color: var(--text-muted);
+		font-size: 0.78rem;
 	}
 
 	.posts {

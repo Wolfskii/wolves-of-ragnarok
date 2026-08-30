@@ -50,18 +50,33 @@ try {
 	for (const user of [
 		{
 			email: 'freydis@wolvesofragnarok.local',
-			username: 'freydis',
-			bio: 'Builder and explorer of Yggdrasil.'
+			username: 'bytebender',
+			bio: 'Builder, explorer, and screenshot collector.'
 		},
 		{
 			email: 'eirik@wolvesofragnarok.local',
-			username: 'eirik',
-			bio: 'Chronicler of expeditions and keeper of maps.'
+			username: 'lagspike',
+			bio: 'Map keeper, server tinkerer, and reluctant navigator.'
 		},
 		{
 			email: 'ulf@wolvesofragnarok.local',
-			username: 'ulf',
-			bio: 'Builder, sailor, and occasional troll problem.'
+			username: 'toastpacket',
+			bio: 'Harbor builder, late-night gamer, and food buff enthusiast.'
+		},
+		{
+			email: 'nightshift@wolvesofragnarok.local',
+			username: 'nightshift',
+			bio: 'Usually online after midnight with too many building ideas.'
+		},
+		{
+			email: 'mossybyte@wolvesofragnarok.local',
+			username: 'mossybyte',
+			bio: 'Minecraft redstone tinkerer and occasional raid planner.'
+		},
+		{
+			email: 'sidequester@wolvesofragnarok.local',
+			username: 'sidequester',
+			bio: 'Always one small detour away from the main objective.'
 		}
 	]) {
 		const demoUser = await database.user.upsert({
@@ -80,12 +95,15 @@ try {
 
 	const firstNews = await database.newsPost.upsert({
 		where: { slug: 'the-longhouse-doors-open' },
-		update: {},
+		update: {
+			excerpt: 'The doors are open: find your people, choose a game, and settle in by the fire.',
+			body: '# The Longhouse Doors Open\n\nWelcome to Wolves of Ragnarok. We are a community of gamers who enjoy spending time together across many online worlds, from Valheim expeditions to relaxed evenings in Discord.\n\nBring your curiosity, your best stories, and whatever game has your attention this week. The hall is open.'
+		},
 		create: {
 			slug: 'the-longhouse-doors-open',
 			title: 'The Longhouse Doors Open',
-			excerpt: 'Our new hall has risen between pine and mountain.',
-			body: '# The Longhouse Doors Open\n\nClaim your place by the hearth and prepare for the next expedition.',
+			excerpt: 'The doors are open: find your people, choose a game, and settle in by the fire.',
+			body: '# The Longhouse Doors Open\n\nWelcome to Wolves of Ragnarok. We are a community of gamers who enjoy spending time together across many online worlds, from Valheim expeditions to relaxed evenings in Discord.\n\nBring your curiosity, your best stories, and whatever game has your attention this week. The hall is open.',
 			status: 'PUBLISHED',
 			publishedAt: new Date(),
 			authorId: admin.id
@@ -94,13 +112,40 @@ try {
 
 	await database.newsPost.upsert({
 		where: { slug: 'ashlands-expedition-muster' },
-		update: {},
+		update: {
+			excerpt:
+				'Fire resistance, strong shields, and a clear plan for the next journey into the Ashlands.',
+			body: '# Ashlands Expedition Muster\n\nThe next Valheim expedition is forming. Check your food, repair your gear, and bring enough portal materials for a safe return.\n\nPost your availability in the forum and we will gather a crew for the weekend.',
+			status: 'PUBLISHED',
+			publishedAt: new Date()
+		},
 		create: {
 			slug: 'ashlands-expedition-muster',
 			title: 'Ashlands Expedition Muster',
-			excerpt: 'Bring fire resistance, your strongest shield, and portal materials.',
-			body: '# Ashlands Expedition Muster\n\nThe war council gathers at dusk.',
-			status: 'DRAFT',
+			excerpt:
+				'Fire resistance, strong shields, and a clear plan for the next journey into the Ashlands.',
+			body: '# Ashlands Expedition Muster\n\nThe next Valheim expedition is forming. Check your food, repair your gear, and bring enough portal materials for a safe return.\n\nPost your availability in the forum and we will gather a crew for the weekend.',
+			status: 'PUBLISHED',
+			publishedAt: new Date(),
+			authorId: admin.id
+		}
+	});
+
+	await database.newsPost.upsert({
+		where: { slug: 'welcome-and-skal' },
+		update: {
+			excerpt:
+				'A warm welcome to new players, returning friends, and everyone looking for a good evening online.',
+			body: '# Welcome and skål\n\nAs long as you are kind and ready to vibe with a mixed group of people, there is a place for you here. We host occasional events, share game nights, and spend most evenings together in our Discord server.\n\nWelcome to the hall, and skål, Viking brother.'
+		},
+		create: {
+			slug: 'welcome-and-skal',
+			title: 'Welcome and skål',
+			excerpt:
+				'A warm welcome to new players, returning friends, and everyone looking for a good evening online.',
+			body: '# Welcome and skål\n\nAs long as you are kind and ready to vibe with a mixed group of people, there is a place for you here. We host occasional events, share game nights, and spend most evenings together in our Discord server.\n\nWelcome to the hall, and skål, Viking brother.',
+			status: 'PUBLISHED',
+			publishedAt: new Date(),
 			authorId: admin.id
 		}
 	});
@@ -123,7 +168,7 @@ try {
 		{
 			slug: 'about',
 			title: 'Our Saga',
-			body: '# Our Saga\n\nThe Wolves gather beneath one banner.'
+			body: 'Welcome to Wolves of Ragnarok,\n\nWe are a community of gamers who enjoy spending time together in various online games and drinking nights. Some evenings bring a serious expedition, other evenings bring a relaxed build session, a new game, or a few hours of conversation and laughter.\n\nAs long as you are kind and want to vibe with a mixed group of people, you are welcome here. We care more about good company than perfect skill, and there is no pressure to be the loudest person in the room.\n\nWe host occasional events, organize game nights, and mostly hang out in our Discord server. Drop in, introduce yourself, and see what is happening.\n\nWelcome and skål, Viking brother!'
 		},
 		{
 			slug: 'rules',
@@ -138,7 +183,7 @@ try {
 	]) {
 		await database.page.upsert({
 			where: { slug: page.slug },
-			update: {},
+			update: { title: page.title, body: page.body, status: 'PUBLISHED', publishedAt: new Date() },
 			create: { ...page, status: 'PUBLISHED', publishedAt: new Date(), authorId: admin.id }
 		});
 	}
@@ -156,13 +201,16 @@ try {
 	});
 
 	await database.server.upsert({
-		where: { host_gamePort: { host: 'valheim.example.com', gamePort: 2456 } },
-		update: {},
+		where: { host_gamePort: { host: 'valheim.webble.se', gamePort: 2456 } },
+		update: {
+			name: 'Yggdrasil',
+			description: 'The primary Valheim world of the Wolves of Ragnarok.'
+		},
 		create: {
-			name: "The Wolves' Den",
+			name: 'Yggdrasil',
 			game: 'VALHEIM',
-			adapter: 'MOCK',
-			host: 'valheim.example.com',
+			adapter: 'GAMEDIG',
+			host: 'valheim.webble.se',
 			gamePort: 2456,
 			queryPort: 2457,
 			description: 'The primary Valheim world of the Wolves of Ragnarok.',
@@ -175,44 +223,165 @@ try {
 			id: '00000000-0000-0000-0000-000000000101',
 			slug: 'welcome-to-the-longhouse',
 			title: 'Welcome to the Longhouse',
-			author: 'freydis',
-			postId: '00000000-0000-0000-0000-000000000201',
-			body: 'Welcome to the new forum. Introduce yourself, share what you play, and tell us what you are building next.'
+			date: '2025-01-11T18:30:00Z',
+			posts: [
+				[
+					'00000000-0000-0000-0000-000000000201',
+					'bytebender',
+					'Welcome to the new forum. Introduce yourself, share what you play, and tell us what you are building next.'
+				],
+				[
+					'00000000-0000-0000-0000-000000000211',
+					'nightshift',
+					'Mostly here for co-op games and the occasional late-night movie or drinking session. Glad to see the hall open again.'
+				],
+				[
+					'00000000-0000-0000-0000-000000000212',
+					'mossybyte',
+					'Same. I am bringing my Minecraft world tour screenshots and absolutely no sensible sleep schedule.'
+				]
+			]
 		},
 		{
 			id: '00000000-0000-0000-0000-000000000102',
 			slug: 'ashlands-expedition-planning',
 			title: 'Ashlands Expedition Planning',
-			author: 'eirik',
-			postId: '00000000-0000-0000-0000-000000000202',
-			body: 'Who is up for an Ashlands run this weekend? Bring fire resistance, a strong shield, and portal materials.'
+			date: '2025-02-15T20:00:00Z',
+			posts: [
+				[
+					'00000000-0000-0000-0000-000000000202',
+					'lagspike',
+					'Who is up for an Ashlands run this weekend? Bring fire resistance, a strong shield, and portal materials.'
+				],
+				[
+					'00000000-0000-0000-0000-000000000213',
+					'toastpacket',
+					'I can bring supplies and build the staging portal. I will probably get distracted making a tiny kitchen again.'
+				],
+				[
+					'00000000-0000-0000-0000-000000000214',
+					'bytebender',
+					'Count me in. Saturday works, and I have finally upgraded the bow instead of spending all my iron on decor.'
+				]
+			]
 		},
 		{
 			id: '00000000-0000-0000-0000-000000000103',
 			slug: 'ideas-for-yggdrasil-builds',
 			title: 'Ideas for Yggdrasil Builds',
-			author: 'ulf',
-			postId: '00000000-0000-0000-0000-000000000203',
-			body: 'I want to expand the harbor and connect it to the mountain road. Post screenshots or sketches for the next build night.'
+			date: '2025-03-02T16:15:00Z',
+			posts: [
+				[
+					'00000000-0000-0000-0000-000000000203',
+					'toastpacket',
+					'I want to expand the harbor and connect it to the mountain road. Post screenshots or sketches for the next build night.'
+				],
+				[
+					'00000000-0000-0000-0000-000000000215',
+					'sidequester',
+					'A covered walkway would be useful. Also, I vote for one deliberately ridiculous tower somewhere near the docks.'
+				],
+				[
+					'00000000-0000-0000-0000-000000000216',
+					'lagspike',
+					'I mapped a possible route around the swamp. The tower can go at the fork so nobody misses it.'
+				]
+			]
+		},
+		{
+			id: '00000000-0000-0000-0000-000000000104',
+			slug: 'minecraft-server-ideas',
+			title: 'Minecraft Server Ideas',
+			date: '2025-04-19T19:45:00Z',
+			posts: [
+				[
+					'00000000-0000-0000-0000-000000000204',
+					'mossybyte',
+					'I found an old world backup and it made me want to bring back the Minecraft server for a short community season.'
+				],
+				[
+					'00000000-0000-0000-0000-000000000217',
+					'nightshift',
+					'A smaller map with shared spawn projects could be fun. No pressure to play every night, just somewhere to drop in.'
+				],
+				[
+					'00000000-0000-0000-0000-000000000218',
+					'bytebender',
+					'I still remember the railway that went nowhere. I support rebuilding it, but this time with signs.'
+				]
+			]
+		},
+		{
+			id: '00000000-0000-0000-0000-000000000105',
+			slug: 'friday-drinks-and-game-night',
+			title: 'Friday Drinks and Game Night',
+			date: '2025-06-06T18:00:00Z',
+			posts: [
+				[
+					'00000000-0000-0000-0000-000000000205',
+					'sidequester',
+					'Thinking about a relaxed Friday night in Discord with a few games afterward. Bring a drink, snacks, or just yourself.'
+				],
+				[
+					'00000000-0000-0000-0000-000000000219',
+					'toastpacket',
+					'I am in. I can host a co-op lobby after the first round of questionable music choices.'
+				],
+				[
+					'00000000-0000-0000-0000-000000000220',
+					'mossybyte',
+					'I will arrive late, but I will bring the playlist and a strong opinion about what counts as a game night.'
+				]
+			]
+		},
+		{
+			id: '00000000-0000-0000-0000-000000000106',
+			slug: 'what-are-we-playing-next',
+			title: 'What Are We Playing Next?',
+			date: '2025-09-13T14:20:00Z',
+			posts: [
+				[
+					'00000000-0000-0000-0000-000000000206',
+					'nightshift',
+					'Valheim and Minecraft are both calling, but I would also be up for trying something completely new together.'
+				],
+				[
+					'00000000-0000-0000-0000-000000000221',
+					'lagspike',
+					'A rotating game night might work: one familiar game, one experiment, and no obligation to finish either.'
+				],
+				[
+					'00000000-0000-0000-0000-000000000222',
+					'sidequester',
+					'Perfect format. I vote we decide in Discord and keep the forum for the overly detailed plans.'
+				]
+			]
 		}
 	]) {
-		const author = demoUsers.get(thread.author);
-		if (!author) throw new Error(`Missing seeded forum author ${thread.author}.`);
+		const firstAuthor = demoUsers.get(thread.posts[0]![1]);
+		if (!firstAuthor) throw new Error(`Missing seeded forum author ${thread.posts[0]![1]}.`);
+		const date = new Date(thread.date);
 		const savedThread = await database.forumThread.upsert({
 			where: { slug: thread.slug },
-			update: { title: thread.title, authorId: author.id },
-			create: { id: thread.id, slug: thread.slug, title: thread.title, authorId: author.id }
-		});
-		await database.forumPost.upsert({
-			where: { id: thread.postId },
-			update: { body: thread.body, authorId: author.id, threadId: savedThread.id },
+			update: { title: thread.title, authorId: firstAuthor.id, createdAt: date, updatedAt: date },
 			create: {
-				id: thread.postId,
-				body: thread.body,
-				authorId: author.id,
-				threadId: savedThread.id
+				id: thread.id,
+				slug: thread.slug,
+				title: thread.title,
+				authorId: firstAuthor.id,
+				createdAt: date,
+				updatedAt: date
 			}
 		});
+		for (const [postId, username, body] of thread.posts) {
+			const author = demoUsers.get(username);
+			if (!author) throw new Error(`Missing seeded forum author ${username}.`);
+			await database.forumPost.upsert({
+				where: { id: postId },
+				update: { body, authorId: author.id, threadId: savedThread.id, createdAt: date },
+				create: { id: postId, body, authorId: author.id, threadId: savedThread.id, createdAt: date }
+			});
+		}
 	}
 
 	console.log(`Seeded Wolves of Ragnarok with admin ${admin.email}.`);

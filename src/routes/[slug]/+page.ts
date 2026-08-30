@@ -30,8 +30,8 @@ const pages = {
 		items: ['Jarl Wolfskii — Admin', 'Freydis — Member', 'Eirik — Member']
 	},
 	about: {
-		title: 'Our Saga',
-		eyebrow: 'The story of the guild',
+		title: 'About Us',
+		eyebrow: 'Who we are',
 		intro:
 			'Wolves of Ragnarok is a community built around shared adventures rather than any single game.',
 		items: [

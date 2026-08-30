@@ -1,9 +1,29 @@
 import { fail, redirect } from '@sveltejs/kit';
-import type { Actions } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 import { loginSchema } from '$lib/server/auth/schemas';
 import { verifyPassword } from '$lib/server/auth/crypto';
 import { createSession } from '$lib/server/auth/session';
 import { getDatabase } from '$lib/server/db';
+
+export const load: PageServerLoad = async () => {
+	try {
+		return {
+			news: await getDatabase().newsPost.findMany({
+				where: { status: 'PUBLISHED' },
+				orderBy: { publishedAt: 'desc' },
+				take: 3,
+				select: {
+					title: true,
+					excerpt: true,
+					publishedAt: true,
+					author: { select: { username: true } }
+				}
+			})
+		};
+	} catch {
+		return { news: [] };
+	}
+};
 
 export const actions = {
 	login: async ({ request, cookies, locals }) => {

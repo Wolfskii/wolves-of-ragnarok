@@ -13,32 +13,40 @@
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
-	const news = [
+	const fallbackNews = [
 		{
 			title: 'The Longhouse Doors Open',
-			excerpt:
-				'Our new hall has risen between pine and mountain. Claim your place by the hearth and prepare for the next expedition.',
+			excerpt: 'Our hall is ready for new adventures.',
 			date: '29 August 2026',
 			author: 'Jarl Wolfskii',
 			tone: 'frost' as const
 		},
 		{
 			title: 'Ashlands Expedition Muster',
-			excerpt:
-				'Bring fire resistance, your strongest shield, and enough portal materials for a long campaign beyond the boiling sea.',
+			excerpt: 'Prepare for the next expedition beyond the boiling sea.',
 			date: '27 August 2026',
 			author: 'Freydis',
 			tone: 'ember' as const
 		},
 		{
 			title: 'New Members Enter the Hall',
-			excerpt:
-				'Welcome our latest members. Introductions and preferred games are now recorded in the guild roster.',
+			excerpt: 'Welcome to the newest members of the guild.',
 			date: '24 August 2026',
 			author: 'Skald Eirik',
 			tone: 'frost' as const
 		}
 	];
+	let news = $derived(
+		data.news.length
+			? data.news.map((article, index) => ({
+					...article,
+					excerpt: article.excerpt ?? 'Read the latest news from the hall.',
+					date: article.publishedAt?.toLocaleDateString() ?? 'Recently',
+					author: article.author.username,
+					tone: index % 2 ? ('ember' as const) : ('frost' as const)
+				}))
+			: fallbackNews
+	);
 </script>
 
 <svelte:head>

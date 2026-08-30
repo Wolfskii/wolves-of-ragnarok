@@ -139,6 +139,16 @@ test('serves public destinations, auth entry, status data, and guards administra
 		expect(response.status(), `${path} should resolve`).toBe(200);
 	}
 
+	await page.goto('/news');
+	await expect(page.getByRole('heading', { name: 'Latest Chronicles' })).toBeVisible();
+	await page.goto('/members');
+	await expect(page.getByRole('heading', { name: 'Guild Roster' })).toBeVisible();
+	await page.goto('/about');
+	await expect(page.getByRole('heading', { name: 'About Us' })).toBeVisible();
+	await page.goto('/community/welcome-to-the-longhouse');
+	await expect(page.getByRole('heading', { name: 'Sign in to read this thread' })).toBeVisible();
+	await expect(page.locator('.post-body')).toHaveCount(0);
+
 	await page.goto('/admin');
 	await expect(page).toHaveURL('/');
 	await page.goto('/servers');
