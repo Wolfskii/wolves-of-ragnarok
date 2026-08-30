@@ -11,7 +11,7 @@ RUN mkdir -p /app/uploads && chown -R node:node /app/uploads
 ENTRYPOINT []
 
 FROM build AS migration
-CMD ["npx", "prisma", "migrate", "deploy"]
+CMD ["sh", "-c", "npx prisma migrate deploy && npm run db:seed"]
 
 FROM cgr.dev/chainguard/node:latest-dev AS production-dependencies
 

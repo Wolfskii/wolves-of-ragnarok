@@ -21,7 +21,7 @@ npm run db:seed
 npm run dev
 ```
 
-Admin credentials are read from `ADMIN_EMAIL`, `ADMIN_USERNAME`, and `ADMIN_PASSWORD` only when `npm run db:seed` is explicitly executed.
+In Docker Compose deployments, the migration service runs `db:seed` automatically after applying migrations. Admin credentials are read from `ADMIN_EMAIL`, `ADMIN_USERNAME`, and `ADMIN_PASSWORD`.
 
 ## Commands
 
