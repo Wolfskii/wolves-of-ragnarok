@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { randomBytes } from 'node:crypto';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../src/generated/prisma/client';
 import { hashPassword } from '../src/lib/server/auth/crypto';
@@ -43,6 +44,39 @@ try {
 			activities: { create: { type: 'JOINED', summary: 'Founded the Wolves of Ragnarok.' } }
 		}
 	});
+
+	const demoPasswordHash = await hashPassword(randomBytes(32).toString('hex'));
+	const demoUsers = new Map<string, { id: string }>();
+	for (const user of [
+		{
+			email: 'freydis@wolvesofragnarok.local',
+			username: 'freydis',
+			bio: 'Builder and explorer of Yggdrasil.'
+		},
+		{
+			email: 'eirik@wolvesofragnarok.local',
+			username: 'eirik',
+			bio: 'Chronicler of expeditions and keeper of maps.'
+		},
+		{
+			email: 'ulf@wolvesofragnarok.local',
+			username: 'ulf',
+			bio: 'Builder, sailor, and occasional troll problem.'
+		}
+	]) {
+		const demoUser = await database.user.upsert({
+			where: { email: user.email },
+			update: { username: user.username, isActive: true, bio: user.bio },
+			create: {
+				email: user.email,
+				username: user.username,
+				passwordHash: demoPasswordHash,
+				bio: user.bio,
+				lastSeenAt: new Date()
+			}
+		});
+		demoUsers.set(user.username, demoUser);
+	}
 
 	const firstNews = await database.newsPost.upsert({
 		where: { slug: 'the-longhouse-doors-open' },
@@ -135,6 +169,51 @@ try {
 			displayOrder: 0
 		}
 	});
+
+	for (const thread of [
+		{
+			id: '00000000-0000-0000-0000-000000000101',
+			slug: 'welcome-to-the-longhouse',
+			title: 'Welcome to the Longhouse',
+			author: 'freydis',
+			postId: '00000000-0000-0000-0000-000000000201',
+			body: 'Welcome to the new forum. Introduce yourself, share what you play, and tell us what you are building next.'
+		},
+		{
+			id: '00000000-0000-0000-0000-000000000102',
+			slug: 'ashlands-expedition-planning',
+			title: 'Ashlands Expedition Planning',
+			author: 'eirik',
+			postId: '00000000-0000-0000-0000-000000000202',
+			body: 'Who is up for an Ashlands run this weekend? Bring fire resistance, a strong shield, and portal materials.'
+		},
+		{
+			id: '00000000-0000-0000-0000-000000000103',
+			slug: 'ideas-for-yggdrasil-builds',
+			title: 'Ideas for Yggdrasil Builds',
+			author: 'ulf',
+			postId: '00000000-0000-0000-0000-000000000203',
+			body: 'I want to expand the harbor and connect it to the mountain road. Post screenshots or sketches for the next build night.'
+		}
+	]) {
+		const author = demoUsers.get(thread.author);
+		if (!author) throw new Error(`Missing seeded forum author ${thread.author}.`);
+		const savedThread = await database.forumThread.upsert({
+			where: { slug: thread.slug },
+			update: { title: thread.title, authorId: author.id },
+			create: { id: thread.id, slug: thread.slug, title: thread.title, authorId: author.id }
+		});
+		await database.forumPost.upsert({
+			where: { id: thread.postId },
+			update: { body: thread.body, authorId: author.id, threadId: savedThread.id },
+			create: {
+				id: thread.postId,
+				body: thread.body,
+				authorId: author.id,
+				threadId: savedThread.id
+			}
+		});
+	}
 
 	console.log(`Seeded Wolves of Ragnarok with admin ${admin.email}.`);
 } finally {

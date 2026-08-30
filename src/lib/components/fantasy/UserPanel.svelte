@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { LogOut, Settings, Shield } from '@lucide/svelte';
+	import { ExternalLink, LogOut, MessageCircle, Settings, Shield } from '@lucide/svelte';
 	import { resolve } from '$app/paths';
 	import type { SessionUser } from '$lib/server/auth/session';
 
@@ -15,6 +15,19 @@
 		{/if}
 		<p class="role"><Shield size={13} />{user.role}</p>
 		<h2 id="user-heading">{user.username}</h2>
+		{#if user.discordUsername}
+			{#if user.discordUserId}
+				<a
+					class="discord-handle"
+					href={`https://discord.com/users/${user.discordUserId}`}
+					target="_blank"
+					rel="noreferrer"
+					><MessageCircle size={13} />{user.discordUsername}<ExternalLink size={11} /></a
+				>
+			{:else}
+				<p class="discord-handle"><MessageCircle size={13} />{user.discordUsername}</p>
+			{/if}
+		{/if}
 		<p class="welcome">The longhouse remembers you.</p>
 		<a class="profile" href={resolve('/profile')}><Settings size={16} />View profile</a>
 		<form method="POST" action="/logout">
@@ -90,6 +103,22 @@
 		color: var(--frost-100);
 		font-size: 1rem;
 		text-transform: uppercase;
+	}
+
+	.discord-handle {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.3rem;
+		margin: 0 0 0.35rem;
+		color: var(--brass-400);
+		font-size: 0.68rem;
+		text-decoration: none;
+	}
+
+	.discord-handle:hover,
+	.discord-handle:focus-visible {
+		color: var(--frost-100);
 	}
 
 	.welcome {

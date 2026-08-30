@@ -12,6 +12,8 @@ export type SessionUser = {
 	username: string;
 	steamUsername: string | null;
 	steamAvatarUrl: string | null;
+	discordUsername: string | null;
+	discordUserId: string | null;
 	role: 'USER' | 'MODERATOR' | 'ADMIN';
 	avatarMediaId: string | null;
 };
@@ -70,6 +72,8 @@ export async function validateSession(token: string | undefined): Promise<Sessio
 		username: session.user.username,
 		steamUsername: session.user.steamUsername,
 		steamAvatarUrl: session.user.steamAvatarUrl,
+		discordUsername: session.user.discordUsername,
+		discordUserId: session.user.discordUserId,
 		role: session.user.role,
 		avatarMediaId: session.user.avatarMediaId
 	};

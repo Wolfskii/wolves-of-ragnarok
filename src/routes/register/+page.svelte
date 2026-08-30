@@ -1,5 +1,6 @@
 <script lang="ts">
 	import AuthPageShell from '$lib/components/fantasy/AuthPageShell.svelte';
+	import { Gamepad2, MessageCircle } from '@lucide/svelte';
 	import { resolve } from '$app/paths';
 	import type { ActionData } from './$types';
 
@@ -32,7 +33,9 @@
 			>
 		</div>
 		<label
-			>Steam profile link <span>(optional, fetches Steam name and avatar)</span><input
+			><span class="field-label"
+				><Gamepad2 size={14} />Steam profile link <em>(optional, fetches name and avatar)</em></span
+			><input
 				name="steamProfileUrl"
 				type="url"
 				inputmode="url"
@@ -40,6 +43,28 @@
 				value={form?.values?.steamProfileUrl ?? ''}
 			/></label
 		>
+		<label
+			><span class="field-label"
+				><MessageCircle size={14} />Discord username <em>(optional)</em></span
+			><input
+				name="discordUsername"
+				maxlength="32"
+				placeholder="yourname"
+				value={form?.values?.discordUsername ?? ''}
+			/></label
+		>
+		<label>
+			<span class="field-label"
+				>Discord user ID <em>(optional, enables direct profile link)</em></span
+			>
+			<input
+				name="discordUserId"
+				inputmode="numeric"
+				maxlength="20"
+				placeholder="123456789012345678"
+				value={form?.values?.discordUserId ?? ''}
+			/>
+		</label>
 		<div class="field-row">
 			<label
 				>Password<input
@@ -97,6 +122,24 @@
 		font-family: var(--display);
 		font-size: 0.62rem;
 		text-transform: uppercase;
+	}
+
+	.field-label {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+	}
+
+	.field-label :global(svg) {
+		color: var(--brass-400);
+	}
+
+	.field-label em {
+		color: var(--text-muted);
+		font-family: var(--body);
+		font-size: 0.55rem;
+		font-style: normal;
+		text-transform: none;
 	}
 
 	label span {

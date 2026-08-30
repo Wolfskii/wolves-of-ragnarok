@@ -17,6 +17,8 @@ export const actions = {
 			email: String(formData.get('email') ?? ''),
 			username: String(formData.get('username') ?? ''),
 			steamProfileUrl: String(formData.get('steamProfileUrl') ?? ''),
+			discordUsername: String(formData.get('discordUsername') ?? ''),
+			discordUserId: String(formData.get('discordUserId') ?? ''),
 			password: String(formData.get('password') ?? ''),
 			confirmPassword: String(formData.get('confirmPassword') ?? '')
 		};
@@ -28,7 +30,9 @@ export const actions = {
 				values: {
 					email: values.email,
 					username: values.username,
-					steamProfileUrl: values.steamProfileUrl
+					steamProfileUrl: values.steamProfileUrl,
+					discordUsername: values.discordUsername,
+					discordUserId: values.discordUserId
 				}
 			});
 		}
@@ -47,7 +51,9 @@ export const actions = {
 				values: {
 					email: parsed.data.email,
 					username: parsed.data.username,
-					steamProfileUrl: parsed.data.steamProfileUrl ?? ''
+					steamProfileUrl: parsed.data.steamProfileUrl ?? '',
+					discordUsername: parsed.data.discordUsername ?? '',
+					discordUserId: parsed.data.discordUserId ?? ''
 				}
 			});
 		}
@@ -63,6 +69,8 @@ export const actions = {
 				steamProfileUrl: parsed.data.steamProfileUrl ?? null,
 				steamUsername: steamProfile.username,
 				steamAvatarUrl: steamProfile.avatarUrl,
+				discordUsername: parsed.data.discordUsername ?? null,
+				discordUserId: parsed.data.discordUserId ?? null,
 				passwordHash: await hashPassword(parsed.data.password),
 				lastSeenAt: new Date(),
 				activities: { create: { type: 'JOINED', summary: 'Joined the Wolves of Ragnarok.' } }

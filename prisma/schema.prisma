@@ -56,6 +56,8 @@ model User {
   steamProfileUrl String?           @db.VarChar(500)
   steamUsername  String?            @db.VarChar(80)
   steamAvatarUrl String?            @db.VarChar(500)
+  discordUsername String?           @db.VarChar(32)
+  discordUserId   String?           @db.VarChar(20)
   passwordHash   String             @db.VarChar(255)
   role           Role               @default(USER)
   bio            String?            @db.Text
@@ -72,6 +74,8 @@ model User {
   games          UserGame[]
   memberships    ServerMembership[]
   activities     Activity[]
+  forumThreads   ForumThread[]      @relation("ForumThreadAuthor")
+  forumPosts     ForumPost[]        @relation("ForumPostAuthor")
 
   @@index([role, isActive])
   @@index([lastSeenAt])
@@ -88,6 +92,32 @@ model Session {
 
   @@index([userId])
   @@index([expiresAt])
+}
+
+model ForumThread {
+  id          String      @id @default(uuid()) @db.Uuid
+  slug        String      @unique @db.VarChar(180)
+  title       String      @db.VarChar(160)
+  authorId    String      @db.Uuid
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  author      User        @relation("ForumThreadAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  posts       ForumPost[]
+
+  @@index([updatedAt(sort: Desc)])
+}
+
+model ForumPost {
+  id        String      @id @default(uuid()) @db.Uuid
+  body      String      @db.Text
+  threadId  String      @db.Uuid
+  authorId  String      @db.Uuid
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  thread    ForumThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  author    User        @relation("ForumPostAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@index([threadId, createdAt])
 }
 
 model NewsPost {

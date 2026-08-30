@@ -1,5 +1,6 @@
 <script lang="ts">
 	import AuthPageShell from '$lib/components/fantasy/AuthPageShell.svelte';
+	import { Gamepad2, MessageCircle } from '@lucide/svelte';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -14,14 +15,21 @@
 	<div class="identity">
 		<strong>@{data.profile.username}</strong>
 		<span>{data.profile.email}</span>
-		{#if data.profile.steamUsername}<small>Steam: {data.profile.steamUsername}</small>{/if}
+		{#if data.profile.steamUsername}<small
+				><Gamepad2 size={13} /> Steam: {data.profile.steamUsername}</small
+			>{/if}
+		{#if data.profile.discordUsername}<small
+				><MessageCircle size={13} /> Discord: {data.profile.discordUsername}</small
+			>{/if}
 	</div>
 
 	{#if form?.profileError}<p class="error" role="alert">{form.profileError}</p>{/if}
 	{#if form?.profileSuccess}<p class="success" role="status">Profile updated.</p>{/if}
 	<form method="POST" action="?/profile">
 		<label
-			>Steam profile link <span>(optional, fetches Steam name and avatar)</span><input
+			><span class="field-label"
+				><Gamepad2 size={14} />Steam profile link <em>(optional, fetches name and avatar)</em></span
+			><input
 				name="steamProfileUrl"
 				type="url"
 				inputmode="url"
@@ -29,6 +37,28 @@
 				value={data.profile.steamProfileUrl ?? ''}
 			/></label
 		>
+		<label
+			><span class="field-label"
+				><MessageCircle size={14} />Discord username <em>(optional)</em></span
+			><input
+				name="discordUsername"
+				maxlength="32"
+				placeholder="yourname"
+				value={data.profile.discordUsername ?? ''}
+			/></label
+		>
+		<label>
+			<span class="field-label"
+				>Discord user ID <em>(optional, enables direct profile link)</em></span
+			>
+			<input
+				name="discordUserId"
+				inputmode="numeric"
+				maxlength="20"
+				placeholder="123456789012345678"
+				value={data.profile.discordUserId ?? ''}
+			/>
+		</label>
 		<label
 			>Bio<textarea name="bio" rows="6" maxlength="1000">{data.profile.bio ?? ''}</textarea></label
 		>
@@ -90,8 +120,29 @@
 	}
 
 	.identity small {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
 		color: var(--brass-400);
 		font-size: 0.65rem;
+	}
+
+	.field-label {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+	}
+
+	.field-label :global(svg) {
+		color: var(--brass-400);
+	}
+
+	.field-label em {
+		color: var(--text-muted);
+		font-family: var(--body);
+		font-size: 0.55rem;
+		font-style: normal;
+		text-transform: none;
 	}
 
 	form,
