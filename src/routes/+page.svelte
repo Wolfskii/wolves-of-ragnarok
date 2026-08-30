@@ -30,7 +30,7 @@
 			tone: 'ember' as const
 		},
 		{
-			title: 'New Wolves Join the Pack',
+			title: 'New Members Enter the Hall',
 			excerpt:
 				'Welcome our latest members. Introductions and preferred games are now recorded in the guild roster.',
 			date: '24 August 2026',
@@ -60,7 +60,7 @@
 					height="642"
 				/>
 				<h1 class="brand-title">Wolves of Ragnarok</h1>
-				<p class="brand-tagline">Where Wolves Gather, Ragnarok Begins.</p>
+				<p class="brand-tagline">Where Vikings Gather, Ragnarok Begins.</p>
 			</header>
 
 			<FantasyNavigation />
@@ -109,7 +109,7 @@
 					<FantasyPanel class="welcome-panel" eyebrow="A summons from the North">
 						<div class="welcome">
 							<p class="section-kicker">The old hall awakens</p>
-							<h2 class="section-heading">Stand with the pack</h2>
+							<h2 class="section-heading">Stand with the fellowship</h2>
 							<p>
 								We are a fellowship of builders, raiders, wanderers, and storytellers. Our fires
 								burn across Valheim and every world where good company matters more than glory.
@@ -137,10 +137,10 @@
 					aria-label="Server status and guild links"
 				>
 					<ServerStatus />
-					<FantasyPanel title="Paths of the Pack" eyebrow="Choose your road">
+					<FantasyPanel title="Paths from the Hall" eyebrow="Choose your road">
 						<nav class="path-list" aria-label="Community links">
 							<a href={resolve('/members')}
-								><UsersRound size={17} /><span>Guild roster<small>Meet the wolves</small></span></a
+								><UsersRound size={17} /><span>Guild roster<small>Meet the members</small></span></a
 							>
 							<a href={resolve('/servers')}
 								><Swords size={17} /><span>Game servers<small>Find the battle</small></span></a
@@ -178,7 +178,7 @@
 					</div>
 					<div>
 						<Shield aria-hidden="true" /><strong>Defend</strong><span
-							>Make the hall safe for every wolf.</span
+							>Make the hall safe for every member.</span
 						>
 					</div>
 					<div>

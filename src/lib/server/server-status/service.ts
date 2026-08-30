@@ -10,7 +10,7 @@ const pending = new Map<string, Promise<ServerStatusResult>>();
 const mockTarget: ServerQueryTarget = {
 	id: 'featured-valheim',
 	name: 'Yggdrasil',
-	host: env.VALHEIM_JOIN_ADDRESS ?? 'valheim-map.webble.se',
+	host: env.VALHEIM_JOIN_ADDRESS ?? 'valheim.webble.se',
 	gamePort: 2456,
 	queryPort: null,
 	timeoutMs: 3000
@@ -23,7 +23,7 @@ function valheimOneConfig(): ValheimOneConfig {
 		playersUrl: env.VALHEIM_PLAYERS_URL ?? 'https://valheim-map.webble.se/api/players',
 		playersToken: env.VALHEIM_PLAYERS_TOKEN ?? '',
 		mapUrl: env.VALHEIM_MAP_URL ?? 'https://valheim-map.webble.se',
-		joinAddress: env.VALHEIM_JOIN_ADDRESS ?? 'valheim-map.webble.se',
+		joinAddress: env.VALHEIM_JOIN_ADDRESS ?? 'valheim.webble.se',
 		joinPort: Number.isInteger(joinPort) && joinPort > 0 && joinPort <= 65535 ? joinPort : 2456
 	};
 }

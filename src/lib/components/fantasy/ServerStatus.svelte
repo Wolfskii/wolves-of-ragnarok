@@ -11,11 +11,15 @@
 		maxPlayers = 10,
 		ping = null,
 		playerNames = [],
-		joinAddress = 'valheim-map.webble.se',
+		joinAddress = 'valheim.webble.se',
 		joinPort = 2456,
 		mapUrl = 'https://valheim-map.webble.se',
 		worldName = 'Yggdrasil',
-		day = null
+		day = null,
+		version = null,
+		snapshotAgeMs = null,
+		queriedAt = null,
+		detailed = false
 	}: {
 		name?: string;
 		online?: boolean;
@@ -28,6 +32,10 @@
 		mapUrl?: string;
 		worldName?: string | null;
 		day?: number | null;
+		version?: string | null;
+		snapshotAgeMs?: number | null;
+		queriedAt?: string | null;
+		detailed?: boolean;
 	} = $props();
 
 	let current = $state({
@@ -37,11 +45,14 @@
 		maxPlayers: 10,
 		ping: null as number | null,
 		playerNames: [] as string[],
-		joinAddress: 'valheim-map.webble.se',
+		joinAddress: 'valheim.webble.se',
 		joinPort: 2456,
 		mapUrl: 'https://valheim-map.webble.se',
 		worldName: 'Yggdrasil' as string | null,
-		day: null as number | null
+		day: null as number | null,
+		version: null as string | null,
+		snapshotAgeMs: null as number | null,
+		queriedAt: null as string | null
 	});
 	let receivedLiveStatus = $state(false);
 
@@ -58,7 +69,10 @@
 				joinPort,
 				mapUrl,
 				worldName,
-				day
+				day,
+				version,
+				snapshotAgeMs,
+				queriedAt
 			};
 	});
 
@@ -82,7 +96,10 @@
 					joinPort: result.joinPort,
 					mapUrl: result.mapUrl,
 					worldName: result.worldName,
-					day: result.day
+					day: result.day,
+					version: result.version,
+					snapshotAgeMs: result.snapshotAgeMs,
+					queriedAt: result.queriedAt
 				};
 			} catch {
 				// Retain the last known state when a refresh cannot reach the backend.
@@ -120,8 +137,7 @@
 			class="population"
 			aria-label={`${current.players} of ${current.maxPlayers} players online`}
 		>
-			<strong>{current.players}</strong>
-			<span>/ {current.maxPlayers} wolves</span>
+			<span>{current.players} / {current.maxPlayers} players</span>
 		</div>
 
 		<div class="meter" aria-hidden="true">
@@ -139,9 +155,45 @@
 			<p class="no-names">Player names unavailable</p>
 		{/if}
 
-		<p class="ping">
-			<span>External health</span><strong>{current.online ? 'Live' : 'No response'}</strong>
+		<p class="health">
+			<span>External health</span>
+			<strong class:offline={!current.online}
+				><i aria-hidden="true"></i>{current.online ? 'Live' : 'Offline'}</strong
+			>
 		</p>
+
+		{#if detailed}
+			<dl class="server-facts">
+				<div>
+					<dt>Reported version</dt>
+					<dd>{current.version ?? 'Unavailable'}</dd>
+				</div>
+				<div>
+					<dt>World</dt>
+					<dd>{current.worldName ?? 'Unavailable'}</dd>
+				</div>
+				<div>
+					<dt>Snapshot age</dt>
+					<dd>
+						{current.snapshotAgeMs === null
+							? 'Unavailable'
+							: `${Math.round(current.snapshotAgeMs / 1000)}s`}
+					</dd>
+				</div>
+				<div>
+					<dt>Last checked</dt>
+					<dd>
+						{current.queriedAt ? new Date(current.queriedAt).toLocaleTimeString() : 'Waiting'}
+					</dd>
+				</div>
+				{#if current.ping !== null}
+					<div>
+						<dt>Query latency</dt>
+						<dd>{current.ping} ms</dd>
+					</div>
+				{/if}
+			</dl>
+		{/if}
 
 		{#if current.joinAddress}
 			<div class="join-details">
@@ -268,21 +320,12 @@
 	}
 
 	.population {
-		display: flex;
-		align-items: baseline;
-		justify-content: center;
-		gap: 0.35rem;
-	}
-
-	.population strong {
 		color: var(--frost-100);
-		font-family: var(--display);
-		font-size: 1.75rem;
+		font-size: 0.8rem;
 	}
 
 	.population span {
-		color: var(--text-muted);
-		font-size: 0.7rem;
+		font-variant-numeric: tabular-nums;
 	}
 
 	.meter {
@@ -326,8 +369,9 @@
 		font-size: 0.7rem;
 	}
 
-	.ping {
+	.health {
 		display: flex;
+		align-items: center;
 		justify-content: space-between;
 		gap: 0.75rem;
 		margin: 0.9rem 0 0;
@@ -337,8 +381,60 @@
 		font-size: 0.62rem;
 	}
 
-	.ping strong {
+	.health strong {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		padding: 0.22rem 0.45rem;
+		border: 1px solid color-mix(in srgb, var(--success-400), transparent 55%);
+		background: color-mix(in srgb, var(--success-400), transparent 88%);
+		color: var(--success-400);
+		font-family: var(--display);
+		font-size: 0.58rem;
+		text-transform: uppercase;
+	}
+
+	.health strong.offline {
+		border-color: color-mix(in srgb, var(--danger-400), transparent 55%);
+		background: color-mix(in srgb, var(--danger-400), transparent 88%);
+		color: var(--danger-400);
+	}
+
+	.health i {
+		width: 0.42rem;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		background: currentColor;
+		box-shadow: 0 0 7px currentColor;
+	}
+
+	.server-facts {
+		display: grid;
+		gap: 0.35rem;
+		margin: 0.75rem 0 0;
+		padding-top: 0.7rem;
+		border-top: 1px solid rgba(137, 115, 69, 0.32);
+	}
+
+	.server-facts div {
+		display: flex;
+		justify-content: space-between;
+		gap: 0.75rem;
+	}
+
+	.server-facts dt,
+	.server-facts dd {
+		margin: 0;
+		font-size: 0.62rem;
+	}
+
+	.server-facts dt {
+		color: var(--text-muted);
+	}
+
+	.server-facts dd {
 		color: var(--steel-300);
+		text-align: right;
 	}
 
 	.join-details {

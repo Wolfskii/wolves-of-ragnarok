@@ -62,6 +62,12 @@ test('shows the map-only live world chart on the servers page', async ({ page },
 		.poll(() => liveMap.evaluate((image) => (image as HTMLImageElement).naturalWidth))
 		.toBe(2048);
 	await expect(page.locator('iframe')).toHaveCount(0);
+	await expect(page.getByText('valheim.webble.se:2456')).toBeVisible();
+	await expect(page.getByText('4 / 10 players')).toBeVisible();
+	await expect(page.locator('.population strong')).toHaveCount(0);
+	await expect(page.getByText('Reported version')).toBeVisible();
+	await expect(page.locator('.health strong')).toHaveText('Live');
+	await expect(page.locator('.health strong')).toHaveCSS('color', 'rgb(128, 215, 162)');
 	await page.screenshot({ path: testInfo.outputPath('servers-live-map.png'), fullPage: true });
 
 	await page.setViewportSize({ width: 390, height: 844 });
@@ -105,5 +111,5 @@ test('serves public destinations, auth entry, status data, and guards administra
 	await page.goto('/admin');
 	await expect(page).toHaveURL('/');
 	await page.goto('/register');
-	await expect(page.getByRole('heading', { name: 'Join the Pack' })).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'Join the Guild' })).toBeVisible();
 });

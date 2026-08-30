@@ -6,10 +6,10 @@
 	let { form }: { form: ActionData } = $props();
 </script>
 
-<svelte:head><title>Join the Pack | Wolves of Ragnarok</title></svelte:head>
+<svelte:head><title>Join the Guild | Wolves of Ragnarok</title></svelte:head>
 
-<AuthPageShell title="Join the Pack" eyebrow="Carve your name into the roster">
-	<p class="intro">Create your guild identity. Every new wolf begins with the rank of member.</p>
+<AuthPageShell title="Join the Guild" eyebrow="Carve your name into the roster">
+	<p class="intro">Create your guild identity. New accounts begin with the rank of member.</p>
 	{#if form?.registrationError}<p class="error" role="alert">{form.registrationError}</p>{/if}
 	<form method="POST">
 		<div class="field-row">

@@ -9,7 +9,7 @@
 	<div class="login-slab">
 		<p class="rune" aria-hidden="true">ᛉ ᛟ ᚱ</p>
 		<h2 id="login-heading">Enter the Hall</h2>
-		<p class="intro">Known wolves may pass beneath the old runes.</p>
+		<p class="intro">Guild members may pass beneath the old runes.</p>
 
 		{#if error}<p class="error" role="alert">{error}</p>{/if}
 
@@ -30,7 +30,7 @@
 		</form>
 
 		<a class="register" href={resolve('/register')}
-			><UserPlus size={15} aria-hidden="true" />Join the pack</a
+			><UserPlus size={15} aria-hidden="true" />Create account</a
 		>
 	</div>
 </section>

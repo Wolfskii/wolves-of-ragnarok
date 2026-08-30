@@ -6,11 +6,11 @@ const pages = {
 		title: 'Latest Chronicles',
 		eyebrow: 'News from across the realms',
 		intro: 'Campaign reports, community announcements, and tales carried home from distant worlds.',
-		items: ['The Longhouse Doors Open', 'Ashlands Expedition Muster', 'New Wolves Join the Pack']
+		items: ['The Longhouse Doors Open', 'Ashlands Expedition Muster', 'New Members Enter the Hall']
 	},
 	community: {
 		title: 'The Longhouse',
-		eyebrow: 'Where the pack gathers',
+		eyebrow: 'Where the guild gathers',
 		intro:
 			'A welcoming home for builders, raiders, explorers, and storytellers who value good company.',
 		items: ['Weekly game nights', 'Community expeditions', 'Discord gatherings']
@@ -24,14 +24,14 @@ const pages = {
 	},
 	members: {
 		title: 'Guild Roster',
-		eyebrow: 'Wolves of every rank',
+		eyebrow: 'Members of every rank',
 		intro:
 			'Members will appear here with their rank, favored games, join date, and public guild biography.',
 		items: ['Jarl Wolfskii — Admin', 'Freydis — Member', 'Eirik — Member']
 	},
 	about: {
 		title: 'Our Saga',
-		eyebrow: 'The story of the pack',
+		eyebrow: 'The story of the guild',
 		intro:
 			'Wolves of Ragnarok is a community built around shared adventures rather than any single game.',
 		items: [
@@ -43,11 +43,12 @@ const pages = {
 	rules: {
 		title: 'Oath and Law',
 		eyebrow: 'The code of the longhouse',
-		intro: 'Respect the pack, protect the hall, and leave every world better than you found it.',
+		intro:
+			'Respect the community, protect the hall, and leave every world better than you found it.',
 		items: [
 			'Treat every member with dignity',
 			'No harassment, cheating, or hate',
-			'Help new wolves find their footing'
+			'Help new players find their footing'
 		]
 	},
 	contact: {

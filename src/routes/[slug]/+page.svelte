@@ -17,7 +17,7 @@
 	<p class="intro">{data.page.intro}</p>
 	{#if data.page.title === 'Game Servers'}
 		<div class="server-overview">
-			<div class="server-status"><ServerStatus /></div>
+			<div class="server-status"><ServerStatus detailed /></div>
 			<ServerLiveMap />
 		</div>
 	{:else}

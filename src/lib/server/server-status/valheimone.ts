@@ -12,6 +12,8 @@ export type ValheimOneConfig = {
 type StatusPayload = {
 	serverName?: unknown;
 	worldName?: unknown;
+	gameVersion?: unknown;
+	serverVersion?: unknown;
 	pluginVersion?: unknown;
 	players?: unknown;
 	maxPlayers?: unknown;
@@ -140,7 +142,10 @@ export class ValheimOneAdapter implements GameServerAdapter {
 			playerNames,
 			pingMs: null,
 			worldName: asString(status.worldName),
-			version: asString(status.pluginVersion),
+			version:
+				asString(status.gameVersion) ??
+				asString(status.serverVersion) ??
+				asString(status.pluginVersion),
 			day: asNumber(status.day),
 			snapshotAgeMs: asNumber(status.snapshotAgeMs),
 			queriedAt: new Date().toISOString()
