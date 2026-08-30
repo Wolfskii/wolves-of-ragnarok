@@ -1,6 +1,7 @@
 <script lang="ts">
 	import AuthPageShell from '$lib/components/fantasy/AuthPageShell.svelte';
 	import { Gamepad2, MessageCircle } from '@lucide/svelte';
+	import RichTextEditor from '$lib/components/fantasy/RichTextEditor.svelte';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -13,6 +14,17 @@
 	eyebrow={`${data.profile.role} since ${new Date(data.profile.createdAt).getFullYear()}`}
 >
 	<div class="identity">
+		{#if data.profile.avatarMediaId || data.profile.steamAvatarUrl}
+			<img
+				class="profile-avatar"
+				src={data.profile.avatarMediaId
+					? `/api/media/${data.profile.avatarMediaId}`
+					: (data.profile.steamAvatarUrl ?? '')}
+				alt=""
+				width="72"
+				height="72"
+			/>
+		{/if}
 		<strong>@{data.profile.username}</strong>
 		<span>{data.profile.email}</span>
 		{#if data.profile.steamUsername}<small
@@ -25,7 +37,17 @@
 
 	{#if form?.profileError}<p class="error" role="alert">{form.profileError}</p>{/if}
 	{#if form?.profileSuccess}<p class="success" role="status">Profile updated.</p>{/if}
-	<form method="POST" action="?/profile">
+	<form method="POST" action="?/profile" enctype="multipart/form-data">
+		<label
+			>Profile picture <span>(optional, uploaded image overrides Steam)</span><input
+				name="avatar"
+				type="file"
+				accept="image/jpeg,image/png,image/webp,image/gif"
+			/></label
+		>
+		<label class="checkbox-label"
+			><input name="useSteamAvatar" type="checkbox" /> Use Steam avatar</label
+		>
 		<label
 			><span class="field-label"
 				><Gamepad2 size={14} />Steam profile link <em>(optional, fetches name and avatar)</em></span
@@ -60,7 +82,11 @@
 			/>
 		</label>
 		<label
-			>Bio<textarea name="bio" rows="6" maxlength="1000">{data.profile.bio ?? ''}</textarea></label
+			>Bio<RichTextEditor
+				name="bio"
+				value={data.profile.bio}
+				placeholder="Tell the hall about yourself..."
+			/></label
 		>
 		<button type="submit">Update profile</button>
 	</form>
@@ -105,7 +131,16 @@
 <style>
 	.identity {
 		display: grid;
+		gap: 0.25rem;
 		margin-bottom: 1.25rem;
+	}
+
+	.profile-avatar {
+		width: 4.5rem;
+		height: 4.5rem;
+		margin-bottom: 0.35rem;
+		border: 1px solid var(--brass-600);
+		object-fit: cover;
 	}
 
 	.identity strong {
@@ -155,6 +190,17 @@
 		gap: 0.85rem;
 	}
 
+	.checkbox-label {
+		display: flex;
+		align-items: center;
+		gap: 0.45rem;
+	}
+
+	.checkbox-label input {
+		width: 1rem;
+		height: 1rem;
+	}
+
 	label,
 	h3 {
 		color: var(--steel-300);
@@ -163,8 +209,7 @@
 		text-transform: uppercase;
 	}
 
-	input,
-	textarea {
+	input {
 		width: 100%;
 		border: 1px solid rgba(168, 59, 67, 0.42);
 		border-radius: 0;
@@ -176,10 +221,6 @@
 
 	input {
 		height: 2.7rem;
-	}
-
-	textarea {
-		resize: vertical;
 	}
 
 	button {

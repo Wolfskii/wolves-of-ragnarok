@@ -2,6 +2,7 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { z } from 'zod';
 import { getDatabase } from '$lib/server/db';
+import { hasRichTextContent, sanitizeRichText } from '$lib/server/rich-text';
 
 const replySchema = z.object({
 	body: z.string().trim().min(1, 'Write something before posting.').max(10_000)
@@ -12,6 +13,7 @@ const authorSelect = {
 	steamUsername: true,
 	steamProfileUrl: true,
 	steamAvatarUrl: true,
+	avatarMedia: { select: { id: true } },
 	discordUsername: true,
 	discordUserId: true
 } as const;
@@ -49,6 +51,9 @@ export const actions = {
 				body: String(formData.get('body') ?? '')
 			});
 		}
+		const body = sanitizeRichText(parsed.data.body);
+		if (!hasRichTextContent(body))
+			return fail(400, { replyError: 'Write something before posting.' });
 
 		const database = getDatabase();
 		const thread = await database.forumThread.findUnique({
@@ -57,7 +62,7 @@ export const actions = {
 		});
 		if (!thread) error(404, 'This thread has been lost beyond the Bifröst.');
 		await database.forumPost.create({
-			data: { body: parsed.data.body, authorId: locals.user.id, threadId: thread.id }
+			data: { body, authorId: locals.user.id, threadId: thread.id }
 		});
 		await database.forumThread.update({
 			where: { id: thread.id },

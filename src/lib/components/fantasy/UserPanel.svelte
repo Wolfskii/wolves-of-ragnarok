@@ -8,8 +8,14 @@
 
 <section class="user-shrine" aria-labelledby="user-heading">
 	<div class="user-slab">
-		{#if user.steamAvatarUrl}
-			<img class="avatar avatar-image" src={user.steamAvatarUrl} alt="" width="48" height="48" />
+		{#if user.avatarUrl || user.steamAvatarUrl}
+			<img
+				class="avatar avatar-image"
+				src={user.avatarUrl ?? user.steamAvatarUrl ?? ''}
+				alt=""
+				width="48"
+				height="48"
+			/>
 		{:else}
 			<div class="avatar" aria-hidden="true">{user.username.slice(0, 1).toUpperCase()}</div>
 		{/if}

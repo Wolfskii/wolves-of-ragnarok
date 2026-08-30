@@ -10,6 +10,7 @@
 			steamUsername: string | null;
 			steamProfileUrl: string | null;
 			steamAvatarUrl: string | null;
+			avatarMedia: { id: string } | null;
 			discordUsername: string | null;
 			discordUserId: string | null;
 		};
@@ -17,8 +18,15 @@
 </script>
 
 <div class="author">
-	{#if author.steamAvatarUrl}
-		<img src={author.steamAvatarUrl} alt="" width="40" height="40" />
+	{#if author.avatarMedia || author.steamAvatarUrl}
+		<img
+			src={author.avatarMedia
+				? `/api/media/${author.avatarMedia.id}`
+				: (author.steamAvatarUrl ?? '')}
+			alt=""
+			width="40"
+			height="40"
+		/>
 	{:else}
 		<div class="avatar" aria-hidden="true">{author.username.slice(0, 1).toUpperCase()}</div>
 	{/if}

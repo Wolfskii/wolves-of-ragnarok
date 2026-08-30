@@ -1,11 +1,13 @@
 import type { PageServerLoad } from './$types';
 import { getDatabase } from '$lib/server/db';
+import { sanitizeRichText } from '$lib/server/rich-text';
 
 const authorSelect = {
 	username: true,
 	steamUsername: true,
 	steamProfileUrl: true,
 	steamAvatarUrl: true,
+	avatarMedia: { select: { id: true } },
 	discordUsername: true,
 	discordUserId: true,
 	role: true,
@@ -32,12 +34,16 @@ export const load: PageServerLoad = async ({ params }) => {
 		}
 
 		if (params.slug === 'members') {
+			const members = await getDatabase().user.findMany({
+				where: { isActive: true },
+				orderBy: { createdAt: 'asc' },
+				select: authorSelect
+			});
 			return {
-				members: await getDatabase().user.findMany({
-					where: { isActive: true },
-					orderBy: { createdAt: 'asc' },
-					select: authorSelect
-				})
+				members: members.map((member) => ({
+					...member,
+					bio: sanitizeRichText(member.bio ?? '')
+				}))
 			};
 		}
 

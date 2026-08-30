@@ -1,12 +1,12 @@
 <script lang="ts">
+	/* eslint-disable svelte/no-at-html-tags -- forum bodies are sanitized by the server action. */
 	import PortalPageShell from '$lib/components/fantasy/PortalPageShell.svelte';
 	import ForumAuthor from '$lib/components/fantasy/ForumAuthor.svelte';
+	import RichTextEditor from '$lib/components/fantasy/RichTextEditor.svelte';
 	import { resolve } from '$app/paths';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
-	type ReplyForm = { body?: string };
-	const replyForm = () => (form as ReplyForm | null | undefined)?.body;
 </script>
 
 <svelte:head>
@@ -33,7 +33,7 @@
 							{new Date(post.createdAt).toLocaleString()}
 						</time>
 					</header>
-					<div class="post-body">{post.body}</div>
+					<div class="post-body">{@html post.body}</div>
 					<span class="post-number">#{index + 1}</span>
 				</article>
 			{/each}
@@ -43,11 +43,7 @@
 			<h2 id="reply-heading">Add a reply</h2>
 			{#if form?.replyError}<p class="error" role="alert">{form.replyError}</p>{/if}
 			<form method="POST" action="?/reply">
-				<label
-					>Reply<textarea name="body" rows="5" maxlength="10000" required
-						>{replyForm() ?? ''}</textarea
-					></label
-				>
+				<label>Reply<RichTextEditor name="body" placeholder="Write a reply..." /></label>
 				<button type="submit">Post reply</button>
 			</form>
 		</section>
@@ -152,18 +148,6 @@
 		font-family: var(--display);
 		font-size: 0.62rem;
 		text-transform: uppercase;
-	}
-
-	textarea {
-		width: 100%;
-		border: 1px solid rgba(168, 59, 67, 0.42);
-		border-radius: 0;
-		background: rgba(0, 3, 4, 0.84);
-		box-shadow: inset 0 1px 8px #000;
-		color: var(--frost-100);
-		font-family: var(--body);
-		padding: 0.65rem;
-		resize: vertical;
 	}
 
 	button {

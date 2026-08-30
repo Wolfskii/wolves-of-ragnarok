@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import type { Actions, PageServerLoad } from './$types';
 import { getDatabase } from '$lib/server/db';
+import { hasRichTextContent, sanitizeRichText } from '$lib/server/rich-text';
 
 const threadSchema = z.object({
 	title: z.string().trim().min(4, 'Thread title must contain at least 4 characters.').max(160),
@@ -14,6 +15,7 @@ const authorSelect = {
 	steamUsername: true,
 	steamProfileUrl: true,
 	steamAvatarUrl: true,
+	avatarMedia: { select: { id: true } },
 	discordUsername: true,
 	discordUserId: true
 } as const;
@@ -57,6 +59,10 @@ export const actions = {
 				}
 			});
 		}
+		const body = sanitizeRichText(parsed.data.body);
+		if (!hasRichTextContent(body)) {
+			return fail(400, { forumError: 'Write something before opening the thread.' });
+		}
 
 		const slug = `${parsed.data.title
 			.toLowerCase()
@@ -67,7 +73,7 @@ export const actions = {
 				slug,
 				title: parsed.data.title,
 				authorId: locals.user.id,
-				posts: { create: { body: parsed.data.body, authorId: locals.user.id } }
+				posts: { create: { body, authorId: locals.user.id } }
 			}
 		});
 

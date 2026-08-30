@@ -1,6 +1,7 @@
 <script lang="ts">
 	import PortalPageShell from '$lib/components/fantasy/PortalPageShell.svelte';
 	import ForumAuthor from '$lib/components/fantasy/ForumAuthor.svelte';
+	import RichTextEditor from '$lib/components/fantasy/RichTextEditor.svelte';
 	import { resolve } from '$app/paths';
 	import type { ActionData, PageData } from './$types';
 
@@ -34,9 +35,8 @@
 					/></label
 				>
 				<label
-					>First post<textarea name="body" rows="4" maxlength="10000" required
-						>{threadForm()?.body ?? ''}</textarea
-					></label
+					>First post<RichTextEditor name="body" placeholder="Write the opening post..." /></label
+				>
 				>
 				<button type="submit">Open thread</button>
 			</form>
@@ -113,8 +113,7 @@
 		text-transform: uppercase;
 	}
 
-	input,
-	textarea {
+	input {
 		width: 100%;
 		border: 1px solid rgba(168, 59, 67, 0.42);
 		border-radius: 0;
@@ -128,10 +127,6 @@
 
 	input {
 		height: 2.55rem;
-	}
-
-	textarea {
-		resize: vertical;
 	}
 
 	button {
