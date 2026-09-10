@@ -125,8 +125,8 @@
 	}
 
 	.immersive .map-frame {
-		aspect-ratio: 16 / 7;
-		min-height: 28rem;
+		aspect-ratio: 16 / 9;
+		min-height: 34rem;
 	}
 
 	.map-frame::after {

@@ -11,6 +11,8 @@ test('opens the Wolves gate with its one-shot opening sound', async ({ page }) =
 	await page.goto('/');
 
 	await expect(page.getByRole('button', { name: 'Open the gates' })).toBeVisible();
+	await expect(page.locator('.gate h1 span')).toHaveText('WOLVES OF');
+	await expect(page.locator('.gate h1 strong')).toHaveText('RAGNAROK');
 	await page.mouse.wheel(0, 1200);
 	await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
 	await expect(page.getByRole('button', { name: 'Skip intro' })).toHaveCount(0);
@@ -139,6 +141,7 @@ test('shows the map-only live world chart on the servers page', async ({
 	const liveMap = page.locator('.live-map');
 	await expect(liveMap).toBeVisible();
 	await expect(liveMap.locator('iframe.public-map')).toBeVisible();
+	await expect(page.locator('.content .status-card')).toHaveCount(0);
 	await expect(page.locator('iframe')).toHaveCount(1);
 	await expect(page.getByText('valheim.webble.se', { exact: true }).first()).toBeVisible();
 	await expect(page.locator('.population').first()).toHaveText('0 / 10 players');
@@ -222,7 +225,7 @@ test('serves public destinations, auth entry, status data, and guards administra
 	await page.goto('/admin');
 	await expect(page).toHaveURL('/');
 	await page.goto('/servers');
-	await expect(page.getByText('Server password is handed out in Discord.')).toBeVisible();
+	await expect(page.getByText('Ask in the Discord server for the password')).toBeVisible();
 	await page.goto('/register');
 	await expect(page.getByRole('heading', { name: 'Join the Guild' })).toBeVisible();
 });

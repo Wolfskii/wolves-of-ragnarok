@@ -6,7 +6,7 @@ const pages = {
 		title: 'Game Servers',
 		eyebrow: 'Yggdrasil under our banner',
 		intro:
-			'Yggdrasil is our Valheim world. Live health, current players, join address, and the world map are shown below.',
+			'Yggdrasil is our Valheim world. Join at valheim.webble.se. Ask in the Discord server for the password, then use the live map below to find your way.',
 		items: []
 	},
 	members: {

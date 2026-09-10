@@ -80,7 +80,7 @@
 				width="576"
 				height="642"
 			/>
-			<h1><span>Wolves of</span><strong>Ragnarok</strong></h1>
+			<h1><span>WOLVES OF</span><strong>RAGNAROK</strong></h1>
 			<p class="gate-lede">Your next adventure starts here.</p>
 
 			{#if stage === 'ready'}

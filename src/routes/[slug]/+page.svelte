@@ -2,7 +2,6 @@
 	/* eslint-disable svelte/no-at-html-tags -- member bios are sanitized by the server loader. */
 	import PortalPageShell from '$lib/components/fantasy/PortalPageShell.svelte';
 	import ServerLiveMap from '$lib/components/fantasy/ServerLiveMap.svelte';
-	import ServerStatus from '$lib/components/fantasy/ServerStatus.svelte';
 	import ValheimWikiSearch from '$lib/components/fantasy/ValheimWikiSearch.svelte';
 	import { resolve } from '$app/paths';
 	import type { PageData, PageServerData } from './$types';
@@ -19,10 +18,7 @@
 	<p class="intro">{data.page.intro}</p>
 	{#if data.page.title === 'Game Servers'}
 		<div class="server-overview">
-			<div class="server-status">
-				<ServerStatus detailed />
-			</div>
-			<ServerLiveMap />
+			<ServerLiveMap immersive />
 		</div>
 	{:else if data.page.title === 'Guild Roster'}
 		<section class="member-list" aria-label="Guild members">
@@ -145,14 +141,8 @@
 		font-size: 0.88rem;
 	}
 	.server-overview {
-		display: grid;
-		grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
-		align-items: start;
-		gap: 1.5rem;
+		display: block;
 		margin: 2rem auto;
-	}
-	.server-status {
-		width: 100%;
 	}
 	ul {
 		display: grid;
@@ -365,13 +355,6 @@
 		color: var(--brass-400);
 	}
 	@media (max-width: 47.99rem) {
-		.server-overview {
-			grid-template-columns: minmax(0, 1fr);
-		}
-		.server-status {
-			max-width: 24rem;
-			margin-inline: auto;
-		}
 		.about-grid {
 			grid-template-columns: 1fr;
 		}
