@@ -93,11 +93,62 @@ try {
 		demoUsers.set(user.username, demoUser);
 	}
 
+	const valheimReleaseBody = `# Valheim 1.0 Has Arrived
+
+Iron Gate has released Valheim 1.0 and opened the road into the Deep North. This is the beginning of a new chapter for every survivor still carrying a hammer, shield, or half-finished plan into the tenth world.
+
+## New content
+
+- The Deep North biome.
+- 40+ new weapons.
+- New bombs and ammunition.
+- Four new armor sets, two capes, and two trinkets.
+- New tools and 10+ new creatures.
+- 80+ new buildable pieces and five crafting-related build pieces.
+- 30+ new crafting materials and 20+ new food items.
+- New locations, music, events, mechanics, upgradeable pockets, and achievements.
+
+## Fixes and improvements
+
+- New draw-distance graphics setting.
+- Overhauled hammer and serving-tray menus.
+- Magica cloth system and improved descriptions.
+- Rebalanced enemy spawn chances in the Ashlands.
+- All hair and beard styles available from the start.
+- Unity engine upgrade and further fixes.
+
+## Our first expedition
+
+We will be taking the Wolves into the Deep North together. Bring warmth, supplies, and a willingness to learn the new threats as a group. Use Discord to organize your first run and share what you discover.
+
+Official announcement: https://www.valheimgame.com/news/valheim-1-0-has-arrived-/
+Official 1.0 FAQ: https://www.valheimgame.com/support/valheim-1-0-faq`;
+
+	await database.newsPost.upsert({
+		where: { slug: 'valheim-1-0-has-arrived' },
+		update: {
+			excerpt:
+				'Valheim 1.0 is live. The Deep North is open, with new threats, tools, building pieces, and reasons to gather the pack.',
+			body: valheimReleaseBody
+		},
+		create: {
+			slug: 'valheim-1-0-has-arrived',
+			title: 'Valheim 1.0 Has Arrived',
+			excerpt:
+				'Valheim 1.0 is live. The Deep North is open, with new threats, tools, building pieces, and reasons to gather the pack.',
+			body: valheimReleaseBody,
+			status: 'PUBLISHED',
+			publishedAt: new Date('2026-09-09T12:00:00Z'),
+			authorId: admin.id
+		}
+	});
+
 	await database.newsPost.upsert({
 		where: { slug: 'the-longhouse-doors-open' },
 		update: {
 			excerpt: 'The doors are open: find your people, choose a game, and settle in by the fire.',
-			body: '# The Longhouse Doors Open\n\nWelcome to Wolves of Ragnarok. We are a community of gamers who enjoy spending time together across many online worlds, from Valheim expeditions to relaxed evenings in Discord.\n\nBring your curiosity, your best stories, and whatever game has your attention this week. The hall is open.'
+			body: '# The Longhouse Doors Open\n\nWelcome to Wolves of Ragnarok. We are a community of gamers who enjoy spending time together across many online worlds, from Valheim expeditions to relaxed evenings in Discord.\n\nBring your curiosity, your best stories, and whatever game has your attention this week. The hall is open.',
+			publishedAt: new Date('2026-08-29T12:00:00Z')
 		},
 		create: {
 			slug: 'the-longhouse-doors-open',
@@ -105,7 +156,7 @@ try {
 			excerpt: 'The doors are open: find your people, choose a game, and settle in by the fire.',
 			body: '# The Longhouse Doors Open\n\nWelcome to Wolves of Ragnarok. We are a community of gamers who enjoy spending time together across many online worlds, from Valheim expeditions to relaxed evenings in Discord.\n\nBring your curiosity, your best stories, and whatever game has your attention this week. The hall is open.',
 			status: 'PUBLISHED',
-			publishedAt: new Date(),
+			publishedAt: new Date('2026-08-29T12:00:00Z'),
 			authorId: admin.id
 		}
 	});
@@ -116,6 +167,7 @@ try {
 			excerpt:
 				'Fire resistance, strong shields, and a clear plan for the next journey into the Ashlands.',
 			body: '# Ashlands Expedition Muster\n\nThe next Valheim expedition is forming. Check your food, repair your gear, and bring enough portal materials for a safe return.\n\nPost your availability in Discord and we will gather a crew for the weekend.',
+			publishedAt: new Date('2026-08-27T12:00:00Z'),
 			status: 'PUBLISHED',
 			publishedAt: new Date()
 		},
@@ -126,7 +178,7 @@ try {
 				'Fire resistance, strong shields, and a clear plan for the next journey into the Ashlands.',
 			body: '# Ashlands Expedition Muster\n\nThe next Valheim expedition is forming. Check your food, repair your gear, and bring enough portal materials for a safe return.\n\nPost your availability in Discord and we will gather a crew for the weekend.',
 			status: 'PUBLISHED',
-			publishedAt: new Date(),
+			publishedAt: new Date('2026-08-27T12:00:00Z'),
 			authorId: admin.id
 		}
 	});
@@ -136,7 +188,8 @@ try {
 		update: {
 			excerpt:
 				'A warm welcome to new players, returning friends, and everyone looking for a good evening online.',
-			body: '# Welcome and skål\n\nAs long as you are kind and ready to vibe with a mixed group of people, there is a place for you here. We host occasional events, share game nights, and spend most evenings together in our Discord server.\n\nWelcome to the hall, and skål, Viking brother.'
+			body: '# Welcome and skål\n\nAs long as you are kind and ready to vibe with a mixed group of people, there is a place for you here. We host occasional events, share game nights, and spend most evenings together in our Discord server.\n\nWelcome to the hall, and skål, Viking brother.',
+			publishedAt: new Date('2026-08-24T12:00:00Z')
 		},
 		create: {
 			slug: 'welcome-and-skal',
@@ -145,8 +198,14 @@ try {
 				'A warm welcome to new players, returning friends, and everyone looking for a good evening online.',
 			body: '# Welcome and skål\n\nAs long as you are kind and ready to vibe with a mixed group of people, there is a place for you here. We host occasional events, share game nights, and spend most evenings together in our Discord server.\n\nWelcome to the hall, and skål, Viking brother.',
 			status: 'PUBLISHED',
-			publishedAt: new Date(),
+			publishedAt: new Date('2026-08-24T12:00:00Z'),
 			authorId: admin.id
+		}
+	});
+
+	await database.newsPost.deleteMany({
+		where: {
+			slug: { in: ['the-longhouse-doors-open', 'ashlands-expedition-muster', 'welcome-and-skal'] }
 		}
 	});
 	console.log(`Seeded Wolves of Ragnarok with admin ${admin.email}.`);

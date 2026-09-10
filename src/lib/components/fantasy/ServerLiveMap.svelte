@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { Maximize2, Minimize2 } from '@lucide/svelte';
 	import type { ServerStatusResult } from '$lib/server/server-status/types';
 
 	let { title = 'Live world chart', immersive = false }: { title?: string; immersive?: boolean } =
@@ -7,6 +8,16 @@
 
 	let mapUrl = $state<string | null>(null);
 	let worldName = $state('Yggdrasil');
+	let isFullscreen = $state(false);
+	let mapFrame: HTMLDivElement;
+
+	async function toggleFullscreen() {
+		if (document.fullscreenElement) {
+			await document.exitFullscreen();
+			return;
+		}
+		await mapFrame?.requestFullscreen();
+	}
 
 	onMount(() => {
 		let active = true;
@@ -44,24 +55,41 @@
 				scheduleRetry();
 			}
 		};
+		const handleFullscreenChange = () => {
+			isFullscreen = document.fullscreenElement === mapFrame;
+		};
 
 		void refresh();
 		const timer = window.setInterval(refresh, 30_000);
+		document.addEventListener('fullscreenchange', handleFullscreenChange);
 		return () => {
 			active = false;
 			window.clearInterval(timer);
 			if (retryTimer) window.clearTimeout(retryTimer);
+			document.removeEventListener('fullscreenchange', handleFullscreenChange);
 		};
 	});
 </script>
 
 <figure class="live-map" class:immersive aria-labelledby="live-map-title">
-	<div class="map-frame">
+	<div class="map-frame" bind:this={mapFrame}>
 		{#if mapUrl}
 			<iframe class="public-map" src={mapUrl} title={`Public Valheim map of ${worldName}`}></iframe>
 		{:else}
 			<p role="status">The world chart is unavailable.</p>
 		{/if}
+		<button
+			class="fullscreen-button"
+			type="button"
+			onclick={() => void toggleFullscreen()}
+			aria-label={isFullscreen ? 'Exit fullscreen map' : 'Open map fullscreen'}
+			title={isFullscreen ? 'Exit fullscreen map' : 'Open map fullscreen'}
+		>
+			{#if isFullscreen}<Minimize2 size={17} aria-hidden="true" />{:else}<Maximize2
+					size={17}
+					aria-hidden="true"
+				/>{/if}
+		</button>
 	</div>
 	<figcaption>
 		<strong id="live-map-title">{title}</strong>
@@ -88,6 +116,14 @@
 			0 16px 30px rgba(0, 0, 0, 0.42);
 	}
 
+	.map-frame:fullscreen {
+		width: 100vw;
+		height: 100vh;
+		aspect-ratio: auto;
+		border: 0;
+		background: #050807;
+	}
+
 	.immersive .map-frame {
 		aspect-ratio: 16 / 7;
 		min-height: 28rem;
@@ -109,6 +145,28 @@
 		height: 100%;
 		border: 0;
 		background: #12223a;
+	}
+
+	.fullscreen-button {
+		position: absolute;
+		top: 0.7rem;
+		right: 0.7rem;
+		z-index: 5;
+		display: grid;
+		place-items: center;
+		width: 2.35rem;
+		height: 2.35rem;
+		padding: 0;
+		border: 1px solid rgba(197, 174, 112, 0.58);
+		background: rgba(8, 11, 10, 0.88);
+		color: var(--frost-100);
+		cursor: pointer;
+	}
+
+	.fullscreen-button:hover,
+	.fullscreen-button:focus-visible {
+		border-color: var(--rune-300);
+		background: rgba(143, 17, 25, 0.82);
 	}
 
 	.map-frame p {

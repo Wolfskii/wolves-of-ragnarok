@@ -1,15 +1,17 @@
 <script lang="ts">
-	import { resolve } from '$app/paths';
-
 	let {
 		title,
 		excerpt,
+		body = '',
+		imageUrl,
 		date,
 		author,
 		tone = 'frost'
 	}: {
 		title: string;
 		excerpt: string;
+		body?: string;
+		imageUrl?: string;
 		date: string;
 		author: string;
 		tone?: 'frost' | 'ember';
@@ -20,11 +22,23 @@
 	<div class="sigil" aria-hidden="true">{tone === 'ember' ? 'ᚲ' : 'ᛞ'}</div>
 	<div>
 		<p class="meta"><time>{date}</time><span>by {author}</span></p>
-		<h3><a href={resolve('/news')}>{title}</a></h3>
-		<p class="excerpt">{excerpt}</p>
-		<a class="read-more" href={resolve('/news')}
-			>Read the chronicle <span aria-hidden="true">→</span></a
-		>
+		<h3>{title}</h3>
+		{#if imageUrl}<img class="news-art" src={imageUrl} alt="" loading="lazy" />{/if}
+		{#if body}
+			<div class="full-body">
+				{#each body.split('\n') as line, index (index)}
+					{#if line.startsWith('## ') || line.startsWith('# ')}
+						<h4>{line.replace(/^##?\s/, '')}</h4>
+					{:else if line.startsWith('- ')}
+						<p class="bullet"><span aria-hidden="true">ᛟ</span>{line.slice(2)}</p>
+					{:else if line.trim()}
+						<p>{line}</p>
+					{/if}
+				{/each}
+			</div>
+		{:else}
+			<p class="excerpt">{excerpt}</p>
+		{/if}
 	</div>
 </article>
 
@@ -33,14 +47,13 @@
 		display: grid;
 		grid-template-columns: 3.8rem minmax(0, 1fr);
 		gap: 1rem;
-		padding: 1rem 0;
+		padding: 1.25rem 0;
 		border-bottom: 1px solid rgba(184, 197, 198, 0.12);
 	}
 
 	article:first-child {
 		padding-top: 0.2rem;
 	}
-
 	article:last-child {
 		border-bottom: 0;
 		padding-bottom: 0;
@@ -79,28 +92,44 @@
 
 	h3 {
 		margin: 0 0 0.45rem;
+		color: var(--frost-100);
 		font-size: 1rem;
 	}
 
-	h3 a {
-		color: var(--frost-100);
-		text-decoration: none;
+	.news-art {
+		width: 100%;
+		max-height: 18rem;
+		margin: 0.8rem 0 1rem;
+		border: 1px solid rgba(197, 174, 112, 0.28);
+		object-fit: cover;
 	}
 
-	.excerpt {
+	.excerpt,
+	.full-body {
 		margin: 0;
 		color: #b2c1bf;
 		font-size: 0.75rem;
 		line-height: 1.65;
 	}
 
-	.read-more {
-		display: inline-block;
-		margin-top: 0.55rem;
+	.full-body p {
+		margin: 0 0 0.8rem;
+	}
+	.full-body h4 {
+		margin: 1.1rem 0 0.45rem;
+		color: var(--brass-400);
 		font-family: var(--display);
-		font-size: 0.58rem;
-		font-weight: 600;
+		font-size: 0.95rem;
 		text-transform: uppercase;
+	}
+	.full-body .bullet {
+		display: grid;
+		grid-template-columns: 1rem minmax(0, 1fr);
+		gap: 0.35rem;
+		margin-bottom: 0.35rem;
+	}
+	.bullet span {
+		color: var(--rune-300);
 	}
 
 	@media (max-width: 26rem) {
@@ -108,7 +137,6 @@
 			grid-template-columns: 3rem minmax(0, 1fr);
 			gap: 0.75rem;
 		}
-
 		.sigil {
 			width: 3rem;
 		}

@@ -13,10 +13,13 @@ export const load: PageServerLoad = async () => {
 				orderBy: { publishedAt: 'desc' },
 				take: 3,
 				select: {
+					slug: true,
 					title: true,
 					excerpt: true,
+					body: true,
 					publishedAt: true,
-					author: { select: { username: true } }
+					author: { select: { username: true } },
+					coverMedia: { select: { id: true } }
 				}
 			})
 		};

@@ -4,6 +4,7 @@
 	import { DoorOpen } from '@lucide/svelte';
 
 	type GateStage = 'checking' | 'ready' | 'opening' | 'revealed';
+	const gateSessionKey = 'wolves-of-ragnarok:gate-open:v1';
 
 	let { children }: { children: Snippet } = $props();
 
@@ -12,15 +13,22 @@
 	let audio: HTMLAudioElement;
 	let revealTimer: number | undefined;
 
+	function resetPageScroll() {
+		window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+	}
+
 	function finishReveal() {
+		window.sessionStorage.setItem(gateSessionKey, 'true');
 		stage = 'revealed';
 	}
 
 	function openGate() {
 		if (stage !== 'ready') return;
 
+		resetPageScroll();
 		stage = 'opening';
 		void audio?.play().catch(() => undefined);
+		window.dispatchEvent(new Event('wolves:gate-open'));
 
 		if (reducedMotion) {
 			finishReveal();
@@ -33,7 +41,10 @@
 	onMount(() => {
 		const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 		reducedMotion = motionQuery.matches;
-		stage = 'ready';
+		audio.volume = 0.5;
+		const alreadyOpened = window.sessionStorage.getItem(gateSessionKey) === 'true';
+		stage = alreadyOpened ? 'revealed' : 'ready';
+		if (!alreadyOpened) resetPageScroll();
 
 		return () => {
 			if (revealTimer) window.clearTimeout(revealTimer);
@@ -42,11 +53,16 @@
 	});
 </script>
 
-<div class="gate-site-reveal" class:opening={stage === 'opening' || stage === 'revealed'}>
+<div
+	class="gate-site-reveal"
+	class:opening={stage === 'opening' || stage === 'revealed'}
+	class:fully-open={stage === 'revealed'}
+>
 	{@render children()}
 </div>
 
-<audio bind:this={audio} src="/media/warheim/valhalla-gate.mp3" preload="auto"></audio>
+<audio bind:this={audio} src="/media/warheim/universfield-wolf-howl-140235.mp3" preload="auto"
+></audio>
 
 {#if stage !== 'revealed'}
 	<div class="gate" class:opening={stage === 'opening'} aria-label="Wolves of Ragnarok entry gate">
@@ -54,7 +70,6 @@
 		<div class="gate-veil" aria-hidden="true"></div>
 
 		<div class="gate-content">
-			<p class="gate-protocol">WOLVES // VALHALLA GATE</p>
 			<img
 				class="gate-mark"
 				src="/images/branding/logo-wolf-light.png"
@@ -62,8 +77,8 @@
 				width="576"
 				height="642"
 			/>
-			<h1>Wolves of Ragnarok</h1>
-			<p class="gate-lede">The pack gathers beyond the threshold.</p>
+			<h1><span>Wolves of</span><strong>Ragnarok</strong></h1>
+			<p class="gate-lede">Your next adventure starts here.</p>
 
 			{#if stage === 'ready'}
 				<button class="enter-button" type="button" onclick={openGate}>
@@ -83,8 +98,11 @@
 {/if}
 
 <style>
+	:global(html:has(.gate)),
 	:global(body:has(.gate)) {
+		height: 100%;
 		overflow: hidden;
+		overscroll-behavior: none;
 	}
 
 	:global(html),
@@ -105,6 +123,8 @@
 		overflow: hidden;
 		background: #050807;
 		isolation: isolate;
+		touch-action: none;
+		transition: background 1.65s ease;
 	}
 
 	.gate-backdrop,
@@ -121,6 +141,7 @@
 			url('/media/warheim/forged-hero.webp') center / cover no-repeat;
 		filter: saturate(0.76);
 		transform: scale(1.04);
+		transition: opacity 1.65s ease;
 	}
 
 	.gate-veil {
@@ -177,7 +198,6 @@
 		transform: translateY(-1.5rem) scale(0.94);
 	}
 
-	.gate-protocol,
 	.gate-lede,
 	.opening-label {
 		font-family: var(--display);
@@ -185,15 +205,11 @@
 		letter-spacing: 0.16em;
 	}
 
-	.gate-protocol {
-		margin: 0 0 1.1rem;
-		color: var(--rune-300);
-		font-size: 0.62rem;
-	}
-
 	.gate-mark {
-		width: clamp(4.5rem, 8vw, 6rem);
+		width: clamp(7rem, 12vw, 9rem);
+		aspect-ratio: 576 / 642;
 		height: auto;
+		object-fit: contain;
 		filter: drop-shadow(0 0 18px rgba(168, 59, 67, 0.55));
 	}
 
@@ -204,6 +220,16 @@
 		text-shadow:
 			0 0 24px rgba(168, 59, 67, 0.46),
 			0 12px 24px #000;
+	}
+
+	h1 span,
+	h1 strong {
+		display: block;
+	}
+
+	h1 strong {
+		color: var(--rune-300);
+		font-weight: 400;
 	}
 
 	.gate-lede {
@@ -288,8 +314,11 @@
 			-18px 0 46px rgba(155, 4, 20, 0.24);
 	}
 
-	.opening .gate-veil,
-	.opening .doors {
+	.gate.opening {
+		background: transparent;
+	}
+
+	.opening .gate-backdrop {
 		opacity: 0;
 	}
 

@@ -16,22 +16,6 @@ const authorSelect = {
 
 export const load: PageServerLoad = async ({ params }) => {
 	try {
-		if (params.slug === 'news') {
-			return {
-				newsPosts: await getDatabase().newsPost.findMany({
-					where: { status: 'PUBLISHED' },
-					orderBy: { publishedAt: 'desc' },
-					select: {
-						title: true,
-						excerpt: true,
-						body: true,
-						publishedAt: true,
-						author: { select: { username: true } }
-					}
-				})
-			};
-		}
-
 		if (params.slug === 'members') {
 			const members = await getDatabase().user.findMany({
 				where: { isActive: true },

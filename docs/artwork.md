@@ -13,7 +13,13 @@
 
 - `static/media/warheim/valhalla-gates.webp`: local copy of the owned Warheim Valhalla gate artwork, sourced from `https://warheim.fr/media/warheim-valhalla-gates.webp`.
 - `static/media/warheim/forged-hero.webp`: local copy of the owned Warheim forged hero artwork, sourced from `https://warheim.fr/media/warheim-forged-hero.webp`.
+- `static/media/warheim/warheim-hero.webp`: local copy of the owned Warheim main hero artwork, sourced from `https://warheim.fr/media/warheim-hero-v2.webp`.
+- `static/media/warheim/gallery/`: local copies of selected owned Warheim gallery artwork used by the homepage arsenal section.
 - `static/media/warheim/valhalla-gate.mp3`: local copy of the owned Warheim gate music, sourced from `https://warheim.fr/audio/valhalla-gate.mp3`.
+- `static/media/warheim/playlist/`: local copies of the ten owned Warheim radio tracks sourced from `https://warheim.fr/audio/` and `https://warheim.fr/audio/playlist/`.
+- `static/media/valheim/valheim-1-0-deep-north.jpg`: official Valheim 1.0/Deep North artwork sourced from Iron Gate Studio's release media at `https://www.valheimgame.com/news/valheim-1-0-has-arrived-`.
+- `static/media/deathborn/`: local copies of Deathborn's `The Reaper's Call`, `The Light of the Living (Instrumental)`, and `The Shadow of the Forgotten (Instrumental)` tracks, used with the user's permission for the Wolves radio.
+- `static/media/warheim/universfield-wolf-howl-140235.mp3`: gate-opening wolf howl used as the entry sound.
 
 These files were copied locally with the owner's permission for the Wolves of Ragnarok entry experience. They are not hotlinked at runtime.
 

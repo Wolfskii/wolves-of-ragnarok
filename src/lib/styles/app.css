@@ -1,5 +1,4 @@
-@import '@fontsource/libre-baskerville/400.css';
-@import '@fontsource/libre-baskerville/700.css';
+@import url('https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,500;1,400&family=Barlow+Condensed:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&family=Uncial+Antiqua&display=swap');
 @import './tokens.css';
 
 @font-face {
@@ -18,6 +17,7 @@
 
 html {
 	min-width: 20rem;
+	font-size: 115%;
 	background: var(--ink-950);
 	color-scheme: dark;
 	scroll-behavior: smooth;
@@ -57,6 +57,140 @@ a:hover {
 	color: var(--frost-100);
 }
 
+.primary-action,
+.discord-action,
+.nav-cta {
+	position: relative;
+	isolation: isolate;
+	overflow: hidden;
+	border: 1px solid rgba(210, 174, 126, 0.4);
+	clip-path: polygon(
+		0.45rem 0,
+		calc(100% - 0.45rem) 0,
+		100% 50%,
+		calc(100% - 0.45rem) 100%,
+		0.45rem 100%,
+		0 50%
+	);
+	background:
+		linear-gradient(100deg, rgba(255, 255, 255, 0.05), transparent 24%),
+		repeating-linear-gradient(3deg, rgba(0, 0, 0, 0.16) 0 2px, transparent 2px 9px),
+		linear-gradient(110deg, #7a0c14, #300407);
+	box-shadow:
+		inset 0 0 24px rgba(0, 0, 0, 0.56),
+		0 16px 38px rgba(0, 0, 0, 0.38);
+	transition:
+		transform 180ms ease,
+		filter 180ms ease,
+		border-color 180ms ease,
+		box-shadow 180ms ease;
+}
+
+.primary-action::before,
+.discord-action::before,
+.nav-cta::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	width: 42%;
+	background: linear-gradient(
+		100deg,
+		transparent,
+		rgba(255, 69, 78, 0.28),
+		rgba(255, 226, 180, 0.3),
+		transparent
+	);
+	transform: translateX(-155%) skewX(-18deg);
+	animation: action-forge-scan 4.8s cubic-bezier(0.22, 0.65, 0.24, 1) 1.2s infinite;
+}
+
+.primary-action:hover,
+.primary-action:focus-visible,
+.discord-action:hover,
+.discord-action:focus-visible,
+.nav-cta:hover,
+.nav-cta:focus-visible {
+	filter: brightness(1.12);
+	transform: translateY(-3px);
+	border-color: rgba(239, 194, 143, 0.72);
+	box-shadow:
+		inset 0 0 28px rgba(198, 20, 32, 0.2),
+		0 20px 48px rgba(0, 0, 0, 0.48),
+		0 0 22px rgba(170, 15, 26, 0.24);
+}
+
+.secondary-action {
+	position: relative;
+	border: 1px solid rgba(232, 221, 197, 0.34);
+	background: rgba(11, 15, 13, 0.82);
+	box-shadow:
+		inset 0 0 18px rgba(0, 0, 0, 0.48),
+		0 10px 24px rgba(0, 0, 0, 0.24);
+	color: var(--frost-100);
+	transition:
+		transform 180ms ease,
+		background 180ms ease,
+		border-color 180ms ease;
+}
+
+.secondary-action:hover,
+.secondary-action:focus-visible {
+	transform: translateY(-3px);
+	border-color: var(--brass-400);
+	background: rgba(39, 48, 40, 0.92);
+}
+
+@keyframes action-forge-scan {
+	0%,
+	58% {
+		opacity: 0;
+		transform: translateX(-155%) skewX(-18deg);
+	}
+	66% {
+		opacity: 1;
+	}
+	88%,
+	to {
+		opacity: 0;
+		transform: translateX(345%) skewX(-18deg);
+	}
+}
+
+@keyframes ember-heading-pulse {
+	0%,
+	100% {
+		text-shadow:
+			0 0 1px var(--rune-300),
+			0 0 12px rgba(197, 27, 39, 0.22);
+	}
+	50% {
+		text-shadow:
+			0 0 1px var(--rune-300),
+			0 0 25px rgba(197, 27, 39, 0.58),
+			0 0 42px rgba(143, 17, 25, 0.28);
+	}
+}
+
+.brand-title strong,
+.war-hero-panel .section-heading strong,
+.realm-page-heading h2 strong,
+.manifesto-copy h2 strong {
+	animation: ember-heading-pulse 4.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.primary-action::before,
+	.discord-action::before,
+	.nav-cta::before,
+	.brand-title strong,
+	.war-hero-panel .section-heading strong,
+	.realm-page-heading h2 strong,
+	.manifesto-copy h2 strong {
+		animation: none;
+	}
+}
+
 img,
 picture {
 	display: block;
@@ -77,6 +211,15 @@ h3 {
 	letter-spacing: 0;
 	line-height: 1.15;
 	text-shadow: var(--heading-glow);
+}
+
+button,
+nav,
+label,
+.section-kicker,
+.brand-code,
+.brand-tagline {
+	font-family: var(--ui);
 }
 
 :focus-visible {
@@ -172,8 +315,10 @@ h3 {
 }
 
 .brand-mark {
-	width: clamp(6.5rem, 10vw, 9.5rem);
+	width: clamp(5.5rem, 8vw, 8rem);
+	aspect-ratio: 576 / 642;
 	height: auto;
+	object-fit: contain;
 	filter: drop-shadow(0 0 16px rgba(168, 59, 67, 0.34)) drop-shadow(0 12px 14px rgba(0, 0, 0, 0.8));
 }
 
@@ -186,6 +331,16 @@ h3 {
 		0 3px 0 #151d20,
 		0 0 25px rgba(168, 59, 67, 0.3),
 		0 12px 24px #000;
+}
+
+.brand-title span,
+.brand-title strong {
+	display: block;
+}
+
+.brand-title strong {
+	color: var(--rune-300);
+	font-weight: 400;
 }
 
 .brand-tagline {

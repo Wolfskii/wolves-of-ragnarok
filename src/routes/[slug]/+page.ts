@@ -2,11 +2,15 @@ import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 const pages = {
-	news: {
-		title: 'Latest Chronicles',
-		eyebrow: 'News from across the realms',
-		intro: 'Campaign reports, community announcements, and tales carried home from distant worlds.',
-		items: ['The Longhouse Doors Open', 'Ashlands Expedition Muster', 'New Members Enter the Hall']
+	survive: {
+		title: 'Survive the Realm',
+		eyebrow: 'The first law of Yggdrasil',
+		intro: 'Preparation, coordination, and courage turn a hostile world into a home.',
+		items: [
+			'Every expedition begins before you leave the gates.',
+			'Bosses are group problems. Bring a plan and bring the pack.',
+			'Death is information. Return better prepared.'
+		]
 	},
 	servers: {
 		title: 'Game Servers',
@@ -32,6 +36,13 @@ const pages = {
 			'Community before competition',
 			'Many games, one longhouse'
 		]
+	},
+	wiki: {
+		title: 'Realm Wiki',
+		eyebrow: 'Search the Valheim Wiki',
+		intro:
+			'Look up items, creatures, biomes, crafting stations, and survival systems without leaving the hall.',
+		items: []
 	},
 	rules: {
 		title: 'Rules & Guidelines',

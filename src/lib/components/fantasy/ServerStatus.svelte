@@ -1,15 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Check, Copy, Eye, EyeOff } from '@lucide/svelte';
+	import { resolve } from '$app/paths';
+	import { ArrowRight, Check, Copy, Eye, EyeOff } from '@lucide/svelte';
 	import type { ServerStatusResult } from '$lib/server/server-status/types';
 
 	let {
 		name = 'Yggdrasil',
 		online = true,
-		players = 0,
-		maxPlayers = 10,
 		ping = null,
-		playerNames = [],
 		joinAddress = 'valheim.webble.se',
 		joinPort = 2456,
 		worldName = 'Yggdrasil',
@@ -18,14 +16,12 @@
 		snapshotAgeMs = null,
 		queriedAt = null,
 		detailed = false,
-		canRevealPassword = false
+		canRevealPassword = false,
+		showInfoLink = false
 	}: {
 		name?: string;
 		online?: boolean;
-		players?: number;
-		maxPlayers?: number;
 		ping?: number | null;
-		playerNames?: string[];
 		joinAddress?: string;
 		joinPort?: number;
 		worldName?: string | null;
@@ -35,15 +31,13 @@
 		queriedAt?: string | null;
 		detailed?: boolean;
 		canRevealPassword?: boolean;
+		showInfoLink?: boolean;
 	} = $props();
 
 	let current = $state({
 		name: 'Yggdrasil',
 		online: true,
-		players: 0,
-		maxPlayers: 10,
 		ping: null as number | null,
-		playerNames: [] as string[],
 		joinAddress: 'valheim.webble.se',
 		joinPort: 2456,
 		worldName: 'Yggdrasil' as string | null,
@@ -118,10 +112,7 @@
 			current = {
 				name,
 				online,
-				players,
-				maxPlayers,
 				ping,
-				playerNames,
 				joinAddress,
 				joinPort,
 				worldName,
@@ -144,10 +135,7 @@
 				current = {
 					name: result.name,
 					online: result.state === 'online',
-					players: result.playerCount ?? 0,
-					maxPlayers: result.maxPlayers ?? 0,
 					ping: result.pingMs,
-					playerNames: result.playerNames,
 					joinAddress: result.joinAddress,
 					joinPort: result.joinPort,
 					worldName: result.worldName,
@@ -190,41 +178,8 @@
 			<span aria-hidden="true"></span>{current.online ? 'Online' : 'Offline'}
 		</p>
 
-		<div
-			class="population"
-			aria-label={`${current.players} of ${current.maxPlayers} players online`}
-		>
-			<span>{current.players} / {current.maxPlayers} players</span>
-		</div>
-
-		<div class="meter" aria-hidden="true">
-			<i style={`width: ${current.maxPlayers ? (current.players / current.maxPlayers) * 100 : 0}%`}
-			></i>
-		</div>
-
-		{#if current.online && current.players > 0 && current.playerNames.length}
-			<ul aria-label="Online players">
-				{#each current.playerNames as player (player)}
-					<li><span aria-hidden="true">ᚢ</span>{player}</li>
-				{/each}
-			</ul>
-		{:else if current.online && current.players > 0}
-			<p class="no-names">Player names unavailable</p>
-		{/if}
-
-		<p class="health">
-			<span>External health</span>
-			<strong class:offline={!current.online}
-				><i aria-hidden="true"></i>{current.online ? 'Live' : 'Offline'}</strong
-			>
-		</p>
-
 		{#if detailed}
 			<dl class="server-facts">
-				<div>
-					<dt>Reported version</dt>
-					<dd>{current.version ?? 'Unavailable'}</dd>
-				</div>
 				<div>
 					<dt>World</dt>
 					<dd>{current.worldName ?? 'Unavailable'}</dd>
@@ -268,6 +223,12 @@
 					</button>
 				</div>
 			</div>
+		{/if}
+
+		{#if showInfoLink}
+			<a class="server-info-link" href={resolve('/servers')}>
+				<span>Server information &amp; password</span><ArrowRight size={14} aria-hidden="true" />
+			</a>
 		{/if}
 
 		{#if detailed && canRevealPassword}
@@ -420,95 +381,6 @@
 		color: var(--danger-400);
 	}
 
-	.population {
-		color: var(--frost-100);
-		font-size: 0.8rem;
-	}
-
-	.population span {
-		font-variant-numeric: tabular-nums;
-	}
-
-	.meter {
-		height: 0.28rem;
-		margin: 0.35rem 0 1rem;
-		border: 1px solid rgba(184, 197, 198, 0.24);
-		background: #020506;
-	}
-
-	.meter i {
-		display: block;
-		height: 100%;
-		background: linear-gradient(90deg, #68232d, var(--rune-400));
-		box-shadow: 0 0 8px var(--rune-500);
-	}
-
-	ul {
-		display: grid;
-		gap: 0.2rem;
-		margin: 0;
-		padding: 0;
-		list-style: none;
-		text-align: left;
-	}
-
-	li {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.2rem 0.35rem;
-		border-bottom: 1px solid rgba(184, 197, 198, 0.08);
-		font-size: 0.73rem;
-	}
-
-	li span {
-		color: var(--rune-400);
-	}
-
-	.no-names {
-		color: var(--text-muted);
-		font-size: 0.7rem;
-	}
-
-	.health {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 0.75rem;
-		margin: 0.9rem 0 0;
-		padding-top: 0.6rem;
-		border-top: 1px solid rgba(137, 115, 69, 0.32);
-		color: var(--text-muted);
-		font-size: 0.62rem;
-	}
-
-	.health strong {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.35rem;
-		padding: 0.22rem 0.45rem;
-		border: 1px solid color-mix(in srgb, var(--success-400), transparent 55%);
-		background: color-mix(in srgb, var(--success-400), transparent 88%);
-		color: var(--success-400);
-		font-family: var(--display);
-		font-size: 0.58rem;
-		text-transform: uppercase;
-	}
-
-	.health strong.offline {
-		border-color: color-mix(in srgb, var(--danger-400), transparent 55%);
-		background: color-mix(in srgb, var(--danger-400), transparent 88%);
-		color: var(--danger-400);
-	}
-
-	.health i {
-		width: 0.42rem;
-		aspect-ratio: 1;
-		border-radius: 50%;
-		background: currentColor;
-		box-shadow: 0 0 7px currentColor;
-	}
-
 	.server-facts {
 		display: grid;
 		gap: 0.35rem;
@@ -589,6 +461,24 @@
 
 	.join-code-box button:hover,
 	.join-code-box button:focus-visible {
+		color: var(--frost-100);
+	}
+
+	.server-info-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.45rem;
+		margin-top: 0.8rem;
+		color: var(--brass-400);
+		font-family: var(--display);
+		font-size: 0.62rem;
+		text-decoration: none;
+		text-transform: uppercase;
+	}
+
+	.server-info-link:hover,
+	.server-info-link:focus-visible {
 		color: var(--frost-100);
 	}
 

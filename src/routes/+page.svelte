@@ -14,25 +14,15 @@
 
 	const fallbackNews = [
 		{
-			title: 'The Longhouse Doors Open',
-			excerpt: 'Our hall is ready for new adventures.',
-			date: '29 August 2026',
-			author: 'Jarl Wolfskii',
-			tone: 'frost' as const
-		},
-		{
-			title: 'Ashlands Expedition Muster',
-			excerpt: 'Prepare for the next expedition beyond the boiling sea.',
-			date: '27 August 2026',
-			author: 'Freydis',
+			slug: 'valheim-1-0-has-arrived',
+			title: 'Valheim 1.0 Has Arrived',
+			excerpt:
+				'The Deep North is open. Read what changed and prepare the Wolves for their first expedition.',
+			body: 'Iron Gate has released Valheim 1.0 and opened the road into the Deep North.\n\n## New content\n\n- The Deep North biome.\n- 40+ new weapons.\n- New bombs and ammunition.\n- Four new armor sets, two capes, and two trinkets.\n- New tools and 10+ new creatures.\n- 80+ new buildable pieces and five crafting-related build pieces.\n- 30+ new crafting materials and 20+ new food items.\n- New locations, music, events, mechanics, upgradeable pockets, and achievements.\n\n## Fixes and improvements\n\n- New draw-distance graphics setting.\n- Overhauled hammer and serving-tray menus.\n- Magica cloth system and improved descriptions.\n- Rebalanced enemy spawn chances in the Ashlands.\n- All hair and beard styles available from the start.\n- Unity engine upgrade and further fixes.\n\nThe Wolves are taking the pack north together. Bring warmth, supplies, and a willingness to learn the new threats as a group.',
+			imageUrl: '/media/valheim/valheim-1-0-deep-north.jpg',
+			date: '9 September 2026',
+			author: 'Wolves of Ragnarok',
 			tone: 'ember' as const
-		},
-		{
-			title: 'New Members Enter the Hall',
-			excerpt: 'Welcome to the newest members of the guild.',
-			date: '24 August 2026',
-			author: 'Skald Eirik',
-			tone: 'frost' as const
 		}
 	];
 	let news = $derived(
@@ -42,6 +32,8 @@
 					excerpt: article.excerpt ?? 'Read the latest news from the hall.',
 					date: article.publishedAt?.toLocaleDateString() ?? 'Recently',
 					author: article.author.username,
+					body: article.body,
+					imageUrl: article.coverMedia?.id ? `/api/media/${article.coverMedia.id}` : undefined,
 					tone: index % 2 ? ('ember' as const) : ('frost' as const)
 				}))
 			: fallbackNews
@@ -61,16 +53,8 @@
 		<main>
 			<div class="portal-shell">
 				<header class="brand-lockup warheim-brand">
-					<img
-						class="brand-mark"
-						src="/images/branding/logo-wolf-light.png"
-						alt="Wolves of Ragnarok wolf crest"
-						width="576"
-						height="642"
-					/>
-					<p class="brand-code">WOR://REALM_01</p>
-					<h1 class="brand-title">Wolves of Ragnarok</h1>
-					<p class="brand-tagline">Built for survival. Held together by the pack.</p>
+					<h1 class="brand-title"><span>Wolves of</span><strong>Ragnarok</strong></h1>
+					<p class="brand-tagline">Good games. Better company.</p>
 				</header>
 
 				<FantasyNavigation />
@@ -118,24 +102,30 @@
 								<li>
 									<span>01</span><a href={resolve('/servers')}>Enter Yggdrasil</a>
 								</li>
-								<li><span>02</span><a href={resolve('/news')}>Read the chronicles</a></li>
+								<li>
+									<span>02</span><a
+										href="https://discord.gg/CbjgD7WVfp"
+										target="_blank"
+										rel="noreferrer">Join Discord</a
+									>
+								</li>
 								<li><span>03</span><a href={resolve('/rules')}>Learn the oath</a></li>
 							</ul>
 						</FantasyPanel>
 					</aside>
 
 					<div class="portal-main">
-						<FantasyPanel class="welcome-panel war-hero-panel" eyebrow="Valheim community // PVE">
+						<FantasyPanel class="welcome-panel war-hero-panel">
 							<div class="welcome">
-								<p class="section-kicker">The world does not owe you anything</p>
-								<h2 class="section-heading">Survive. Return. Become dangerous.</h2>
+								<h2 class="section-heading">Yggdrasil is waiting.</h2>
 								<p>
-									Wolves of Ragnarok is a persistent Valheim realm for players who want preparation
-									to matter, victories to feel earned, and the hardest journeys to be shared.
+									Yggdrasil is the Wolves of Ragnarok Valheim server, started for the Valheim 1.0
+									release and all its new content. It is a persistent world for builders, explorers,
+									and groups looking for their next adventure together.
 								</p>
 								<div class="welcome-actions">
 									<a class="primary-action" href={resolve('/servers')}
-										>Explore Yggdrasil <ArrowRight size={16} /></a
+										>Enter the Yggdrasil Valheim server <ArrowRight size={16} /></a
 									>
 									<a class="secondary-action" href={resolve('/about')}>Know the realm</a>
 								</div>
@@ -155,7 +145,7 @@
 						class="portal-sidebar portal-sidebar--right"
 						aria-label="Server status and guild links"
 					>
-						<ServerStatus />
+						<ServerStatus showInfoLink />
 						<FantasyPanel title="Survival Systems" eyebrow="The realm is still breathing">
 							<nav class="path-list" aria-label="Realm links">
 								<a href={resolve('/members')}
@@ -186,7 +176,9 @@
 				<div class="manifesto-index">ᛉ · THE FIRST LAW</div>
 				<div class="manifesto-copy">
 					<p class="section-kicker">A realm for the relentless</p>
-					<h2 id="manifesto-heading">The brutal road is better with a pack.</h2>
+					<h2 id="manifesto-heading">
+						<span>The brutal road is better</span><strong>with a pack.</strong>
+					</h2>
 					<p>
 						Bosses, raids, weather, distance, and the long walk home give every expedition a cost.
 						Bring a plan, bring a friend, and leave the realm changed.
@@ -285,7 +277,7 @@
 
 	.world-art--warrior {
 		top: 25rem;
-		right: clamp(-18rem, -13vw, -10rem);
+		right: calc(50% + 36rem + 1rem);
 		width: clamp(18rem, 26vw, 27rem);
 		filter: drop-shadow(0 20px 30px #000);
 	}
@@ -326,11 +318,6 @@
 	}
 
 	.primary-action {
-		border: 1px solid var(--brass-600);
-		background: var(--glass-button);
-		box-shadow:
-			inset 0 1px rgba(255, 255, 255, 0.14),
-			var(--glow-rune);
 		color: var(--frost-100);
 		clip-path: polygon(
 			0.5rem 0,
@@ -487,7 +474,7 @@
 	.site-world {
 		background:
 			linear-gradient(180deg, rgba(3, 5, 5, 0.18) 0 24rem, rgba(3, 5, 5, 0.88) 48rem),
-			url('/media/warheim/forged-hero.webp') center top / max(120rem, 100vw) 48rem no-repeat,
+			url('/media/warheim/warheim-hero.webp') center top / max(120rem, 100vw) 48rem no-repeat,
 			url('/images/backgrounds/background-main.png') center 42rem / max(100rem, 100vw) auto
 				no-repeat,
 			#030608;
@@ -496,15 +483,6 @@
 	.warheim-brand {
 		min-height: 15rem;
 		padding-top: 0.5rem;
-	}
-
-	.brand-code {
-		margin: 0.35rem 0 0;
-		color: var(--rune-300);
-		font-family: var(--display);
-		font-size: 0.58rem;
-		letter-spacing: 0.2em;
-		text-transform: uppercase;
 	}
 
 	.warheim-brand::after {
@@ -542,6 +520,12 @@
 		text-transform: uppercase;
 	}
 
+	:global(.war-hero-panel .panel-body h2 strong) {
+		display: block;
+		color: var(--rune-300);
+		font-weight: 400;
+	}
+
 	:global(.war-hero-panel .welcome > p:not(.section-kicker)) {
 		max-width: 52ch;
 		font-size: 0.9rem;
@@ -560,18 +544,11 @@
 		align-items: center;
 		gap: 0.45rem;
 		padding: 0.7rem 0.85rem;
-		border: 1px solid var(--rune-400);
-		background: rgba(104, 31, 41, 0.42);
 		color: var(--frost-100);
 		font-family: var(--display);
 		font-size: 0.62rem;
 		text-decoration: none;
 		text-transform: uppercase;
-	}
-
-	.discord-action:hover,
-	.discord-action:focus-visible {
-		background: rgba(168, 59, 67, 0.6);
 	}
 
 	.threat-strip {
@@ -645,6 +622,16 @@
 		text-transform: uppercase;
 	}
 
+	.manifesto-copy h2 span,
+	.manifesto-copy h2 strong {
+		display: block;
+	}
+
+	.manifesto-copy h2 strong {
+		color: var(--rune-300);
+		font-weight: 400;
+	}
+
 	.manifesto-copy > p:last-child {
 		max-width: 52ch;
 		margin: 0;
@@ -668,7 +655,7 @@
 		}
 
 		.world-art--warrior {
-			right: -13rem;
+			display: none;
 		}
 	}
 
