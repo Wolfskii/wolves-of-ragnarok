@@ -9,6 +9,7 @@
 		{ href: '/', label: 'Home' },
 		{ href: '/survive', label: 'Survive' },
 		{ href: '/about', label: 'About' },
+		{ href: '/merch', label: 'Merch' },
 		{ href: '/wiki', label: 'Wiki' },
 		{ href: '/rules', label: 'Rules' }
 	] as const;
@@ -217,9 +218,9 @@
 			display: none;
 		}
 
-		a {
+		ul a {
 			padding: 0.75rem 0.35rem;
-			text-align: center;
+			text-align: left;
 		}
 
 		.nav-right {

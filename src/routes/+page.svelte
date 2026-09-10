@@ -77,15 +77,6 @@
 					height="1024"
 					aria-hidden="true"
 				/>
-				<img
-					class="world-art world-art--warrior"
-					src="/images/characters/viking-warrior-right.webp"
-					alt=""
-					width="1024"
-					height="1536"
-					aria-hidden="true"
-				/>
-
 				<div class="portal-grid">
 					<aside
 						class="portal-sidebar portal-sidebar--left"
@@ -179,7 +170,18 @@
 			</section>
 
 			<section class="manifesto-section" aria-labelledby="manifesto-heading">
-				<div class="manifesto-index">ᛉ · THE FIRST LAW</div>
+				<div class="manifesto-index">
+					<div>ᛉ · THE FIRST LAW</div>
+					<img
+						class="manifesto-warrior"
+						src="/images/characters/viking-warrior-right.webp"
+						alt=""
+						width="1024"
+						height="1536"
+						loading="lazy"
+						aria-hidden="true"
+					/>
+				</div>
 				<div class="manifesto-copy">
 					<p class="section-kicker">A realm for the relentless</p>
 					<h2 id="manifesto-heading">
@@ -278,13 +280,6 @@
 		top: 29rem;
 		left: clamp(-17rem, -14vw, -9rem);
 		width: clamp(20rem, 29vw, 30rem);
-		filter: drop-shadow(0 20px 30px #000);
-	}
-
-	.world-art--warrior {
-		top: 25rem;
-		right: calc(50% + 36rem + 1rem);
-		width: clamp(18rem, 26vw, 27rem);
 		filter: drop-shadow(0 20px 30px #000);
 	}
 
@@ -602,7 +597,7 @@
 
 	.manifesto-section {
 		display: grid;
-		grid-template-columns: minmax(10rem, 0.6fr) minmax(0, 1.8fr) minmax(10rem, 0.8fr);
+		grid-template-columns: minmax(18rem, 0.8fr) minmax(0, 1.8fr) minmax(10rem, 0.8fr);
 		gap: 2rem;
 		align-items: end;
 		padding: 7rem 1rem 5rem;
@@ -617,6 +612,18 @@
 		letter-spacing: 0.14em;
 		line-height: 1.7;
 		text-transform: uppercase;
+	}
+
+	.manifesto-warrior {
+		display: block;
+		width: min(100%, 19rem);
+		height: 25rem;
+		margin: 1rem auto -5rem;
+		object-fit: contain;
+		object-position: center bottom;
+		filter: drop-shadow(0 20px 28px #000);
+		pointer-events: none;
+		user-select: none;
 	}
 
 	.manifesto-copy h2 {
@@ -659,19 +666,11 @@
 		.world-art--wolf {
 			left: -13rem;
 		}
-
-		.world-art--warrior {
-			display: none;
-		}
 	}
 
 	@media (max-width: 64rem) {
 		.portal-crown {
 			top: 17rem;
-		}
-
-		.world-art--warrior {
-			display: none;
 		}
 
 		.world-art--wolf {
@@ -738,6 +737,10 @@
 
 		.manifesto-aside {
 			text-align: left;
+		}
+
+		.manifesto-warrior {
+			display: none;
 		}
 	}
 </style>

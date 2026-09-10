@@ -20,7 +20,7 @@
 	{#if data.page.title === 'Game Servers'}
 		<div class="server-overview">
 			<div class="server-status">
-				<ServerStatus detailed canRevealPassword={Boolean(data.user)} />
+				<ServerStatus detailed />
 			</div>
 			<ServerLiveMap />
 		</div>
@@ -106,6 +106,33 @@
 			</div>
 			<a class="about-discord" href="https://discord.gg/CbjgD7WVfp" target="_blank" rel="noreferrer"
 				>Join us on Discord ↗</a
+			>
+		</section>
+	{:else if data.page.title === 'Wolves Merch'}
+		<section class="merch-page">
+			<div class="merch-lead">
+				<p class="section-kicker">The Wolves supply drop</p>
+				<h2><span>Wear the mark.</span><strong>Coming soon.</strong></h2>
+				<p>
+					We are putting together a small collection for the community. The first drop will focus on
+					comfortable pieces, clean designs, and gear worth keeping after the launch day.
+				</p>
+			</div>
+			<div class="merch-grid">
+				{#each data.page.items as item, index (item)}
+					<article>
+						<span class="merch-number">0{index + 1}</span>
+						<h3>{item.split(' with ')[0].split(' and ')[0]}</h3>
+						<p>{item}</p>
+						<small>Planned for the first drop</small>
+					</article>
+				{/each}
+			</div>
+			<p class="merch-note">
+				We will announce designs, sizes, pricing, and availability in Discord first.
+			</p>
+			<a class="about-discord" href="https://discord.gg/CbjgD7WVfp" target="_blank" rel="noreferrer"
+				>Get merch updates on Discord ↗</a
 			>
 		</section>
 	{:else if data.page.title === 'Realm Wiki'}
@@ -269,6 +296,82 @@
 		text-decoration: none;
 		text-transform: uppercase;
 	}
+
+	.merch-page {
+		margin-top: 1.5rem;
+	}
+	.merch-lead {
+		padding: 1rem 0 2rem;
+		border-bottom: 1px solid rgba(197, 174, 112, 0.25);
+	}
+	.merch-lead h2 {
+		max-width: 12ch;
+		margin: 0 0 1rem;
+		color: var(--frost-100);
+		font-size: clamp(2rem, 6vw, 4.5rem);
+		line-height: 0.96;
+		text-transform: uppercase;
+	}
+	.merch-lead h2 span,
+	.merch-lead h2 strong {
+		display: block;
+	}
+	.merch-lead h2 strong {
+		color: var(--rune-300);
+		font-weight: 400;
+	}
+	.merch-lead > p:last-child {
+		max-width: 56ch;
+		margin: 0;
+		color: var(--text-muted);
+		font-size: 0.86rem;
+		line-height: 1.8;
+	}
+	.merch-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		margin-top: 1.5rem;
+	}
+	.merch-grid article {
+		display: grid;
+		grid-template-columns: 2.5rem minmax(10rem, 0.7fr) minmax(0, 1.3fr) auto;
+		gap: 1rem;
+		align-items: baseline;
+		padding: 1rem 0;
+		border-bottom: 1px solid rgba(197, 174, 112, 0.24);
+	}
+	.merch-number {
+		color: var(--rune-300);
+		font-family: var(--code);
+		font-size: 0.62rem;
+	}
+	.merch-grid h3 {
+		margin: 0;
+		color: var(--frost-100);
+		font-size: 1rem;
+		text-transform: uppercase;
+	}
+	.merch-grid p {
+		margin: 0;
+		color: var(--text-muted);
+		font-size: 0.72rem;
+		line-height: 1.6;
+	}
+	.merch-grid small {
+		display: block;
+		margin: 0;
+		color: var(--brass-400);
+		font-family: var(--ui);
+		font-size: 0.62rem;
+		text-transform: uppercase;
+	}
+	.merch-note {
+		margin: 1.5rem 0 0;
+		color: var(--brass-400);
+		font-family: var(--manuscript);
+		font-size: 1rem;
+		font-style: italic;
+	}
 	.realm-page {
 		margin-top: 1.5rem;
 	}
@@ -371,6 +474,20 @@
 
 		.about-grid {
 			grid-template-columns: 1fr;
+		}
+
+		.merch-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.merch-grid article {
+			grid-template-columns: 2.5rem minmax(0, 1fr);
+			gap: 0.65rem;
+		}
+
+		.merch-grid p,
+		.merch-grid small {
+			grid-column: 2;
 		}
 	}
 </style>

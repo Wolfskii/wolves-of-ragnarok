@@ -4,6 +4,7 @@
 	import {
 		changeRadioTrack,
 		getRadioState,
+		getRadioPlaylist,
 		initializeRadio,
 		playRadio,
 		radioTracks,
@@ -13,12 +14,14 @@
 	} from '$lib/client/radio';
 
 	let trackIndex = $state(0);
+	let playlist = $state([...radioTracks]);
 	let playing = $state(false);
 	let muted = $state(false);
 
 	onMount(() => {
 		const sync = () => {
 			const state = getRadioState();
+			playlist = [...getRadioPlaylist()];
 			trackIndex = state.trackIndex;
 			playing = state.playing;
 			muted = state.muted;
@@ -26,8 +29,8 @@
 		const unsubscribe = subscribeRadio(sync);
 		const handleGateOpen = () => playRadio();
 		window.addEventListener('wolves:gate-open', handleGateOpen);
-		sync();
 		initializeRadio();
+		sync();
 
 		return () => {
 			window.removeEventListener('wolves:gate-open', handleGateOpen);
@@ -43,12 +46,12 @@
 	</div>
 	<div class="track-status" aria-live="polite">
 		<small>Now playing</small>
-		<strong title={radioTracks[trackIndex].title}>{radioTracks[trackIndex].title}</strong>
+		<strong title={playlist[trackIndex].title}>{playlist[trackIndex].title}</strong>
 	</div>
 	<div class="player-controls">
-			<button
+		<button
 			type="button"
-				onclick={() => changeRadioTrack(-1)}
+			onclick={() => changeRadioTrack(-1)}
 			aria-label="Previous track"
 			title="Previous track"
 		>
@@ -67,7 +70,12 @@
 					aria-hidden="true"
 				/>{/if}
 		</button>
-			<button type="button" onclick={() => changeRadioTrack(1)} aria-label="Next track" title="Next track">
+		<button
+			type="button"
+			onclick={() => changeRadioTrack(1)}
+			aria-label="Next track"
+			title="Next track"
+		>
 			<ChevronRight size={14} aria-hidden="true" />
 		</button>
 		<button

@@ -19,7 +19,20 @@ type RadioListener = () => void;
 let audio: HTMLAudioElement | null = null;
 let trackIndex = 0;
 let muted = false;
+let shuffledTracks: readonly RadioTrack[] | null = null;
 const listeners = new Set<RadioListener>();
+
+type RadioTrack = (typeof radioTracks)[number];
+
+function createShuffledPlaylist(): readonly RadioTrack[] {
+	const playlist = [...radioTracks];
+	for (let index = playlist.length - 1; index > 0; index -= 1) {
+		const random = crypto.getRandomValues(new Uint32Array(1))[0] / 2 ** 32;
+		const swapIndex = Math.floor(random * (index + 1));
+		[playlist[index], playlist[swapIndex]] = [playlist[swapIndex], playlist[index]];
+	}
+	return playlist;
+}
 
 function notify() {
 	for (const listener of listeners) listener();
@@ -28,13 +41,14 @@ function notify() {
 function ensureAudio(): HTMLAudioElement | null {
 	if (typeof document === 'undefined') return null;
 	if (audio) return audio;
+	shuffledTracks ??= createShuffledPlaylist();
 
 	audio = document.createElement('audio');
 	audio.preload = 'auto';
 	audio.autoplay = true;
 	audio.volume = 0.2;
 	audio.muted = muted;
-	audio.src = radioTracks[trackIndex].src;
+	audio.src = shuffledTracks[trackIndex].src;
 	audio.addEventListener('ended', () => nextTrack());
 	document.body.appendChild(audio);
 	return audio;
@@ -51,6 +65,11 @@ export function getRadioState() {
 		playing: Boolean(audio && !audio.paused),
 		muted
 	};
+}
+
+export function getRadioPlaylist() {
+	ensureAudio();
+	return shuffledTracks ?? radioTracks;
 }
 
 export function playRadio() {
@@ -77,10 +96,11 @@ export function toggleRadio() {
 }
 
 export function changeRadioTrack(direction: number) {
-	trackIndex = (trackIndex + direction + radioTracks.length) % radioTracks.length;
+	const playlist = getRadioPlaylist();
+	trackIndex = (trackIndex + direction + playlist.length) % playlist.length;
 	const player = ensureAudio();
 	if (!player) return;
-	player.src = radioTracks[trackIndex].src;
+	player.src = playlist[trackIndex].src;
 	player.load();
 	playRadio();
 	notify();

@@ -17,13 +17,11 @@ test('opens the Wolves gate with its one-shot opening sound', async ({ page }) =
 	await expect(page.getByText('Music on')).toHaveCount(0);
 	await page.getByRole('button', { name: 'Open the gates' }).click();
 	await expect(page.getByRole('button', { name: 'Pause radio' })).toBeVisible();
-	await expect(page.getByText("The Reaper's Call", { exact: true })).toBeVisible();
+	await expect(page.locator('.track-status strong')).toBeVisible();
 	await expect(page.locator('.door-left')).toHaveCSS('opacity', '1');
 	await expect(page.locator('.door-right')).toHaveCSS('opacity', '1');
 	await expect(page.locator('.gate')).toHaveCount(0);
 	await expect(page.locator('.gate-site-reveal')).toHaveClass(/fully-open/);
-	await expect(page.getByRole('heading', { name: 'Map of Yggdrasil' })).toBeVisible();
-
 	await page.reload();
 	await expect(page.getByRole('button', { name: 'Open the gates' })).toHaveCount(0);
 	await expect(page.getByRole('heading', { name: 'Map of Yggdrasil' })).toBeVisible();
@@ -47,15 +45,15 @@ test('renders the fantasy portal without broken artwork or overflow', async ({
 	await expect(page.locator('a[href="/news/valheim-1-0-has-arrived"]')).toHaveCount(0);
 	await expect(page.getByRole('heading', { name: 'Yggdrasil', exact: true })).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Map of Yggdrasil' })).toBeVisible();
-	await expect(page.getByRole('link', { name: 'Server information & password' })).toHaveAttribute(
+	await expect(page.getByRole('link', { name: 'Server information', exact: true })).toHaveAttribute(
 		'href',
 		'/servers'
 	);
 	const mapBox = await page.locator('.serpent-map').boundingBox();
-	const warriorBox = await page.locator('.world-art--warrior').boundingBox();
+	const warriorBox = await page.locator('.manifesto-warrior').boundingBox();
 	expect(mapBox).not.toBeNull();
 	expect(warriorBox).not.toBeNull();
-	expect(warriorBox!.x + warriorBox!.width).toBeLessThanOrEqual(mapBox!.x + 1);
+	await expect(page.locator('.manifesto-section .manifesto-warrior')).toBeVisible();
 	await expect(page.locator('.serpent')).toHaveCSS('pointer-events', 'none');
 	await expect(page.locator('.shieldmaiden')).toHaveCSS('pointer-events', 'none');
 	await expect(page.locator('.brand-title')).toHaveCSS('font-family', /Uncial Antiqua/);
@@ -117,14 +115,18 @@ test('shows the map-only live world chart on the servers page', async ({
 	await expect(liveMap).toBeVisible();
 	await expect(liveMap.locator('iframe.public-map')).toBeVisible();
 	await expect(page.locator('iframe')).toHaveCount(1);
-	await expect(page.getByText('valheim.webble.se', { exact: true })).toBeVisible();
-	await expect(page.locator('.population')).toHaveCount(0);
+	await expect(page.getByText('valheim.webble.se', { exact: true }).first()).toBeVisible();
+	await expect(page.locator('.population').first()).toHaveText('4 / 10 players');
 	await expect(page.getByText('Player names unavailable')).toHaveCount(0);
 	await expect(page.getByText('External health')).toHaveCount(0);
 	await expect(page.getByRole('link', { name: 'Open live map' })).toHaveCount(0);
 	await expect(page.getByText('Reported version')).toHaveCount(0);
-	await page.getByRole('button', { name: 'Copy join address' }).click();
-	await expect(page.getByRole('button', { name: 'Join address copied' })).toBeVisible();
+	await page
+		.locator('.status-card')
+		.first()
+		.getByRole('button', { name: 'Copy join address' })
+		.click();
+	await expect(page.getByRole('button', { name: 'Join address copied' }).first()).toBeVisible();
 	await expect
 		.poll(() => page.evaluate(() => navigator.clipboard.readText()))
 		.toBe('valheim.webble.se');
@@ -163,6 +165,7 @@ test('serves public destinations, auth entry, status data, and guards administra
 		'/survive',
 		'/members',
 		'/about',
+		'/merch',
 		'/wiki',
 		'/rules',
 		'/register'
@@ -198,7 +201,7 @@ test('serves public destinations, auth entry, status data, and guards administra
 	await page.goto('/admin');
 	await expect(page).toHaveURL('/');
 	await page.goto('/servers');
-	await expect(page.getByRole('button', { name: 'Reveal server password' })).toHaveCount(0);
+	await expect(page.getByText('Server password is handed out in Discord.')).toBeVisible();
 	await page.goto('/register');
 	await expect(page.getByRole('heading', { name: 'Join the Guild' })).toBeVisible();
 });

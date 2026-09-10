@@ -37,6 +37,20 @@ const pages = {
 			'Many games, one longhouse'
 		]
 	},
+	merch: {
+		title: 'Wolves Merch',
+		eyebrow: 'Coming soon',
+		intro:
+			'Wear the mark, carry the story, and represent the community wherever the next session takes you.',
+		items: [
+			'Hoodies with the Wolves of Ragnarok crest',
+			'T-shirts for Yggdrasil nights and everyday gaming',
+			'Caps, beanies, and embroidered patches',
+			'Mugs and desk gear for long sessions',
+			'Sticker packs and laptop decals',
+			'Posters and art prints from the realm'
+		]
+	},
 	wiki: {
 		title: 'Realm Wiki',
 		eyebrow: 'Search the Valheim Wiki',

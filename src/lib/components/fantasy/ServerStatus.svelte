@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
-	import { ArrowRight, Check, Copy, Eye, EyeOff } from '@lucide/svelte';
+	import { ArrowRight, Check, Copy } from '@lucide/svelte';
 	import type { ServerStatusResult } from '$lib/server/server-status/types';
 
 	let {
 		name = 'Yggdrasil',
 		online = true,
+		playerCount = null,
+		maxPlayers = null,
 		ping = null,
 		joinAddress = 'valheim.webble.se',
 		joinPort = 2456,
@@ -16,11 +18,12 @@
 		snapshotAgeMs = null,
 		queriedAt = null,
 		detailed = false,
-		canRevealPassword = false,
 		showInfoLink = false
 	}: {
 		name?: string;
 		online?: boolean;
+		playerCount?: number | null;
+		maxPlayers?: number | null;
 		ping?: number | null;
 		joinAddress?: string;
 		joinPort?: number;
@@ -30,13 +33,14 @@
 		snapshotAgeMs?: number | null;
 		queriedAt?: string | null;
 		detailed?: boolean;
-		canRevealPassword?: boolean;
 		showInfoLink?: boolean;
 	} = $props();
 
 	let current = $state({
 		name: 'Yggdrasil',
 		online: true,
+		playerCount: null as number | null,
+		maxPlayers: null as number | null,
 		ping: null as number | null,
 		joinAddress: 'valheim.webble.se',
 		joinPort: 2456,
@@ -47,14 +51,8 @@
 		queriedAt: null as string | null
 	});
 	let receivedLiveStatus = $state(false);
-	let serverPassword = $state('');
-	let passwordVisible = $state(false);
-	let passwordLoading = $state(false);
-	let passwordError = $state('');
-	let passwordCopied = $state(false);
 	let addressCopied = $state(false);
 	let copyResetTimer: number | undefined;
-	let passwordCopyResetTimer: number | undefined;
 
 	async function copyJoinAddress() {
 		await navigator.clipboard.writeText(current.joinAddress);
@@ -65,53 +63,13 @@
 		}, 2000);
 	}
 
-	async function loadServerPassword(): Promise<string | null> {
-		if (serverPassword) return serverPassword;
-		passwordLoading = true;
-		passwordError = '';
-		try {
-			const response = await fetch('/api/servers/featured/password', { method: 'POST' });
-			const result = (await response.json()) as { password?: string; error?: string };
-			if (!response.ok || !result.password) {
-				passwordError = result.error ?? 'The server password could not be loaded.';
-				return null;
-			}
-			serverPassword = result.password;
-			return result.password;
-		} catch {
-			passwordError = 'The server password could not be loaded.';
-			return null;
-		} finally {
-			passwordLoading = false;
-		}
-	}
-
-	async function togglePassword() {
-		const password = await loadServerPassword();
-		if (password) passwordVisible = !passwordVisible;
-	}
-
-	async function copyServerPassword() {
-		const password = await loadServerPassword();
-		if (!password) return;
-
-		try {
-			await navigator.clipboard.writeText(password);
-			passwordCopied = true;
-			if (passwordCopyResetTimer) window.clearTimeout(passwordCopyResetTimer);
-			passwordCopyResetTimer = window.setTimeout(() => {
-				passwordCopied = false;
-			}, 2000);
-		} catch {
-			passwordError = 'The server password could not be copied.';
-		}
-	}
-
 	$effect(() => {
 		if (!receivedLiveStatus)
 			current = {
 				name,
 				online,
+				playerCount,
+				maxPlayers,
 				ping,
 				joinAddress,
 				joinPort,
@@ -135,6 +93,8 @@
 				current = {
 					name: result.name,
 					online: result.state === 'online',
+					playerCount: result.playerCount,
+					maxPlayers: result.maxPlayers,
 					ping: result.pingMs,
 					joinAddress: result.joinAddress,
 					joinPort: result.joinPort,
@@ -155,28 +115,36 @@
 			active = false;
 			window.clearInterval(timer);
 			if (copyResetTimer) window.clearTimeout(copyResetTimer);
-			if (passwordCopyResetTimer) window.clearTimeout(passwordCopyResetTimer);
 		};
 	});
 </script>
 
 <section class="status-card" aria-labelledby="server-name">
-	<div class="shield-wrap" aria-hidden="true">
+	<a class="shield-wrap" href={resolve('/servers')} aria-label="Open Yggdrasil server information">
 		<img src="/images/ui/server-shield.webp" alt="" width="1024" height="1024" />
 		<span class:offline={!current.online}></span>
-	</div>
+	</a>
 
 	<div class="status-slab">
-		<p class="game">Valheim</p>
-		<h2 id="server-name">{current.name}</h2>
-		{#if current.worldName || current.day !== null}
-			<p class="world-details">
-				{current.worldName ?? 'Valheim world'}{current.day !== null ? ` · Day ${current.day}` : ''}
-			</p>
-		{/if}
+		<a class="server-identity" href={resolve('/servers')} aria-labelledby="server-name">
+			<p class="game">Valheim</p>
+			<h2 id="server-name">{current.name}</h2>
+			{#if current.worldName || current.day !== null}
+				<p class="world-details">
+					{current.worldName ?? 'Valheim world'}{current.day !== null
+						? ` · Day ${current.day}`
+						: ''}
+				</p>
+			{/if}
+		</a>
 		<p class="state" class:offline={!current.online}>
 			<span aria-hidden="true"></span>{current.online ? 'Online' : 'Offline'}
 		</p>
+		{#if current.playerCount !== null}
+			<p class="population">
+				{current.playerCount}{current.maxPlayers !== null ? ` / ${current.maxPlayers}` : ''} players
+			</p>
+		{/if}
 
 		{#if detailed}
 			<dl class="server-facts">
@@ -227,47 +195,12 @@
 
 		{#if showInfoLink}
 			<a class="server-info-link" href={resolve('/servers')}>
-				<span>Server information &amp; password</span><ArrowRight size={14} aria-hidden="true" />
+				<span>Server information</span><ArrowRight size={14} aria-hidden="true" />
 			</a>
 		{/if}
 
-		{#if detailed && canRevealPassword}
-			<div class="password-details">
-				<label for="server-password">Server password</label>
-				<div class="password-field">
-					<input
-						id="server-password"
-						type={passwordVisible ? 'text' : 'password'}
-						value={serverPassword}
-						placeholder="Hidden"
-						readonly
-					/>
-					<button
-						type="button"
-						onclick={togglePassword}
-						disabled={passwordLoading}
-						aria-label={serverPassword && passwordVisible
-							? 'Hide server password'
-							: 'Reveal server password'}
-						title={serverPassword && passwordVisible
-							? 'Hide server password'
-							: 'Reveal server password'}
-					>
-						{#if passwordVisible}<EyeOff size={16} />{:else}<Eye size={16} />{/if}
-					</button>
-					<button
-						class="copy-button"
-						type="button"
-						onclick={copyServerPassword}
-						disabled={passwordLoading}
-						aria-label={passwordCopied ? 'Server password copied' : 'Copy server password'}
-						title={passwordCopied ? 'Copied' : 'Copy server password'}
-					>
-						{#if passwordCopied}<Check size={15} />{:else}<Copy size={15} />{/if}
-					</button>
-				</div>
-				{#if passwordError}<p class="password-error" role="alert">{passwordError}</p>{/if}
-			</div>
+		{#if detailed}
+			<p class="password-note">Server password is handed out in Discord.</p>
 		{/if}
 	</div>
 </section>
@@ -280,6 +213,7 @@
 	}
 
 	.shield-wrap {
+		display: block;
 		position: absolute;
 		z-index: 3;
 		top: 0;
@@ -288,6 +222,8 @@
 		aspect-ratio: 1;
 		transform: translateX(-50%);
 		filter: drop-shadow(0 0 16px rgba(168, 59, 67, 0.34));
+		cursor: pointer;
+		text-decoration: none;
 	}
 
 	.shield-wrap img {
@@ -352,6 +288,17 @@
 		text-transform: uppercase;
 	}
 
+	.server-identity {
+		display: block;
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.server-identity:hover h2,
+	.server-identity:focus-visible h2 {
+		color: var(--rune-300);
+	}
+
 	.world-details {
 		margin: -0.35rem 0 0.65rem;
 		color: var(--text-muted);
@@ -379,6 +326,15 @@
 
 	.state.offline {
 		color: var(--danger-400);
+	}
+
+	.population {
+		margin: 0 0 0.85rem;
+		color: var(--frost-100);
+		font-family: var(--ui);
+		font-size: 0.78rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
 	}
 
 	.server-facts {
@@ -482,61 +438,15 @@
 		color: var(--frost-100);
 	}
 
-	.password-details {
-		display: grid;
-		gap: 0.3rem;
-		margin-top: 0.75rem;
-		text-align: left;
-	}
-
-	.password-details label {
-		color: var(--text-muted);
-		font-size: 0.62rem;
-		text-transform: uppercase;
-		letter-spacing: 0.12em;
-	}
-
-	.password-field {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) 2.25rem 2.25rem;
-		height: 2.25rem;
-		border: 1px solid rgba(137, 115, 69, 0.48);
-		background: rgba(0, 0, 0, 0.38);
-	}
-
-	.password-field input {
-		min-width: 0;
-		border: 0;
-		background: transparent;
-		color: var(--frost-100);
-		font-family: monospace;
-		font-size: 0.72rem;
-		padding-inline: 0.55rem;
-	}
-
-	.password-field button {
-		display: grid;
-		place-items: center;
-		border: 0;
-		border-left: 1px solid rgba(137, 115, 69, 0.48);
-		background: var(--glass-button);
+	.password-note {
+		margin: 0.85rem 0 0;
+		padding-top: 0.7rem;
+		border-top: 1px solid rgba(137, 115, 69, 0.32);
 		color: var(--brass-400);
-		cursor: pointer;
-	}
-
-	.password-field button:disabled {
-		cursor: wait;
-		opacity: 0.55;
-	}
-
-	.password-field .copy-button {
-		border-left-color: rgba(137, 115, 69, 0.3);
-	}
-
-	.password-error {
-		margin: 0;
-		color: var(--danger-400);
-		font-size: 0.62rem;
+		font-family: var(--ui);
+		font-size: 0.68rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
 	}
 
 	@media (max-width: 47.99rem) {

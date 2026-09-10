@@ -10,6 +10,7 @@
 
 	let stage = $state<GateStage>('checking');
 	let reducedMotion = $state(false);
+	let animateReveal = $state(true);
 	let audio: HTMLAudioElement;
 	let revealTimer: number | undefined;
 
@@ -43,6 +44,7 @@
 		reducedMotion = motionQuery.matches;
 		audio.volume = 0.5;
 		const alreadyOpened = window.sessionStorage.getItem(gateSessionKey) === 'true';
+		animateReveal = !alreadyOpened;
 		stage = alreadyOpened ? 'revealed' : 'ready';
 		if (!alreadyOpened) resetPageScroll();
 
@@ -55,7 +57,8 @@
 
 <div
 	class="gate-site-reveal"
-	class:opening={stage === 'opening' || stage === 'revealed'}
+	class:opening={stage === 'opening' || (stage === 'revealed' && animateReveal)}
+	class:stable-visible={stage === 'revealed' && !animateReveal}
 	class:fully-open={stage === 'revealed'}
 >
 	{@render children()}
@@ -178,6 +181,13 @@
 		transform: scale(1);
 	}
 
+	.gate-site-reveal.stable-visible {
+		opacity: 1;
+		filter: none;
+		transform: none;
+		transition: none;
+	}
+
 	.gate-content {
 		position: relative;
 		z-index: 4;
@@ -284,7 +294,8 @@
 	.door {
 		background-image: url('/media/warheim/valhalla-gates.webp');
 		background-repeat: no-repeat;
-		background-size: 200% 100%;
+		background-size: auto 100%;
+		background-color: #050807;
 		transition:
 			transform 2.45s cubic-bezier(0.72, 0.01, 0.18, 1),
 			box-shadow 2.45s cubic-bezier(0.72, 0.01, 0.18, 1);
@@ -329,6 +340,11 @@
 
 		.gate-backdrop {
 			background-position: 58% center;
+		}
+
+		.door {
+			background-size: auto 125%;
+			background-position-y: center;
 		}
 	}
 
