@@ -2,17 +2,15 @@
 	import FantasyFooter from '$lib/components/fantasy/FantasyFooter.svelte';
 	import FantasyNavigation from '$lib/components/fantasy/FantasyNavigation.svelte';
 	import FantasyPanel from '$lib/components/fantasy/FantasyPanel.svelte';
-	import LoginPanel from '$lib/components/fantasy/LoginPanel.svelte';
 	import NewsCard from '$lib/components/fantasy/NewsCard.svelte';
 	import RagnarokGate from '$lib/components/fantasy/RagnarokGate.svelte';
 	import ServerLiveMap from '$lib/components/fantasy/ServerLiveMap.svelte';
 	import ServerStatus from '$lib/components/fantasy/ServerStatus.svelte';
-	import UserPanel from '$lib/components/fantasy/UserPanel.svelte';
 	import { resolve } from '$app/paths';
 	import { ArrowRight, Shield, Swords, UsersRound } from '@lucide/svelte';
-	import type { ActionData, PageData } from './$types';
+	import type { PageData } from './$types';
 
-	let { data, form }: { data: PageData; form: ActionData } = $props();
+	let { data }: { data: PageData } = $props();
 
 	const fallbackNews = [
 		{
@@ -51,10 +49,10 @@
 </script>
 
 <svelte:head>
-	<title>Wolves of Ragnarok | Norse Gaming Community</title>
+	<title>Wolves of Ragnarok | Valheim Survival Realm</title>
 	<meta
 		name="description"
-		content="Wolves of Ragnarok is a Norse gaming community where adventurers gather, forge alliances, and face the end of worlds together."
+		content="Wolves of Ragnarok is an English and Swedish Valheim survival community built for difficult journeys, persistent worlds, and strong alliances."
 	/>
 </svelte:head>
 
@@ -62,7 +60,7 @@
 	<div class="site-world">
 		<main>
 			<div class="portal-shell">
-				<header class="brand-lockup">
+				<header class="brand-lockup warheim-brand">
 					<img
 						class="brand-mark"
 						src="/images/branding/logo-wolf-light.png"
@@ -70,8 +68,9 @@
 						width="576"
 						height="642"
 					/>
+					<p class="brand-code">WOR://REALM_01</p>
 					<h1 class="brand-title">Wolves of Ragnarok</h1>
-					<p class="brand-tagline">Late nights. Good games. No empty seats.</p>
+					<p class="brand-tagline">Built for survival. Held together by the pack.</p>
 				</header>
 
 				<FantasyNavigation />
@@ -100,47 +99,45 @@
 				<div class="portal-grid">
 					<aside
 						class="portal-sidebar portal-sidebar--left"
-						aria-label="Member access and announcements"
+						aria-label="Community access and realm notices"
 					>
-						{#if data.user}
-							<UserPanel user={data.user} />
-						{:else}
-							<LoginPanel error={form?.loginError} identifier={form?.identifier} />
-						{/if}
-						<FantasyPanel title="The Pack Gathers" eyebrow="From the longhouse">
+						<FantasyPanel title="Join the Pack" eyebrow="Discord is the longhouse">
+							<p class="aside-copy">
+								No forum. No dead halls. Find the next expedition, ask for help, and meet the people
+								behind the names in Discord.
+							</p>
+							<a
+								class="discord-action"
+								href="https://discord.gg/CbjgD7WVfp"
+								target="_blank"
+								rel="noreferrer">Join Discord <ArrowRight size={14} /></a
+							>
+						</FantasyPanel>
+						<FantasyPanel title="The Pack Gathers" eyebrow="Choose your road">
 							<ul class="brief-list">
 								<li>
-									<span>01</span><a
-										href="https://discord.gg/CbjgD7WVfp"
-										target="_blank"
-										rel="noreferrer">Enter the Discord hall</a
-									>
+									<span>01</span><a href={resolve('/servers')}>Enter Yggdrasil</a>
 								</li>
-								<li><span>02</span><a href={resolve('/servers')}>Find the Yggdrasil world</a></li>
-								<li><span>03</span><a href={resolve('/register')}>Take the pack oath</a></li>
+								<li><span>02</span><a href={resolve('/news')}>Read the chronicles</a></li>
+								<li><span>03</span><a href={resolve('/rules')}>Learn the oath</a></li>
 							</ul>
 						</FantasyPanel>
 					</aside>
 
 					<div class="portal-main">
-						<FantasyPanel class="welcome-panel" eyebrow="A summons from the North">
+						<FantasyPanel class="welcome-panel war-hero-panel" eyebrow="Valheim community // PVE">
 							<div class="welcome">
-								<p class="section-kicker">The threshold is open</p>
-								<h2 class="section-heading">Enter the Wolves of Ragnarok</h2>
+								<p class="section-kicker">The world does not owe you anything</p>
+								<h2 class="section-heading">Survive. Return. Become dangerous.</h2>
 								<p>
-									A Valheim community for builders, raiders, wanderers, and storytellers. The fire
-									is lit, the world is waiting, and the next story is yours to shape.
+									Wolves of Ragnarok is a persistent Valheim realm for players who want preparation
+									to matter, victories to feel earned, and the hardest journeys to be shared.
 								</p>
 								<div class="welcome-actions">
 									<a class="primary-action" href={resolve('/servers')}
-										>Enter Yggdrasil <ArrowRight size={16} /></a
+										>Explore Yggdrasil <ArrowRight size={16} /></a
 									>
-									<a
-										class="secondary-action"
-										href="https://discord.gg/CbjgD7WVfp"
-										target="_blank"
-										rel="noreferrer">Join Discord</a
-									>
+									<a class="secondary-action" href={resolve('/about')}>Know the realm</a>
 								</div>
 							</div>
 						</FantasyPanel>
@@ -159,8 +156,8 @@
 						aria-label="Server status and guild links"
 					>
 						<ServerStatus />
-						<FantasyPanel title="Paths from the Hall" eyebrow="Choose your road">
-							<nav class="path-list" aria-label="Community links">
+						<FantasyPanel title="Survival Systems" eyebrow="The realm is still breathing">
+							<nav class="path-list" aria-label="Realm links">
 								<a href={resolve('/members')}
 									><UsersRound size={17} /><span>Guild roster<small>Meet the members</small></span
 									></a
@@ -176,6 +173,27 @@
 					</aside>
 				</div>
 			</div>
+
+			<section class="threat-strip" aria-label="The Wolves of Ragnarok way">
+				<div><span>01</span><strong>Survive</strong><small>Preparation is power.</small></div>
+				<div><span>02</span><strong>Learn</strong><small>Every death leaves a map.</small></div>
+				<div>
+					<span>03</span><strong>Conquer</strong><small>No one holds the line alone.</small>
+				</div>
+			</section>
+
+			<section class="manifesto-section" aria-labelledby="manifesto-heading">
+				<div class="manifesto-index">ᛉ · THE FIRST LAW</div>
+				<div class="manifesto-copy">
+					<p class="section-kicker">A realm for the relentless</p>
+					<h2 id="manifesto-heading">The brutal road is better with a pack.</h2>
+					<p>
+						Bosses, raids, weather, distance, and the long walk home give every expedition a cost.
+						Bring a plan, bring a friend, and leave the realm changed.
+					</p>
+				</div>
+				<div class="manifesto-aside">CONCEIVED FOR SURVIVAL.<br />NOT FOR SIGHTSEEING.</div>
+			</section>
 
 			<section class="serpent-band" aria-labelledby="world-map-heading">
 				<div class="map-heading">
@@ -449,7 +467,9 @@
 		position: relative;
 		z-index: 1;
 		width: min(calc(100% - 3rem), 72rem);
+		max-width: 100%;
 		margin-inline: auto;
+		overflow: hidden;
 	}
 
 	.shieldmaiden {
@@ -462,6 +482,180 @@
 		filter: drop-shadow(0 20px 28px #000);
 		pointer-events: none;
 		user-select: none;
+	}
+
+	.site-world {
+		background:
+			linear-gradient(180deg, rgba(3, 5, 5, 0.18) 0 24rem, rgba(3, 5, 5, 0.88) 48rem),
+			url('/media/warheim/forged-hero.webp') center top / max(120rem, 100vw) 48rem no-repeat,
+			url('/images/backgrounds/background-main.png') center 42rem / max(100rem, 100vw) auto
+				no-repeat,
+			#030608;
+	}
+
+	.warheim-brand {
+		min-height: 15rem;
+		padding-top: 0.5rem;
+	}
+
+	.brand-code {
+		margin: 0.35rem 0 0;
+		color: var(--rune-300);
+		font-family: var(--display);
+		font-size: 0.58rem;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+	}
+
+	.warheim-brand::after {
+		content: '';
+		position: absolute;
+		right: 0;
+		bottom: 0.35rem;
+		left: 0;
+		height: 1px;
+		background: linear-gradient(90deg, transparent, var(--rune-400), transparent);
+		box-shadow: 0 0 16px rgba(168, 59, 67, 0.48);
+	}
+
+	.portal-grid {
+		margin-top: 2.25rem;
+	}
+
+	:global(.war-hero-panel) {
+		filter: drop-shadow(0 22px 30px rgba(0, 0, 0, 0.76));
+	}
+
+	:global(.war-hero-panel .panel-body) {
+		min-height: 21rem;
+		padding: clamp(1.4rem, 4vw, 3rem);
+		background:
+			linear-gradient(115deg, rgba(168, 59, 67, 0.16), transparent 40%),
+			radial-gradient(circle at 82% 16%, rgba(197, 174, 112, 0.12), transparent 16rem),
+			var(--panel-fill);
+	}
+
+	:global(.war-hero-panel .panel-body h2) {
+		max-width: 13ch;
+		font-size: clamp(2rem, 5vw, 4.2rem);
+		line-height: 0.98;
+		text-transform: uppercase;
+	}
+
+	:global(.war-hero-panel .welcome > p:not(.section-kicker)) {
+		max-width: 52ch;
+		font-size: 0.9rem;
+		line-height: 1.8;
+	}
+
+	.aside-copy {
+		margin: 0 0 1rem;
+		color: var(--text-muted);
+		font-size: 0.72rem;
+		line-height: 1.7;
+	}
+
+	.discord-action {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		padding: 0.7rem 0.85rem;
+		border: 1px solid var(--rune-400);
+		background: rgba(104, 31, 41, 0.42);
+		color: var(--frost-100);
+		font-family: var(--display);
+		font-size: 0.62rem;
+		text-decoration: none;
+		text-transform: uppercase;
+	}
+
+	.discord-action:hover,
+	.discord-action:focus-visible {
+		background: rgba(168, 59, 67, 0.6);
+	}
+
+	.threat-strip {
+		position: relative;
+		z-index: 5;
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		margin: 0 auto;
+		border-block: 1px solid rgba(197, 174, 112, 0.38);
+		background: rgba(3, 6, 7, 0.84);
+		box-shadow: 0 18px 32px rgba(0, 0, 0, 0.46);
+	}
+
+	.threat-strip > div {
+		display: grid;
+		grid-template-columns: 2.3rem 1fr;
+		column-gap: 0.65rem;
+		align-items: center;
+		padding: 1rem 1.25rem;
+	}
+
+	.threat-strip > div + div {
+		border-left: 1px solid rgba(197, 174, 112, 0.22);
+	}
+
+	.threat-strip span {
+		grid-row: span 2;
+		color: var(--rune-300);
+		font-family: var(--display);
+		font-size: 0.72rem;
+	}
+
+	.threat-strip strong {
+		color: var(--frost-100);
+		font-family: var(--display);
+		font-size: 0.74rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+	}
+
+	.threat-strip small {
+		color: var(--text-muted);
+		font-size: 0.62rem;
+	}
+
+	.manifesto-section {
+		display: grid;
+		grid-template-columns: minmax(10rem, 0.6fr) minmax(0, 1.8fr) minmax(10rem, 0.8fr);
+		gap: 2rem;
+		align-items: end;
+		padding: 7rem 1rem 5rem;
+		border-bottom: 1px solid rgba(197, 174, 112, 0.22);
+	}
+
+	.manifesto-index,
+	.manifesto-aside {
+		color: var(--rune-300);
+		font-family: var(--display);
+		font-size: 0.62rem;
+		letter-spacing: 0.14em;
+		line-height: 1.7;
+		text-transform: uppercase;
+	}
+
+	.manifesto-copy h2 {
+		max-width: 15ch;
+		margin: 0 0 1rem;
+		color: var(--frost-100);
+		font-size: clamp(2rem, 5vw, 4.3rem);
+		line-height: 0.98;
+		text-transform: uppercase;
+	}
+
+	.manifesto-copy > p:last-child {
+		max-width: 52ch;
+		margin: 0;
+		color: var(--text-muted);
+		font-size: 0.86rem;
+		line-height: 1.8;
+	}
+
+	.manifesto-aside {
+		color: var(--brass-400);
+		text-align: right;
 	}
 
 	@media (max-width: 75rem) {
@@ -499,6 +693,17 @@
 			width: 70%;
 		}
 
+		.site-world {
+			background-size:
+				auto 38rem,
+				auto 38rem,
+				auto 52rem;
+			background-position:
+				58% top,
+				58% top,
+				42% 38rem;
+		}
+
 		.world-art {
 			display: none;
 		}
@@ -521,6 +726,25 @@
 			bottom: -6rem;
 			width: 20rem;
 			opacity: 0.52;
+		}
+
+		.threat-strip {
+			grid-template-columns: 1fr;
+		}
+
+		.threat-strip > div + div {
+			border-top: 1px solid rgba(197, 174, 112, 0.22);
+			border-left: 0;
+		}
+
+		.manifesto-section {
+			grid-template-columns: 1fr;
+			gap: 1.25rem;
+			padding: 4rem 0.5rem 3rem;
+		}
+
+		.manifesto-aside {
+			text-align: left;
 		}
 	}
 </style>

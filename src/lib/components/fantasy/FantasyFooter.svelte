@@ -13,9 +13,6 @@
 		<a href={resolve('/rules')}>Guild rules</a>
 		<a href={resolve('/contact')}>Contact</a>
 		<a href="https://discord.gg/CbjgD7WVfp" target="_blank" rel="noreferrer">Discord</a>
-		<button type="button" onclick={() => window.dispatchEvent(new Event('wolves:replay-intro'))}
-			>Replay intro</button
-		>
 	</nav>
 </footer>
 
@@ -71,23 +68,9 @@
 		margin-top: 0.75rem;
 	}
 
-	a,
-	button {
+	a {
 		color: var(--text-muted);
 		font-size: 0.6rem;
 		text-transform: uppercase;
-	}
-
-	button {
-		padding: 0;
-		border: 0;
-		background: transparent;
-		font-family: inherit;
-		cursor: pointer;
-	}
-
-	button:hover,
-	button:focus-visible {
-		color: var(--frost-100);
 	}
 </style>

@@ -1,34 +1,31 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const introBypassKey = 'wolves-of-ragnarok:intro-bypass:v1';
-
-async function bypassIntro(page: Page) {
-	await page.addInitScript((key: string) => localStorage.setItem(key, 'true'), introBypassKey);
+async function enterThroughGate(page: Page) {
+	await page.goto('/');
+	await page.getByRole('button', { name: 'Open the gates' }).click();
+	await expect(page.locator('.gate')).toHaveCount(0);
 }
 
-test('opens the Wolves gate and remembers an explicit bypass', async ({ page }) => {
+test('opens the Wolves gate with its one-shot opening sound', async ({ page }) => {
 	await page.setViewportSize({ width: 1280, height: 900 });
 	await page.goto('/');
 
-	await expect(page.getByRole('button', { name: 'Enter the hall' })).toBeVisible();
-	await page.getByRole('button', { name: 'Enter the hall' }).click();
-	await expect(page.getByRole('button', { name: 'Enter the hall' })).toBeHidden();
+	await expect(page.getByRole('button', { name: 'Open the gates' })).toBeVisible();
+	await expect(page.getByRole('button', { name: 'Skip intro' })).toHaveCount(0);
+	await expect(page.getByText('Music on')).toHaveCount(0);
+	await page.getByRole('button', { name: 'Open the gates' }).click();
+	await expect(page.locator('.gate')).toHaveCount(0);
 	await expect(page.getByRole('heading', { name: 'Map of Yggdrasil' })).toBeVisible();
 
 	await page.reload();
-	await expect(page.getByRole('button', { name: 'Enter the hall' })).toBeVisible();
-	await page.getByRole('button', { name: 'Skip intro' }).click();
-	await expect(page.getByRole('button', { name: 'Skip intro' })).toBeHidden();
-	await page.reload();
-	await expect(page.getByRole('button', { name: 'Enter the hall' })).toBeHidden();
+	await expect(page.getByRole('button', { name: 'Open the gates' })).toBeVisible();
 });
 
 test('renders the fantasy portal without broken artwork or overflow', async ({
 	page
 }, testInfo) => {
-	await bypassIntro(page);
 	await page.setViewportSize({ width: 1920, height: 1080 });
-	await page.goto('/');
+	await enterThroughGate(page);
 
 	await expect(page).toHaveTitle(/Wolves of Ragnarok/);
 	await expect(page.getByRole('heading', { level: 1, name: 'Wolves of Ragnarok' })).toBeVisible();
@@ -38,10 +35,11 @@ test('renders the fantasy portal without broken artwork or overflow', async ({
 	await expect(page.locator('.serpent')).toHaveCSS('pointer-events', 'none');
 	await expect(page.locator('.shieldmaiden')).toHaveCSS('pointer-events', 'none');
 	await expect(page.locator('.brand-title')).toHaveCSS('font-family', /GR Read One/);
-	await expect(page.locator('.login-shrine .guardian')).toHaveCount(0);
+	await expect(page.getByText('Member access')).toHaveCount(0);
+	await expect(page.getByText('Sign in')).toHaveCount(0);
 	await expect(page.locator('.brand-title')).toHaveCSS('text-shadow', /168, 59, 67/);
-	const discordLinks = page.getByRole('link', { name: 'Discord' });
-	await expect(discordLinks).toHaveCount(4);
+	const discordLinks = page.locator('a[href="https://discord.gg/CbjgD7WVfp"]');
+	await expect(discordLinks).toHaveCount(3);
 	for (const link of await discordLinks.all()) {
 		await expect(link).toHaveAttribute('href', 'https://discord.gg/CbjgD7WVfp');
 	}
@@ -67,9 +65,8 @@ test('renders the fantasy portal without broken artwork or overflow', async ({
 });
 
 test('stacks the portal and exposes mobile navigation', async ({ page }, testInfo) => {
-	await bypassIntro(page);
 	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto('/');
+	await enterThroughGate(page);
 
 	const menu = page.getByRole('button', { name: 'Hall menu' });
 	await expect(menu).toBeVisible();

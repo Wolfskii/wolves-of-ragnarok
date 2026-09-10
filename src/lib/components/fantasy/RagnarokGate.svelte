@@ -1,29 +1,19 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { Snippet } from 'svelte';
-	import { DoorOpen, FastForward, Volume2, VolumeX } from '@lucide/svelte';
-
-	const bypassKey = 'wolves-of-ragnarok:intro-bypass:v1';
+	import { DoorOpen } from '@lucide/svelte';
 
 	type GateStage = 'checking' | 'ready' | 'opening' | 'revealed';
 
-	let {
-		children,
-		onReveal
-	}: {
-		children: Snippet;
-		onReveal?: () => void;
-	} = $props();
+	let { children }: { children: Snippet } = $props();
 
 	let stage = $state<GateStage>('checking');
-	let muted = $state(false);
 	let reducedMotion = $state(false);
 	let audio: HTMLAudioElement;
 	let revealTimer: number | undefined;
 
 	function finishReveal() {
 		stage = 'revealed';
-		onReveal?.();
 	}
 
 	function openGate() {
@@ -37,46 +27,26 @@
 			return;
 		}
 
-		revealTimer = window.setTimeout(finishReveal, 1450);
-	}
-
-	function skipGate() {
-		window.localStorage.setItem(bypassKey, 'true');
-		audio?.pause();
-		finishReveal();
-	}
-
-	function replayGate() {
-		window.localStorage.removeItem(bypassKey);
-		stage = 'ready';
-		if (audio) audio.currentTime = 0;
-	}
-
-	function toggleAudio() {
-		muted = !muted;
-		if (audio) audio.muted = muted;
-		if (!muted && stage !== 'revealed') void audio?.play().catch(() => undefined);
+		revealTimer = window.setTimeout(finishReveal, 2500);
 	}
 
 	onMount(() => {
 		const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 		reducedMotion = motionQuery.matches;
-		stage = window.localStorage.getItem(bypassKey) === 'true' ? 'revealed' : 'ready';
-
-		const handleReplay = () => replayGate();
-		window.addEventListener('wolves:replay-intro', handleReplay);
+		stage = 'ready';
 
 		return () => {
-			window.removeEventListener('wolves:replay-intro', handleReplay);
 			if (revealTimer) window.clearTimeout(revealTimer);
 			audio?.pause();
 		};
 	});
 </script>
 
-{@render children()}
+<div class="gate-site-reveal" class:opening={stage === 'opening' || stage === 'revealed'}>
+	{@render children()}
+</div>
 
-<audio bind:this={audio} src="/media/warheim/valhalla-gate.mp3" loop preload="metadata"></audio>
+<audio bind:this={audio} src="/media/warheim/valhalla-gate.mp3" preload="auto"></audio>
 
 {#if stage !== 'revealed'}
 	<div class="gate" class:opening={stage === 'opening'} aria-label="Wolves of Ragnarok entry gate">
@@ -98,31 +68,11 @@
 			{#if stage === 'ready'}
 				<button class="enter-button" type="button" onclick={openGate}>
 					<DoorOpen size={18} aria-hidden="true" />
-					<span>Enter the hall</span>
+					<span>Open the gates</span>
 				</button>
 			{:else}
 				<p class="opening-label">The doors remember your name.</p>
 			{/if}
-
-			<div class="gate-actions">
-				<button class="quiet-button" type="button" onclick={skipGate}>
-					<FastForward size={14} aria-hidden="true" />
-					<span>Skip intro</span>
-				</button>
-				<button
-					class="quiet-button"
-					type="button"
-					onclick={toggleAudio}
-					aria-label={muted ? 'Play gate music' : 'Mute gate music'}
-					title={muted ? 'Play gate music' : 'Mute gate music'}
-				>
-					{#if muted}<VolumeX size={15} aria-hidden="true" />{:else}<Volume2
-							size={15}
-							aria-hidden="true"
-						/>{/if}
-					<span>{muted ? 'Music off' : 'Music on'}</span>
-				</button>
-			</div>
 		</div>
 
 		<div class="doors" aria-hidden="true">
@@ -135,6 +85,11 @@
 <style>
 	:global(body:has(.gate)) {
 		overflow: hidden;
+	}
+
+	:global(html),
+	:global(body) {
+		overflow-x: clip;
 	}
 
 	audio {
@@ -179,6 +134,27 @@
 				transparent 66%,
 				rgba(2, 4, 4, 0.74)
 			);
+		transition: opacity 1.65s ease;
+	}
+
+	.gate-site-reveal {
+		position: relative;
+		z-index: 0;
+		min-height: 100vh;
+		opacity: 0;
+		filter: brightness(0.42) saturate(1.45) contrast(1.08);
+		transform: scale(1.055);
+		transform-origin: center;
+		transition:
+			opacity 2.6s cubic-bezier(0.18, 0.68, 0.2, 1) 0.7s,
+			transform 3.8s cubic-bezier(0.16, 0.72, 0.18, 1) 0.45s,
+			filter 2.8s ease 0.62s;
+	}
+
+	.gate-site-reveal.opening {
+		opacity: 1;
+		filter: brightness(1) saturate(1) contrast(1);
+		transform: scale(1);
 	}
 
 	.gate-content {
@@ -190,13 +166,15 @@
 		padding-bottom: 21rem;
 		text-align: center;
 		transition:
-			opacity 700ms ease,
-			transform 700ms ease;
+			opacity 1.25s cubic-bezier(0.22, 0.68, 0.2, 1),
+			transform 1.4s cubic-bezier(0.2, 0.7, 0.18, 1),
+			filter 1.25s cubic-bezier(0.22, 0.68, 0.2, 1);
 	}
 
 	.opening .gate-content {
 		opacity: 0;
-		transform: translateY(-1.5rem);
+		filter: blur(8px);
+		transform: translateY(-1.5rem) scale(0.94);
 	}
 
 	.gate-protocol,
@@ -234,8 +212,7 @@
 		font-size: clamp(0.58rem, 1.5vw, 0.76rem);
 	}
 
-	.enter-button,
-	.quiet-button {
+	.enter-button {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -264,24 +241,6 @@
 		background: rgba(168, 59, 67, 0.24);
 	}
 
-	.gate-actions {
-		display: flex;
-		gap: 1rem;
-		margin-top: 1.1rem;
-	}
-
-	.quiet-button {
-		padding: 0.3rem;
-		background: transparent;
-		color: var(--steel-300);
-		font-size: 0.55rem;
-	}
-
-	.quiet-button:hover,
-	.quiet-button:focus-visible {
-		color: var(--frost-100);
-	}
-
 	.opening-label {
 		margin: 0;
 		color: var(--brass-400);
@@ -293,32 +252,45 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		pointer-events: none;
-		transition: opacity 700ms ease;
+		transition: opacity 1.65s ease;
 	}
 
 	.door {
 		background-image: url('/media/warheim/valhalla-gates.webp');
 		background-repeat: no-repeat;
 		background-size: 200% 100%;
-		transition: transform 1.4s cubic-bezier(0.76, 0, 0.24, 1);
+		transition:
+			transform 2.45s cubic-bezier(0.72, 0.01, 0.18, 1),
+			box-shadow 2.45s cubic-bezier(0.72, 0.01, 0.18, 1);
 	}
 
 	.door-left {
 		background-position: left center;
-		transform-origin: left center;
+		transform-origin: center;
 	}
 
 	.door-right {
 		background-position: right center;
-		transform-origin: right center;
+		transform-origin: center;
 	}
 
 	.opening .door-left {
-		transform: translateX(-100%);
+		transform: translate3d(-101.5%, 0, 0) skewY(-0.45deg);
+		box-shadow:
+			58px 0 130px rgba(0, 0, 0, 0.86),
+			18px 0 46px rgba(155, 4, 20, 0.24);
 	}
 
 	.opening .door-right {
-		transform: translateX(100%);
+		transform: translate3d(101.5%, 0, 0) skewY(0.45deg);
+		box-shadow:
+			-58px 0 130px rgba(0, 0, 0, 0.86),
+			-18px 0 46px rgba(155, 4, 20, 0.24);
+	}
+
+	.opening .gate-veil,
+	.opening .doors {
+		opacity: 0;
 	}
 
 	@media (max-width: 42rem) {
@@ -329,17 +301,14 @@
 		.gate-backdrop {
 			background-position: 58% center;
 		}
-
-		.gate-actions {
-			gap: 0.65rem;
-		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
 		.gate-content,
+		.gate-site-reveal,
 		.doors,
 		.door {
-			transition-duration: 1ms;
+			transition-duration: 1ms !important;
 		}
 	}
 </style>
