@@ -308,8 +308,10 @@ label,
 .brand-lockup {
 	position: relative;
 	z-index: 8;
-	display: grid;
-	justify-items: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
 	min-height: 12.5rem;
 	text-align: center;
 }
@@ -331,6 +333,10 @@ label,
 		0 3px 0 #151d20,
 		0 0 25px rgba(168, 59, 67, 0.3),
 		0 12px 24px #000;
+}
+
+.brand-lockup .brand-title {
+	text-align: left;
 }
 
 .brand-title span,
@@ -416,6 +422,12 @@ label,
 
 	.brand-lockup {
 		min-height: 10rem;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.brand-lockup .brand-title {
+		text-align: center;
 	}
 
 	.portal-grid {

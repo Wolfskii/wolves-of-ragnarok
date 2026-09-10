@@ -175,8 +175,7 @@
 		border: 1px solid rgba(137, 115, 69, 0.35);
 		background: rgba(0, 3, 4, 0.42);
 	}
-	.member-card p,
-	.about-copy {
+	.member-card p {
 		color: #becbc8;
 		font-size: 0.8rem;
 		line-height: 1.7;
@@ -189,11 +188,6 @@
 	.member-card p {
 		margin: 0.75rem 0 0.35rem;
 	}
-	.about-copy {
-		margin-top: 1.5rem;
-		white-space: pre-line;
-	}
-
 	.about-page {
 		margin-top: 1.5rem;
 	}

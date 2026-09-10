@@ -97,25 +97,31 @@ try {
 
 Iron Gate has released Valheim 1.0 and opened the road into the Deep North. This is the beginning of a new chapter for every survivor still carrying a hammer, shield, or half-finished plan into the tenth world.
 
-## New content
+## What was added in Valheim 1.0
 
-- The Deep North biome.
+### The Deep North
+
+- A brand-new Deep North biome.
+- New locations to discover.
+- New creatures and events.
+- New mechanics and music.
+
+### Weapons and equipment
+
 - 40+ new weapons.
 - New bombs and ammunition.
-- Four new armor sets, two capes, and two trinkets.
-- New tools and 10+ new creatures.
-- 80+ new buildable pieces and five crafting-related build pieces.
-- 30+ new crafting materials and 20+ new food items.
-- New locations, music, events, mechanics, upgradeable pockets, and achievements.
+- Four new armor sets.
+- Two new capes and two new trinkets.
+- New tools.
+- Upgradeable pockets.
 
-## Fixes and improvements
+### Building, crafting, and food
 
-- New draw-distance graphics setting.
-- Overhauled hammer and serving-tray menus.
-- Magica cloth system and improved descriptions.
-- Rebalanced enemy spawn chances in the Ashlands.
-- All hair and beard styles available from the start.
-- Unity engine upgrade and further fixes.
+- 80+ new buildable pieces.
+- Five new crafting-related build pieces.
+- 30+ new crafting materials.
+- 20+ new food items.
+- New locations, events, and achievements.
 
 ## Our first expedition
 

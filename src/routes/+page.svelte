@@ -18,7 +18,7 @@
 			title: 'Valheim 1.0 Has Arrived',
 			excerpt:
 				'The Deep North is open. Read what changed and prepare the Wolves for their first expedition.',
-			body: 'Iron Gate has released Valheim 1.0 and opened the road into the Deep North.\n\n## New content\n\n- The Deep North biome.\n- 40+ new weapons.\n- New bombs and ammunition.\n- Four new armor sets, two capes, and two trinkets.\n- New tools and 10+ new creatures.\n- 80+ new buildable pieces and five crafting-related build pieces.\n- 30+ new crafting materials and 20+ new food items.\n- New locations, music, events, mechanics, upgradeable pockets, and achievements.\n\n## Fixes and improvements\n\n- New draw-distance graphics setting.\n- Overhauled hammer and serving-tray menus.\n- Magica cloth system and improved descriptions.\n- Rebalanced enemy spawn chances in the Ashlands.\n- All hair and beard styles available from the start.\n- Unity engine upgrade and further fixes.\n\nThe Wolves are taking the pack north together. Bring warmth, supplies, and a willingness to learn the new threats as a group.',
+			body: 'Iron Gate has released Valheim 1.0 and opened the road into the Deep North. The update is a major new chapter for the tenth world, with new places to explore, new ways to build and fight, and more reasons to gather a group before setting out.\n\n## What was added in Valheim 1.0\n\n### The Deep North\n\n- A brand-new Deep North biome.\n- New locations to discover.\n- New creatures and events.\n- New mechanics and music.\n\n### Weapons and equipment\n\n- 40+ new weapons.\n- New bombs and ammunition.\n- Four new armor sets.\n- Two new capes and two new trinkets.\n- New tools.\n- Upgradeable pockets.\n\n### Building, crafting, and food\n\n- 80+ new buildable pieces.\n- Five new crafting-related build pieces.\n- 30+ new crafting materials.\n- 20+ new food items.\n- New locations, events, and achievements.\n\nThe Wolves are taking the pack north together. Bring warmth, supplies, and a willingness to learn the new threats as a group.',
 			imageUrl: '/media/valheim/valheim-1-0-deep-north.jpg',
 			date: '9 September 2026',
 			author: 'Wolves of Ragnarok',
@@ -53,8 +53,14 @@
 		<main>
 			<div class="portal-shell">
 				<header class="brand-lockup warheim-brand">
+					<img
+						class="brand-mark"
+						src="/images/branding/logo-wolf-light.png"
+						alt="Wolves of Ragnarok wolf crest"
+						width="576"
+						height="642"
+					/>
 					<h1 class="brand-title"><span>Wolves of</span><strong>Ragnarok</strong></h1>
-					<p class="brand-tagline">Good games. Better company.</p>
 				</header>
 
 				<FantasyNavigation />
