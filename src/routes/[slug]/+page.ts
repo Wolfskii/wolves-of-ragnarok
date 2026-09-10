@@ -8,13 +8,6 @@ const pages = {
 		intro: 'Campaign reports, community announcements, and tales carried home from distant worlds.',
 		items: ['The Longhouse Doors Open', 'Ashlands Expedition Muster', 'New Members Enter the Hall']
 	},
-	community: {
-		title: 'The Longhouse',
-		eyebrow: 'Where the guild gathers',
-		intro:
-			'A welcoming home for builders, raiders, explorers, and storytellers who value good company.',
-		items: ['Weekly game nights', 'Community expeditions', 'Discord gatherings']
-	},
 	servers: {
 		title: 'Game Servers',
 		eyebrow: 'Yggdrasil under our banner',

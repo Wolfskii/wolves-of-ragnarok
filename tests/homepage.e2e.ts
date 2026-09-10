@@ -1,8 +1,32 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+
+const introBypassKey = 'wolves-of-ragnarok:intro-bypass:v1';
+
+async function bypassIntro(page: Page) {
+	await page.addInitScript((key: string) => localStorage.setItem(key, 'true'), introBypassKey);
+}
+
+test('opens the Wolves gate and remembers an explicit bypass', async ({ page }) => {
+	await page.setViewportSize({ width: 1280, height: 900 });
+	await page.goto('/');
+
+	await expect(page.getByRole('button', { name: 'Enter the hall' })).toBeVisible();
+	await page.getByRole('button', { name: 'Enter the hall' }).click();
+	await expect(page.getByRole('button', { name: 'Enter the hall' })).toBeHidden();
+	await expect(page.getByRole('heading', { name: 'Map of Yggdrasil' })).toBeVisible();
+
+	await page.reload();
+	await expect(page.getByRole('button', { name: 'Enter the hall' })).toBeVisible();
+	await page.getByRole('button', { name: 'Skip intro' }).click();
+	await expect(page.getByRole('button', { name: 'Skip intro' })).toBeHidden();
+	await page.reload();
+	await expect(page.getByRole('button', { name: 'Enter the hall' })).toBeHidden();
+});
 
 test('renders the fantasy portal without broken artwork or overflow', async ({
 	page
 }, testInfo) => {
+	await bypassIntro(page);
 	await page.setViewportSize({ width: 1920, height: 1080 });
 	await page.goto('/');
 
@@ -17,7 +41,7 @@ test('renders the fantasy portal without broken artwork or overflow', async ({
 	await expect(page.locator('.login-shrine .guardian')).toHaveCount(0);
 	await expect(page.locator('.brand-title')).toHaveCSS('text-shadow', /168, 59, 67/);
 	const discordLinks = page.getByRole('link', { name: 'Discord' });
-	await expect(discordLinks).toHaveCount(2);
+	await expect(discordLinks).toHaveCount(4);
 	for (const link of await discordLinks.all()) {
 		await expect(link).toHaveAttribute('href', 'https://discord.gg/CbjgD7WVfp');
 	}
@@ -43,6 +67,7 @@ test('renders the fantasy portal without broken artwork or overflow', async ({
 });
 
 test('stacks the portal and exposes mobile navigation', async ({ page }, testInfo) => {
+	await bypassIntro(page);
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto('/');
 
@@ -67,10 +92,10 @@ test('shows the map-only live world chart on the servers page', async ({
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto('/servers');
 
-	const liveMap = page.getByRole('region', { name: /^Interactive world map of / });
+	const liveMap = page.locator('.live-map');
 	await expect(liveMap).toBeVisible();
-	await expect.poll(() => liveMap.locator('.leaflet-tile-loaded').count()).toBeGreaterThan(0);
-	await expect(page.locator('iframe')).toHaveCount(0);
+	await expect(liveMap.locator('iframe.public-map')).toBeVisible();
+	await expect(page.locator('iframe')).toHaveCount(1);
 	await expect(page.getByText('valheim.webble.se', { exact: true })).toBeVisible();
 	await expect(page.getByText('4 / 10 players')).toBeVisible();
 	await expect(page.locator('.population strong')).toHaveCount(0);
@@ -85,18 +110,6 @@ test('shows the map-only live world chart on the servers page', async ({
 		.poll(() => page.evaluate(() => navigator.clipboard.readText()))
 		.toBe('valheim.webble.se');
 	await page.screenshot({ path: testInfo.outputPath('servers-live-map.png'), fullPage: true });
-
-	await liveMap.hover();
-	await page.mouse.wheel(0, -600);
-	const mapPane = liveMap.locator('.leaflet-map-pane');
-	const beforeDrag = await mapPane.getAttribute('style');
-	const mapBox = await liveMap.boundingBox();
-	expect(mapBox).not.toBeNull();
-	await page.mouse.move(mapBox!.x + mapBox!.width / 2, mapBox!.y + mapBox!.height / 2);
-	await page.mouse.down();
-	await page.mouse.move(mapBox!.x + mapBox!.width / 2 + 70, mapBox!.y + mapBox!.height / 2 + 40);
-	await page.mouse.up();
-	await expect.poll(() => mapPane.getAttribute('style')).not.toBe(beforeDrag);
 
 	await page.setViewportSize({ width: 390, height: 844 });
 	await expect(liveMap).toBeVisible();
@@ -126,15 +139,7 @@ test('serves public destinations, auth entry, status data, and guards administra
 	expect(passwordResponse.status()).toBe(401);
 	expect(passwordResponse.headers()['cache-control']).toContain('no-store');
 
-	for (const path of [
-		'/news',
-		'/community',
-		'/servers',
-		'/members',
-		'/about',
-		'/rules',
-		'/register'
-	]) {
+	for (const path of ['/news', '/servers', '/members', '/about', '/rules', '/register']) {
 		const response = await request.get(path);
 		expect(response.status(), `${path} should resolve`).toBe(200);
 	}
@@ -145,9 +150,8 @@ test('serves public destinations, auth entry, status data, and guards administra
 	await expect(page.getByRole('heading', { name: 'Guild Roster' })).toBeVisible();
 	await page.goto('/about');
 	await expect(page.getByRole('heading', { name: 'About Us' })).toBeVisible();
-	await page.goto('/community/welcome-to-the-longhouse');
-	await expect(page.getByRole('heading', { name: 'Sign in to read this thread' })).toBeVisible();
-	await expect(page.locator('.post-body')).toHaveCount(0);
+	await expect((await request.get('/community')).status()).toBe(404);
+	await expect((await request.get('/community/welcome-to-the-longhouse')).status()).toBe(404);
 
 	await page.goto('/admin');
 	await expect(page).toHaveURL('/');

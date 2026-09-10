@@ -1,7 +1,6 @@
 <script lang="ts">
 	/* eslint-disable svelte/no-at-html-tags -- member bios are sanitized by the server loader. */
 	import PortalPageShell from '$lib/components/fantasy/PortalPageShell.svelte';
-	import ForumAuthor from '$lib/components/fantasy/ForumAuthor.svelte';
 	import ServerLiveMap from '$lib/components/fantasy/ServerLiveMap.svelte';
 	import ServerStatus from '$lib/components/fantasy/ServerStatus.svelte';
 	import { resolve } from '$app/paths';
@@ -49,7 +48,7 @@
 				{#if data.members?.length}
 					{#each data.members as member (member.username)}
 						<article class="member-card">
-							<ForumAuthor author={member} />
+							<h2 class="member-name">{member.username}</h2>
 							<p>{@html member.bio || 'A member of the Wolves of Ragnarok.'}</p>
 							<small>{member.role} · Joined {member.createdAt.toLocaleDateString()}</small>
 						</article>

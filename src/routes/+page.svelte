@@ -4,6 +4,7 @@
 	import FantasyPanel from '$lib/components/fantasy/FantasyPanel.svelte';
 	import LoginPanel from '$lib/components/fantasy/LoginPanel.svelte';
 	import NewsCard from '$lib/components/fantasy/NewsCard.svelte';
+	import RagnarokGate from '$lib/components/fantasy/RagnarokGate.svelte';
 	import ServerLiveMap from '$lib/components/fantasy/ServerLiveMap.svelte';
 	import ServerStatus from '$lib/components/fantasy/ServerStatus.svelte';
 	import UserPanel from '$lib/components/fantasy/UserPanel.svelte';
@@ -57,143 +58,157 @@
 	/>
 </svelte:head>
 
-<div class="site-world">
-	<main>
-		<div class="portal-shell">
-			<header class="brand-lockup">
-				<img
-					class="brand-mark"
-					src="/images/branding/logo-wolf-light.png"
-					alt="Wolves of Ragnarok wolf crest"
-					width="576"
-					height="642"
-				/>
-				<h1 class="brand-title">Wolves of Ragnarok</h1>
-				<p class="brand-tagline">Late nights. Good games. No empty seats.</p>
-			</header>
+<RagnarokGate>
+	<div class="site-world">
+		<main>
+			<div class="portal-shell">
+				<header class="brand-lockup">
+					<img
+						class="brand-mark"
+						src="/images/branding/logo-wolf-light.png"
+						alt="Wolves of Ragnarok wolf crest"
+						width="576"
+						height="642"
+					/>
+					<h1 class="brand-title">Wolves of Ragnarok</h1>
+					<p class="brand-tagline">Late nights. Good games. No empty seats.</p>
+				</header>
 
-			<FantasyNavigation />
+				<FantasyNavigation />
 
-			<div class="portal-crown" aria-hidden="true">
-				<span>ᛏ</span><i></i><b>ᛟ</b><i></i><span>ᛉ</span>
-			</div>
-
-			<img
-				class="world-art world-art--wolf"
-				src="/images/creatures/wolf-foreground-left.webp"
-				alt=""
-				width="1024"
-				height="1024"
-				aria-hidden="true"
-			/>
-			<img
-				class="world-art world-art--warrior"
-				src="/images/characters/viking-warrior-right.webp"
-				alt=""
-				width="1024"
-				height="1536"
-				aria-hidden="true"
-			/>
-
-			<div class="portal-grid">
-				<aside
-					class="portal-sidebar portal-sidebar--left"
-					aria-label="Member access and announcements"
-				>
-					{#if data.user}
-						<UserPanel user={data.user} />
-					{:else}
-						<LoginPanel error={form?.loginError} identifier={form?.identifier} />
-					{/if}
-					<FantasyPanel title="War Council" eyebrow="From the longhouse">
-						<ul class="brief-list">
-							<li><span>Fri</span><a href={resolve('/community')}>Ashlands raid muster</a></li>
-							<li><span>Sat</span><a href={resolve('/community')}>Build night at the Den</a></li>
-							<li><span>Sun</span><a href={resolve('/community')}>Community feast</a></li>
-						</ul>
-					</FantasyPanel>
-				</aside>
-
-				<div class="portal-main">
-					<FantasyPanel class="welcome-panel" eyebrow="A summons from the North">
-						<div class="welcome">
-							<p class="section-kicker">The old hall awakens</p>
-							<h2 class="section-heading">Stand with the fellowship</h2>
-							<p>
-								We are a fellowship of builders, raiders, wanderers, and storytellers. Our fires
-								burn across Valheim and every world where good company matters more than glory.
-							</p>
-							<div class="welcome-actions">
-								<a class="primary-action" href={resolve('/register')}
-									>Answer the call <ArrowRight size={16} /></a
-								>
-								<a class="secondary-action" href={resolve('/about')}>Read our saga</a>
-							</div>
-						</div>
-					</FantasyPanel>
-
-					<FantasyPanel title="Latest Chronicles" eyebrow="Carved into memory">
-						<div class="news-list">
-							{#each news as article (article.title)}
-								<NewsCard {...article} />
-							{/each}
-						</div>
-					</FantasyPanel>
+				<div class="portal-crown" aria-hidden="true">
+					<span>ᛏ</span><i></i><b>ᛟ</b><i></i><span>ᛉ</span>
 				</div>
 
-				<aside
-					class="portal-sidebar portal-sidebar--right"
-					aria-label="Server status and guild links"
-				>
-					<ServerStatus />
-					<FantasyPanel title="Paths from the Hall" eyebrow="Choose your road">
-						<nav class="path-list" aria-label="Community links">
-							<a href={resolve('/members')}
-								><UsersRound size={17} /><span>Guild roster<small>Meet the members</small></span></a
-							>
-							<a href={resolve('/servers')}
-								><Swords size={17} /><span>Game servers<small>Find the battle</small></span></a
-							>
-							<a href={resolve('/rules')}
-								><Shield size={17} /><span>Oath and law<small>Read the rules</small></span></a
-							>
-						</nav>
-					</FantasyPanel>
-				</aside>
-			</div>
-		</div>
+				<img
+					class="world-art world-art--wolf"
+					src="/images/creatures/wolf-foreground-left.webp"
+					alt=""
+					width="1024"
+					height="1024"
+					aria-hidden="true"
+				/>
+				<img
+					class="world-art world-art--warrior"
+					src="/images/characters/viking-warrior-right.webp"
+					alt=""
+					width="1024"
+					height="1536"
+					aria-hidden="true"
+				/>
 
-		<section class="serpent-band" aria-labelledby="world-map-heading">
-			<div class="map-heading">
-				<p class="section-kicker">The realm beneath our banner</p>
-				<h2 id="world-map-heading">Map of Yggdrasil</h2>
-			</div>
-			<div class="serpent-map">
-				<ServerLiveMap immersive title="Live world chart" />
-			</div>
-			<img
-				class="serpent"
-				src="/images/creatures/world-serpent.webp"
-				alt=""
-				width="1536"
-				height="1024"
-				loading="lazy"
-				aria-hidden="true"
-			/>
-			<img
-				class="shieldmaiden"
-				src="/images/characters/shieldmaiden-left.webp"
-				alt=""
-				width="1024"
-				height="1536"
-				loading="lazy"
-				aria-hidden="true"
-			/>
-		</section>
-	</main>
+				<div class="portal-grid">
+					<aside
+						class="portal-sidebar portal-sidebar--left"
+						aria-label="Member access and announcements"
+					>
+						{#if data.user}
+							<UserPanel user={data.user} />
+						{:else}
+							<LoginPanel error={form?.loginError} identifier={form?.identifier} />
+						{/if}
+						<FantasyPanel title="The Pack Gathers" eyebrow="From the longhouse">
+							<ul class="brief-list">
+								<li>
+									<span>01</span><a
+										href="https://discord.gg/CbjgD7WVfp"
+										target="_blank"
+										rel="noreferrer">Enter the Discord hall</a
+									>
+								</li>
+								<li><span>02</span><a href={resolve('/servers')}>Find the Yggdrasil world</a></li>
+								<li><span>03</span><a href={resolve('/register')}>Take the pack oath</a></li>
+							</ul>
+						</FantasyPanel>
+					</aside>
 
-	<FantasyFooter />
-</div>
+					<div class="portal-main">
+						<FantasyPanel class="welcome-panel" eyebrow="A summons from the North">
+							<div class="welcome">
+								<p class="section-kicker">The threshold is open</p>
+								<h2 class="section-heading">Enter the Wolves of Ragnarok</h2>
+								<p>
+									A Valheim community for builders, raiders, wanderers, and storytellers. The fire
+									is lit, the world is waiting, and the next story is yours to shape.
+								</p>
+								<div class="welcome-actions">
+									<a class="primary-action" href={resolve('/servers')}
+										>Enter Yggdrasil <ArrowRight size={16} /></a
+									>
+									<a
+										class="secondary-action"
+										href="https://discord.gg/CbjgD7WVfp"
+										target="_blank"
+										rel="noreferrer">Join Discord</a
+									>
+								</div>
+							</div>
+						</FantasyPanel>
+
+						<FantasyPanel title="Latest Chronicles" eyebrow="Carved into memory">
+							<div class="news-list">
+								{#each news as article (article.title)}
+									<NewsCard {...article} />
+								{/each}
+							</div>
+						</FantasyPanel>
+					</div>
+
+					<aside
+						class="portal-sidebar portal-sidebar--right"
+						aria-label="Server status and guild links"
+					>
+						<ServerStatus />
+						<FantasyPanel title="Paths from the Hall" eyebrow="Choose your road">
+							<nav class="path-list" aria-label="Community links">
+								<a href={resolve('/members')}
+									><UsersRound size={17} /><span>Guild roster<small>Meet the members</small></span
+									></a
+								>
+								<a href={resolve('/servers')}
+									><Swords size={17} /><span>Game servers<small>Find the battle</small></span></a
+								>
+								<a href={resolve('/rules')}
+									><Shield size={17} /><span>Oath and law<small>Read the rules</small></span></a
+								>
+							</nav>
+						</FantasyPanel>
+					</aside>
+				</div>
+			</div>
+
+			<section class="serpent-band" aria-labelledby="world-map-heading">
+				<div class="map-heading">
+					<p class="section-kicker">The realm beneath our banner</p>
+					<h2 id="world-map-heading">Map of Yggdrasil</h2>
+				</div>
+				<div class="serpent-map">
+					<ServerLiveMap immersive title="Live world chart" />
+				</div>
+				<img
+					class="serpent"
+					src="/images/creatures/world-serpent.webp"
+					alt=""
+					width="1536"
+					height="1024"
+					loading="lazy"
+					aria-hidden="true"
+				/>
+				<img
+					class="shieldmaiden"
+					src="/images/characters/shieldmaiden-left.webp"
+					alt=""
+					width="1024"
+					height="1536"
+					loading="lazy"
+					aria-hidden="true"
+				/>
+			</section>
+		</main>
+
+		<FantasyFooter />
+	</div>
+</RagnarokGate>
 
 <style>
 	.portal-crown {

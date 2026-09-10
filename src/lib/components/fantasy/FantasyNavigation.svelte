@@ -7,7 +7,6 @@
 	const links = [
 		{ href: '/', label: 'Home' },
 		{ href: '/news', label: 'News' },
-		{ href: '/community', label: 'Community' },
 		{ href: '/servers', label: 'Servers' },
 		{ href: '/members', label: 'Members' },
 		{ href: '/about', label: 'About' }

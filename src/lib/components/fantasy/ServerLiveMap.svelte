@@ -58,11 +58,7 @@
 <figure class="live-map" class:immersive aria-labelledby="live-map-title">
 	<div class="map-frame">
 		{#if mapUrl}
-			<iframe
-				class="public-map"
-				src={mapUrl}
-				title={`Public Valheim map of ${worldName}`}
-			></iframe>
+			<iframe class="public-map" src={mapUrl} title={`Public Valheim map of ${worldName}`}></iframe>
 		{:else}
 			<p role="status">The world chart is unavailable.</p>
 		{/if}

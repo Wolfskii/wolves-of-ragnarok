@@ -9,6 +9,14 @@
 - `static/images/ui/server-shield.webp`: server-status emblem
 - `static/images/ui/*.svg`: original reusable ornament system
 
+## Imported Reference Media
+
+- `static/media/warheim/valhalla-gates.webp`: local copy of the owned Warheim Valhalla gate artwork, sourced from `https://warheim.fr/media/warheim-valhalla-gates.webp`.
+- `static/media/warheim/forged-hero.webp`: local copy of the owned Warheim forged hero artwork, sourced from `https://warheim.fr/media/warheim-forged-hero.webp`.
+- `static/media/warheim/valhalla-gate.mp3`: local copy of the owned Warheim gate music, sourced from `https://warheim.fr/audio/valhalla-gate.mp3`.
+
+These files were copied locally with the owner's permission for the Wolves of Ragnarok entry experience. They are not hotlinked at runtime.
+
 Do not alter the official logos beyond derived favicon/social sizes. Preserve source aspect ratios and transparent edges. Document origin/license for every future non-original asset.
 
 ## Composition

@@ -10,7 +10,7 @@ docker compose up --build -d
 docker compose ps
 ```
 
-The `migrate` service applies checked-in migrations, runs the idempotent seed with `ADMIN_EMAIL`, `ADMIN_USERNAME`, and `ADMIN_PASSWORD`, and exits before `web` starts. A normal redeploy therefore applies schema changes and keeps the admin account, demo users, forum threads, and starter content current automatically.
+The `migrate` service applies checked-in migrations, runs the idempotent seed with `ADMIN_EMAIL`, `ADMIN_USERNAME`, and `ADMIN_PASSWORD`, and exits before `web` starts. A normal redeploy therefore applies schema changes and keeps the admin account, demo users, and starter content current automatically.
 
 ## Reverse Proxy
 

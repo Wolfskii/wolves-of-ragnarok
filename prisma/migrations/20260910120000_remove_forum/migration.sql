@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS "ForumPost";
+DROP TABLE IF EXISTS "ForumThread";
