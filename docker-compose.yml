@@ -67,6 +67,8 @@ services:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD}
     networks:
       - app-network
+    volumes:
+      - uploads:/app/uploads
 
   postgres:
     image: postgres:17-alpine

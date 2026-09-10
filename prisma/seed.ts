@@ -1,8 +1,11 @@
 import 'dotenv/config';
+import { copyFile, mkdir, stat } from 'node:fs/promises';
 import { randomBytes } from 'node:crypto';
+import { resolve } from 'node:path';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../src/generated/prisma/client';
 import { hashPassword } from '../src/lib/server/auth/crypto';
+import sharp from 'sharp';
 
 const databaseUrl = process.env.DATABASE_URL;
 const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
@@ -130,12 +133,46 @@ We will be taking the Wolves into the Deep North together. Bring warmth, supplie
 Official announcement: https://www.valheimgame.com/news/valheim-1-0-has-arrived-/
 Official 1.0 FAQ: https://www.valheimgame.com/support/valheim-1-0-faq`;
 
+	const coverFilename = 'valheim-1-0-deep-north.jpg';
+	const coverSource = resolve(process.cwd(), 'static/media/valheim', coverFilename);
+	const coverStoragePath = `media/${coverFilename}`;
+	const coverDestination = resolve(process.env.UPLOAD_DIR ?? './uploads', coverStoragePath);
+	await mkdir(resolve(coverDestination, '..'), { recursive: true });
+	await copyFile(coverSource, coverDestination);
+	const coverMetadata = await sharp(coverSource).metadata();
+	const coverSize = (await stat(coverSource)).size;
+	const coverMedia = await database.media.upsert({
+		where: { storagePath: coverStoragePath },
+		update: {
+			kind: 'NEWS_COVER',
+			filename: coverFilename,
+			mimeType: 'image/jpeg',
+			sizeBytes: coverSize,
+			width: coverMetadata.width,
+			height: coverMetadata.height,
+			altText: 'Valheim 1.0 Deep North landscape',
+			uploadedById: admin.id
+		},
+		create: {
+			kind: 'NEWS_COVER',
+			filename: coverFilename,
+			storagePath: coverStoragePath,
+			mimeType: 'image/jpeg',
+			sizeBytes: coverSize,
+			width: coverMetadata.width,
+			height: coverMetadata.height,
+			altText: 'Valheim 1.0 Deep North landscape',
+			uploadedById: admin.id
+		}
+	});
+
 	await database.newsPost.upsert({
 		where: { slug: 'valheim-1-0-has-arrived' },
 		update: {
 			excerpt:
 				'Valheim 1.0 is live. The Deep North is open, with new threats, tools, building pieces, and reasons to gather the pack.',
-			body: valheimReleaseBody
+			body: valheimReleaseBody,
+			coverMediaId: coverMedia.id
 		},
 		create: {
 			slug: 'valheim-1-0-has-arrived',
@@ -145,7 +182,8 @@ Official 1.0 FAQ: https://www.valheimgame.com/support/valheim-1-0-faq`;
 			body: valheimReleaseBody,
 			status: 'PUBLISHED',
 			publishedAt: new Date('2026-09-09T12:00:00Z'),
-			authorId: admin.id
+			authorId: admin.id,
+			coverMediaId: coverMedia.id
 		}
 	});
 

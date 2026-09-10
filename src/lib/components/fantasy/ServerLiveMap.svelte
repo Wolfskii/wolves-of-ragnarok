@@ -125,8 +125,9 @@
 	}
 
 	.immersive .map-frame {
-		aspect-ratio: 16 / 9;
-		min-height: 34rem;
+		width: 100%;
+		height: clamp(28rem, 52vw, 42rem);
+		aspect-ratio: auto;
 	}
 
 	.map-frame::after {
@@ -206,8 +207,7 @@
 
 	@media (max-width: 35rem) {
 		.immersive .map-frame {
-			aspect-ratio: 4 / 5;
-			min-height: 30rem;
+			height: 30rem;
 		}
 
 		figcaption {

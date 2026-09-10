@@ -68,6 +68,7 @@ test('renders the fantasy portal without broken artwork or overflow', async ({
 	await expect(page.getByText('RUNE AUDIO · 01')).toBeVisible();
 	await expect(page.getByRole('button', { name: 'Pause radio' })).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Valheim 1.0 Has Arrived' })).toBeVisible();
+	await expect(page.locator('.news-art').first()).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'The Longhouse Doors Open' })).toHaveCount(0);
 	await expect(page.getByRole('heading', { name: 'Ashlands Expedition Muster' })).toHaveCount(0);
 	await expect(page.getByRole('heading', { name: 'New Members Enter the Hall' })).toHaveCount(0);
