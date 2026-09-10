@@ -7,7 +7,6 @@
 
 	const links = [
 		{ href: '/', label: 'Home' },
-		{ href: '/survive', label: 'Survive' },
 		{ href: '/about', label: 'About' },
 		{ href: '/merch', label: 'Merch' },
 		{ href: '/wiki', label: 'Wiki' },
@@ -111,7 +110,7 @@
 	ul {
 		display: flex;
 		align-items: stretch;
-		justify-content: center;
+		justify-content: flex-start;
 		margin: 0;
 		padding: 0 0.55rem;
 		list-style: none;

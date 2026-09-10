@@ -38,27 +38,6 @@
 				<p class="empty">The roster is currently unavailable.</p>
 			{/if}
 		</section>
-	{:else if data.page.title === 'Survive the Realm'}
-		<section class="realm-page">
-			<div class="realm-page-heading">
-				<p class="section-kicker">The first law // survive together</p>
-				<h2><span>The world will</span><strong>test you.</strong></h2>
-				<p>{data.page.intro}</p>
-			</div>
-			<div class="realm-law-grid">
-				{#each data.page.items as item, index (item)}
-					<article>
-						<span class="law-rune" aria-hidden="true">{['ᚦ', 'ᛏ', 'ᛉ', 'ᚷ'][index] ?? 'ᛟ'}</span>
-						<h3>{['Preparation is power', 'Read the threat', 'Return better'][index]}</h3>
-						<p>{item}</p>
-					</article>
-				{/each}
-			</div>
-			<p class="realm-callout">
-				No one survives alone. Make the plan in Discord, step through the gates together, and leave
-				Yggdrasil with a story worth bringing home.
-			</p>
-		</section>
 	{:else if data.page.title === 'About Us'}
 		<section class="about-page">
 			<div class="about-lead">
@@ -228,7 +207,7 @@
 		max-width: 12ch;
 		margin: 0 0 1rem;
 		color: var(--frost-100);
-		font-size: clamp(2rem, 6vw, 4.5rem);
+		font-size: clamp(1.7rem, 4vw, 3.4rem);
 		line-height: 0.96;
 		text-transform: uppercase;
 	}
@@ -308,7 +287,7 @@
 		max-width: 12ch;
 		margin: 0 0 1rem;
 		color: var(--frost-100);
-		font-size: clamp(2rem, 6vw, 4.5rem);
+		font-size: clamp(1.7rem, 4vw, 3.4rem);
 		line-height: 0.96;
 		text-transform: uppercase;
 	}
@@ -372,81 +351,6 @@
 		font-size: 1rem;
 		font-style: italic;
 	}
-	.realm-page {
-		margin-top: 1.5rem;
-	}
-	.realm-page-heading {
-		padding: 1rem 0 2rem;
-		border-bottom: 1px solid rgba(197, 174, 112, 0.25);
-	}
-	.realm-page-heading h2 {
-		max-width: 12ch;
-		margin: 0 0 1rem;
-		color: var(--frost-100);
-		font-size: clamp(2rem, 6vw, 4.5rem);
-		line-height: 0.96;
-		text-transform: uppercase;
-	}
-	.realm-page-heading h2 span,
-	.realm-page-heading h2 strong {
-		display: block;
-	}
-	.realm-page-heading h2 strong {
-		color: var(--rune-300);
-		font-weight: 400;
-	}
-	.realm-page-heading > p:last-child {
-		max-width: 55ch;
-		margin: 0;
-		color: var(--text-muted);
-		font-size: 0.85rem;
-		line-height: 1.8;
-	}
-	.realm-law-grid {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 0.75rem;
-		margin-top: 1.5rem;
-	}
-	.realm-law-grid article {
-		min-height: 14rem;
-		padding: 1.1rem;
-		border: 1px solid rgba(126, 132, 119, 0.3);
-		background: linear-gradient(135deg, rgba(29, 36, 31, 0.68), rgba(8, 11, 10, 0.8));
-	}
-	.law-rune {
-		display: grid;
-		place-items: center;
-		width: 2.5rem;
-		height: 2.5rem;
-		margin-bottom: 1.4rem;
-		border: 1px solid var(--rune-400);
-		color: var(--rune-300);
-		font-family: var(--display);
-		font-size: 1.1rem;
-	}
-	.realm-law-grid h3 {
-		margin: 0 0 0.55rem;
-		color: var(--frost-100);
-		font-size: 1.05rem;
-		text-transform: uppercase;
-	}
-	.realm-law-grid p {
-		margin: 0;
-		color: var(--text-muted);
-		font-size: 0.74rem;
-		line-height: 1.7;
-	}
-	.realm-callout {
-		margin: 1.5rem 0 0;
-		padding: 1rem;
-		border-left: 2px solid var(--rune-400);
-		background: rgba(143, 17, 25, 0.11);
-		color: var(--brass-400);
-		font-family: var(--manuscript);
-		font-size: 1.05rem;
-		font-style: italic;
-	}
 	.empty {
 		color: var(--text-muted);
 		font-size: 0.78rem;
@@ -468,10 +372,6 @@
 			max-width: 24rem;
 			margin-inline: auto;
 		}
-		.realm-law-grid {
-			grid-template-columns: 1fr;
-		}
-
 		.about-grid {
 			grid-template-columns: 1fr;
 		}

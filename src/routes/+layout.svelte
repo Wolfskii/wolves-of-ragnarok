@@ -12,7 +12,6 @@
 </svelte:head>
 
 <div class="route-stage">
-	<div class="atmospheric-snow" aria-hidden="true"></div>
 	{#key page.url.pathname}
 		<div class="route-layer" in:fade={{ duration: 420 }} out:fade={{ duration: 260 }}>
 			{@render children()}
@@ -28,51 +27,19 @@
 		background: var(--ink-950);
 	}
 
-	.atmospheric-snow {
-		position: fixed;
-		inset: -18vh -18vw;
-		z-index: 1;
-		pointer-events: none;
-		opacity: 0.19;
-		background-image:
-			repeating-linear-gradient(
-				125deg,
-				transparent 0 15px,
-				rgba(229, 216, 187, 0.34) 15px 16px,
-				transparent 16px 34px
-			),
-			repeating-linear-gradient(
-				125deg,
-				transparent 0 38px,
-				rgba(201, 185, 149, 0.2) 38px 39px,
-				transparent 39px 77px
-			);
-		background-size:
-			180px 180px,
-			320px 320px;
-		mix-blend-mode: screen;
-		transform: translate3d(-7%, -7%, 0);
-		animation: snow-drift 18s linear infinite;
-	}
-
 	.route-layer {
 		position: relative;
-		z-index: 2;
+		z-index: 0;
 		min-height: 100vh;
 	}
 
-	@keyframes snow-drift {
-		from {
-			transform: translate3d(-7%, -7%, 0);
-		}
-		to {
-			transform: translate3d(7%, 7%, 0);
-		}
+	.route-layer :global(.site-world) {
+		isolation: auto;
 	}
 
-	@media (prefers-reduced-motion: reduce) {
-		.atmospheric-snow {
-			animation: none;
-		}
+	.route-layer :global(.site-world > main),
+	.route-layer :global(.site-world > footer) {
+		position: relative;
+		z-index: 2;
 	}
 </style>

@@ -93,7 +93,8 @@
 	h3 {
 		margin: 0 0 0.45rem;
 		color: var(--frost-100);
-		font-size: 1rem;
+		font-size: clamp(1.35rem, 2.3vw, 1.8rem);
+		line-height: 1.05;
 	}
 
 	.news-art {

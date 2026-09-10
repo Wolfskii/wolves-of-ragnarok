@@ -2,16 +2,6 @@ import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 const pages = {
-	survive: {
-		title: 'Survive the Realm',
-		eyebrow: 'The first law of Yggdrasil',
-		intro: 'Preparation, coordination, and courage turn a hostile world into a home.',
-		items: [
-			'Every expedition begins before you leave the gates.',
-			'Bosses are group problems. Bring a plan and bring the pack.',
-			'Death is information. Return better prepared.'
-		]
-	},
 	servers: {
 		title: 'Game Servers',
 		eyebrow: 'Yggdrasil under our banner',

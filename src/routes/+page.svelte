@@ -3,11 +3,12 @@
 	import FantasyNavigation from '$lib/components/fantasy/FantasyNavigation.svelte';
 	import FantasyPanel from '$lib/components/fantasy/FantasyPanel.svelte';
 	import NewsCard from '$lib/components/fantasy/NewsCard.svelte';
+	import PortalBrand from '$lib/components/fantasy/PortalBrand.svelte';
 	import RagnarokGate from '$lib/components/fantasy/RagnarokGate.svelte';
-	import ServerLiveMap from '$lib/components/fantasy/ServerLiveMap.svelte';
+	import RealmSystems from '$lib/components/fantasy/RealmSystems.svelte';
 	import ServerStatus from '$lib/components/fantasy/ServerStatus.svelte';
 	import { resolve } from '$app/paths';
-	import { ArrowRight, Shield, Swords, UsersRound } from '@lucide/svelte';
+	import { ArrowRight } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -52,18 +53,10 @@
 	<div class="site-world">
 		<main>
 			<div class="portal-shell">
-				<header class="brand-lockup warheim-brand">
-					<img
-						class="brand-mark"
-						src="/images/branding/logo-wolf-light.png"
-						alt="Wolves of Ragnarok wolf crest"
-						width="576"
-						height="642"
-					/>
-					<h1 class="brand-title"><span>Wolves of</span><strong>Ragnarok</strong></h1>
+				<header>
+					<PortalBrand />
+					<FantasyNavigation />
 				</header>
-
-				<FantasyNavigation />
 
 				<div class="portal-crown" aria-hidden="true">
 					<span>ᛏ</span><i></i><b>ᛟ</b><i></i><span>ᛉ</span>
@@ -77,38 +70,17 @@
 					height="1024"
 					aria-hidden="true"
 				/>
+				<img
+					class="world-art world-art--male-warrior"
+					src="/images/characters/viking-warrior-right.webp"
+					alt=""
+					width="1024"
+					height="1536"
+					aria-hidden="true"
+				/>
 				<div class="portal-grid">
-					<aside
-						class="portal-sidebar portal-sidebar--left"
-						aria-label="Community access and realm notices"
-					>
-						<FantasyPanel title="Join the Pack" eyebrow="Discord is the longhouse">
-							<p class="aside-copy">
-								No forum. No dead halls. Find the next expedition, ask for help, and meet the people
-								behind the names in Discord.
-							</p>
-							<a
-								class="discord-action"
-								href="https://discord.gg/CbjgD7WVfp"
-								target="_blank"
-								rel="noreferrer">Join Discord <ArrowRight size={14} /></a
-							>
-						</FantasyPanel>
-						<FantasyPanel title="The Pack Gathers" eyebrow="Choose your road">
-							<ul class="brief-list">
-								<li>
-									<span>01</span><a href={resolve('/servers')}>Enter Yggdrasil</a>
-								</li>
-								<li>
-									<span>02</span><a
-										href="https://discord.gg/CbjgD7WVfp"
-										target="_blank"
-										rel="noreferrer">Join Discord</a
-									>
-								</li>
-								<li><span>03</span><a href={resolve('/rules')}>Learn the oath</a></li>
-							</ul>
-						</FantasyPanel>
+					<aside class="portal-sidebar portal-sidebar--left" aria-label="Realm systems">
+						<RealmSystems />
 					</aside>
 
 					<div class="portal-main">
@@ -122,14 +94,14 @@
 								</p>
 								<div class="welcome-actions">
 									<a class="primary-action" href={resolve('/servers')}
-										>Enter the Yggdrasil Valheim server <ArrowRight size={16} /></a
+										>Enter Yggdrasil <ArrowRight size={16} /></a
 									>
 									<a class="secondary-action" href={resolve('/about')}>Know the realm</a>
 								</div>
 							</div>
 						</FantasyPanel>
 
-						<FantasyPanel title="Latest Chronicles" eyebrow="Carved into memory">
+						<FantasyPanel>
 							<div class="news-list">
 								{#each news as article (article.title)}
 									<NewsCard {...article} />
@@ -138,25 +110,8 @@
 						</FantasyPanel>
 					</div>
 
-					<aside
-						class="portal-sidebar portal-sidebar--right"
-						aria-label="Server status and guild links"
-					>
+					<aside class="portal-sidebar portal-sidebar--right" aria-label="Server status">
 						<ServerStatus showInfoLink />
-						<FantasyPanel title="Survival Systems" eyebrow="The realm is still breathing">
-							<nav class="path-list" aria-label="Realm links">
-								<a href={resolve('/members')}
-									><UsersRound size={17} /><span>Guild roster<small>Meet the members</small></span
-									></a
-								>
-								<a href={resolve('/servers')}
-									><Swords size={17} /><span>Game servers<small>Find the battle</small></span></a
-								>
-								<a href={resolve('/rules')}
-									><Shield size={17} /><span>Oath and law<small>Read the rules</small></span></a
-								>
-							</nav>
-						</FantasyPanel>
 					</aside>
 				</div>
 			</div>
@@ -193,34 +148,6 @@
 					</p>
 				</div>
 				<div class="manifesto-aside">CONCEIVED FOR SURVIVAL.<br />NOT FOR SIGHTSEEING.</div>
-			</section>
-
-			<section class="serpent-band" aria-labelledby="world-map-heading">
-				<div class="map-heading">
-					<p class="section-kicker">The realm beneath our banner</p>
-					<h2 id="world-map-heading">Map of Yggdrasil</h2>
-				</div>
-				<div class="serpent-map">
-					<ServerLiveMap immersive title="Live world chart" />
-				</div>
-				<img
-					class="serpent"
-					src="/images/creatures/world-serpent.webp"
-					alt=""
-					width="1536"
-					height="1024"
-					loading="lazy"
-					aria-hidden="true"
-				/>
-				<img
-					class="shieldmaiden"
-					src="/images/characters/shieldmaiden-left.webp"
-					alt=""
-					width="1024"
-					height="1536"
-					loading="lazy"
-					aria-hidden="true"
-				/>
 			</section>
 		</main>
 
@@ -283,6 +210,14 @@
 		filter: drop-shadow(0 20px 30px #000);
 	}
 
+	.world-art--male-warrior {
+		top: 18rem;
+		left: clamp(-25rem, -21vw, -14rem);
+		z-index: 3;
+		width: clamp(17rem, 24vw, 25rem);
+		filter: drop-shadow(0 20px 30px #000);
+	}
+
 	:global(.welcome-panel) {
 		margin-bottom: 1.5rem;
 	}
@@ -330,148 +265,6 @@
 		);
 	}
 
-	.secondary-action {
-		color: var(--steel-300);
-	}
-
-	.brief-list {
-		display: grid;
-		gap: 0.5rem;
-		margin: 0;
-		padding: 0;
-		list-style: none;
-	}
-
-	.brief-list li {
-		display: grid;
-		grid-template-columns: 2rem minmax(0, 1fr);
-		gap: 0.55rem;
-		align-items: start;
-		padding-bottom: 0.5rem;
-		border-bottom: 1px solid rgba(184, 197, 198, 0.09);
-		font-size: 0.66rem;
-	}
-
-	.brief-list span {
-		color: var(--brass-400);
-		font-family: var(--display);
-		text-transform: uppercase;
-	}
-
-	.brief-list a {
-		color: var(--text);
-		text-decoration: none;
-	}
-
-	.path-list {
-		display: grid;
-		gap: 0.35rem;
-	}
-
-	.path-list a {
-		display: grid;
-		grid-template-columns: 1.5rem minmax(0, 1fr);
-		gap: 0.5rem;
-		align-items: center;
-		padding: 0.55rem;
-		border-bottom: 1px solid rgba(184, 197, 198, 0.09);
-		color: var(--steel-300);
-		font-family: var(--display);
-		font-size: 0.62rem;
-		text-decoration: none;
-		text-transform: uppercase;
-	}
-
-	.path-list :global(svg) {
-		color: var(--rune-400);
-	}
-
-	.path-list small {
-		display: block;
-		margin-top: 0.05rem;
-		color: var(--text-muted);
-		font-family: var(--body);
-		font-size: 0.52rem;
-		text-transform: none;
-	}
-
-	.serpent-band {
-		position: relative;
-		min-height: 50rem;
-		margin-top: 1rem;
-		overflow: hidden;
-		background: linear-gradient(180deg, #030608, transparent 12%, transparent 72%, #030608 100%);
-	}
-
-	.serpent-band::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		z-index: 2;
-		background: linear-gradient(
-			90deg,
-			rgba(2, 5, 7, 0.72),
-			transparent 28%,
-			transparent 72%,
-			rgba(2, 5, 7, 0.74)
-		);
-		pointer-events: none;
-	}
-
-	.serpent {
-		position: absolute;
-		inset: 0;
-		z-index: 3;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		object-position: center 42%;
-		mix-blend-mode: screen;
-		opacity: 0.16;
-		pointer-events: none;
-		user-select: none;
-	}
-
-	.map-heading {
-		position: relative;
-		z-index: 5;
-		width: min(calc(100% - 3rem), 72rem);
-		margin-inline: auto;
-		padding-top: 5rem;
-		text-align: center;
-		pointer-events: none;
-	}
-
-	.map-heading h2 {
-		margin: 0 0 1.5rem;
-		color: var(--frost-100);
-		font-size: clamp(1.8rem, 4vw, 2.8rem);
-		text-shadow:
-			0 4px 18px #000,
-			0 0 22px rgba(168, 59, 67, 0.28);
-	}
-
-	.serpent-map {
-		position: relative;
-		z-index: 1;
-		width: min(calc(100% - 3rem), 72rem);
-		max-width: 100%;
-		margin-inline: auto;
-		overflow: hidden;
-	}
-
-	.shieldmaiden {
-		position: absolute;
-		z-index: 4;
-		left: max(calc(50% - 42rem), -10rem);
-		bottom: -7rem;
-		width: clamp(18rem, 27vw, 28rem);
-		height: auto;
-		filter: drop-shadow(0 20px 28px #000);
-		pointer-events: none;
-		user-select: none;
-	}
-
 	.site-world {
 		background:
 			linear-gradient(180deg, rgba(3, 5, 5, 0.18) 0 24rem, rgba(3, 5, 5, 0.88) 48rem),
@@ -479,22 +272,6 @@
 			url('/images/backgrounds/background-main.png') center 42rem / max(100rem, 100vw) auto
 				no-repeat,
 			#030608;
-	}
-
-	.warheim-brand {
-		min-height: 15rem;
-		padding-top: 0.5rem;
-	}
-
-	.warheim-brand::after {
-		content: '';
-		position: absolute;
-		right: 0;
-		bottom: 0.35rem;
-		left: 0;
-		height: 1px;
-		background: linear-gradient(90deg, transparent, var(--rune-400), transparent);
-		box-shadow: 0 0 16px rgba(168, 59, 67, 0.48);
 	}
 
 	.portal-grid {
@@ -531,25 +308,6 @@
 		max-width: 52ch;
 		font-size: 0.9rem;
 		line-height: 1.8;
-	}
-
-	.aside-copy {
-		margin: 0 0 1rem;
-		color: var(--text-muted);
-		font-size: 0.72rem;
-		line-height: 1.7;
-	}
-
-	.discord-action {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.45rem;
-		padding: 0.7rem 0.85rem;
-		color: var(--frost-100);
-		font-family: var(--display);
-		font-size: 0.62rem;
-		text-decoration: none;
-		text-transform: uppercase;
 	}
 
 	.threat-strip {
@@ -698,26 +456,6 @@
 
 		.world-art {
 			display: none;
-		}
-
-		.serpent-band {
-			min-height: 46rem;
-		}
-
-		.serpent {
-			object-position: 49% center;
-			opacity: 0.12;
-		}
-
-		.map-heading {
-			padding-top: 3.5rem;
-		}
-
-		.shieldmaiden {
-			left: -7rem;
-			bottom: -6rem;
-			width: 20rem;
-			opacity: 0.52;
 		}
 
 		.threat-strip {

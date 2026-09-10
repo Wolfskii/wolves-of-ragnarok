@@ -24,7 +24,6 @@ test('opens the Wolves gate with its one-shot opening sound', async ({ page }) =
 	await expect(page.locator('.gate-site-reveal')).toHaveClass(/fully-open/);
 	await page.reload();
 	await expect(page.getByRole('button', { name: 'Open the gates' })).toHaveCount(0);
-	await expect(page.getByRole('heading', { name: 'Map of Yggdrasil' })).toBeVisible();
 });
 
 test('renders the fantasy portal without broken artwork or overflow', async ({
@@ -44,24 +43,21 @@ test('renders the fantasy portal without broken artwork or overflow', async ({
 	await expect(page.getByRole('heading', { name: 'New Members Enter the Hall' })).toHaveCount(0);
 	await expect(page.locator('a[href="/news/valheim-1-0-has-arrived"]')).toHaveCount(0);
 	await expect(page.getByRole('heading', { name: 'Yggdrasil', exact: true })).toBeVisible();
-	await expect(page.getByRole('heading', { name: 'Map of Yggdrasil' })).toBeVisible();
 	await expect(page.getByRole('link', { name: 'Server information', exact: true })).toHaveAttribute(
 		'href',
 		'/servers'
 	);
-	const mapBox = await page.locator('.serpent-map').boundingBox();
 	const warriorBox = await page.locator('.manifesto-warrior').boundingBox();
-	expect(mapBox).not.toBeNull();
 	expect(warriorBox).not.toBeNull();
 	await expect(page.locator('.manifesto-section .manifesto-warrior')).toBeVisible();
-	await expect(page.locator('.serpent')).toHaveCSS('pointer-events', 'none');
-	await expect(page.locator('.shieldmaiden')).toHaveCSS('pointer-events', 'none');
-	await expect(page.locator('.brand-title')).toHaveCSS('font-family', /Uncial Antiqua/);
+	const portalHeading = page.locator('.portal-brand h1');
+	await expect(portalHeading).toHaveText('WOLVES OFRAGNAROK');
+	await expect(portalHeading).toHaveCSS('font-family', /Uncial Antiqua/);
+	await expect(portalHeading).toHaveCSS('text-transform', 'uppercase');
 	await expect(page.getByText('Member access')).toHaveCount(0);
 	await expect(page.getByText('Sign in')).toHaveCount(0);
-	await expect(page.locator('.brand-title')).toHaveCSS('text-shadow', /168, 59, 67/);
 	const discordLinks = page.locator('a[href="https://discord.gg/CbjgD7WVfp"]');
-	await expect(discordLinks).toHaveCount(4);
+	await expect(discordLinks).toHaveCount(2);
 	for (const link of await discordLinks.all()) {
 		await expect(link).toHaveAttribute('href', 'https://discord.gg/CbjgD7WVfp');
 	}
@@ -93,7 +89,8 @@ test('stacks the portal and exposes mobile navigation', async ({ page }, testInf
 	const menu = page.getByRole('button', { name: 'Realm menu' });
 	await expect(menu).toBeVisible();
 	await menu.click();
-	await expect(page.getByRole('link', { name: 'Survive', exact: true })).toBeVisible();
+	await expect(page.getByRole('link', { name: 'About', exact: true })).toBeVisible();
+	await expect(page.getByRole('link', { name: 'Survive', exact: true })).toHaveCount(0);
 
 	const hasHorizontalOverflow = await page.evaluate(
 		() => document.documentElement.scrollWidth > document.documentElement.clientWidth
@@ -116,7 +113,7 @@ test('shows the map-only live world chart on the servers page', async ({
 	await expect(liveMap.locator('iframe.public-map')).toBeVisible();
 	await expect(page.locator('iframe')).toHaveCount(1);
 	await expect(page.getByText('valheim.webble.se', { exact: true }).first()).toBeVisible();
-	await expect(page.locator('.population').first()).toHaveText('4 / 10 players');
+	await expect(page.locator('.population').first()).toHaveText('0 / 10 players');
 	await expect(page.getByText('Player names unavailable')).toHaveCount(0);
 	await expect(page.getByText('External health')).toHaveCount(0);
 	await expect(page.getByRole('link', { name: 'Open live map' })).toHaveCount(0);
@@ -153,26 +150,19 @@ test('serves public destinations, auth entry, status data, and guards administra
 	await expect(statusResponse.json()).resolves.toMatchObject({
 		name: 'Yggdrasil',
 		state: 'online',
-		playerCount: 4,
+		playerCount: 0,
 		maxPlayers: 10
 	});
 	const passwordResponse = await request.post('/api/servers/featured/password');
 	expect(passwordResponse.status()).toBe(401);
 	expect(passwordResponse.headers()['cache-control']).toContain('no-store');
 
-	for (const path of [
-		'/servers',
-		'/survive',
-		'/members',
-		'/about',
-		'/merch',
-		'/wiki',
-		'/rules',
-		'/register'
-	]) {
+	for (const path of ['/servers', '/members', '/about', '/merch', '/wiki', '/rules', '/register']) {
 		const response = await request.get(path);
 		expect(response.status(), `${path} should resolve`).toBe(200);
 	}
+	const removedSurviveResponse = await request.get('/survive');
+	expect(removedSurviveResponse.status()).toBe(404);
 
 	await page.goto('/members');
 	await expect(page.getByRole('heading', { name: 'Guild Roster' })).toBeVisible();
@@ -193,8 +183,11 @@ test('serves public destinations, auth entry, status data, and guards administra
 	await expect(page.getByRole('heading', { name: 'Search the Valheim Wiki' })).toBeVisible();
 	await page.getByRole('searchbox', { name: 'Search the Valheim Wiki' }).fill('iron');
 	await expect(page.getByText('Valheim Wiki entry').first()).toBeVisible();
-	await page.getByRole('button', { name: 'Read in the hall' }).first().click();
+	await expect(page.getByText('Open full article')).toHaveCount(0);
+	await page.getByRole('button', { name: 'Read more' }).first().click();
 	await expect(page.locator('.selected-result')).toBeVisible();
+	await expect(page.locator('.suggestions')).toBeHidden();
+	await expect(page.locator('.results')).toBeHidden();
 	await expect((await request.get('/community')).status()).toBe(404);
 	await expect((await request.get('/community/welcome-to-the-longhouse')).status()).toBe(404);
 

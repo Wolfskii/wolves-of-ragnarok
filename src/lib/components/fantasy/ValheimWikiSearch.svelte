@@ -92,7 +92,7 @@
 				>{status === 'loading' ? 'Searching...' : 'Search'}</button
 			>
 		</div>
-		<div class="suggestions" aria-label="Suggested searches">
+		<div class:hidden={selectedResult !== null} class="suggestions" aria-label="Suggested searches">
 			<span>Try:</span>
 			{#each ['Iron', 'Portal', 'Mistlands', 'Eitr'] as suggestion (suggestion)}
 				<button type="button" onclick={() => useSuggestion(suggestion)}>{suggestion}</button>
@@ -107,7 +107,7 @@
 	{:else if status === 'ready' && results.length === 0}
 		<p class="search-message" role="status">No Valheim Wiki entries matched “{query}”.</p>
 	{:else if results.length}
-		<div class="results" aria-live="polite">
+		<div class:hidden={selectedResult !== null} class="results" aria-live="polite">
 			{#each results as result (result.url)}
 				<article class="result-card" class:selected={selectedResult?.url === result.url}>
 					{#if result.imageUrl}<img src={result.imageUrl} alt="" loading="lazy" />{/if}
@@ -116,11 +116,7 @@
 						<h3>{result.title}</h3>
 						<p>{result.excerpt}{result.excerpt.length >= 520 ? '...' : ''}</p>
 						<button class="read-result" type="button" onclick={() => (selectedResult = result)}
-							>Read in the hall</button
-						>
-						<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-						<a href={result.url} target="_blank" rel="noreferrer"
-							>Open full article <span aria-hidden="true">↗</span></a
+							>Read more</button
 						>
 					</div>
 				</article>
@@ -156,6 +152,10 @@
 		background:
 			linear-gradient(120deg, rgba(168, 59, 67, 0.1), transparent 38%), rgba(3, 7, 8, 0.74);
 		box-shadow: inset 0 0 28px rgba(197, 174, 112, 0.05);
+	}
+
+	.hidden {
+		display: none !important;
 	}
 
 	.search-intro h2 {
@@ -303,18 +303,6 @@
 		font-size: 0.68rem;
 		line-height: 1.6;
 	}
-	.result-copy a {
-		color: var(--brass-400);
-		font-family: var(--display);
-		font-size: 0.58rem;
-		text-decoration: none;
-		text-transform: uppercase;
-	}
-	.result-copy a:hover,
-	.result-copy a:focus-visible {
-		color: var(--frost-100);
-	}
-
 	.read-result {
 		margin: 0 0.65rem 0.6rem 0;
 		padding: 0.35rem 0.5rem;

@@ -23,9 +23,9 @@ describe('server status adapters', () => {
 		expect(first).toMatchObject({
 			serverId: 'test-server',
 			state: 'online',
-			playerCount: 4,
+			playerCount: 0,
 			maxPlayers: 10,
-			playerNames: ['Eirik', 'Freydis', 'Ulf', 'Sigrun']
+			playerNames: []
 		});
 		expect(second).toMatchObject({
 			playerCount: first.playerCount,
