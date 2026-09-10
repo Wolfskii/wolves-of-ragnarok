@@ -1,74 +1,36 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { ChevronLeft, ChevronRight, Pause, Play, Volume2, VolumeX } from '@lucide/svelte';
+	import {
+		changeRadioTrack,
+		getRadioState,
+		playRadio,
+		radioTracks,
+		subscribeRadio,
+		toggleRadio,
+		toggleRadioMute
+	} from '$lib/client/radio';
 
-	const tracks = [
-		{ title: "The Reaper's Call", src: '/media/deathborn/the-reapers-call.mp3' },
-		{ title: 'The Light of the Living', src: '/media/deathborn/the-light-of-the-living.mp3' },
-		{
-			title: 'The Shadow of the Forgotten',
-			src: '/media/deathborn/the-shadow-of-the-forgotten.mp3'
-		},
-		{ title: 'Raid I', src: '/media/warheim/playlist/raid-i.ogg' },
-		{ title: 'Raid II', src: '/media/warheim/playlist/raid-ii.ogg' },
-		{ title: 'Raid III', src: '/media/warheim/playlist/raid-iii.ogg' },
-		{ title: 'Raid IV', src: '/media/warheim/playlist/raid-iv.ogg' },
-		{ title: 'Raid V', src: '/media/warheim/playlist/raid-v.ogg' },
-		{ title: 'Raid Boss', src: '/media/warheim/playlist/raid-boss.ogg' },
-		{ title: 'Raid Easy', src: '/media/warheim/playlist/raid-easy.ogg' },
-		{ title: 'Raid Hard', src: '/media/warheim/playlist/raid-hard.ogg' },
-		{ title: 'Raid Medium', src: '/media/warheim/playlist/raid-medium.ogg' },
-		{ title: 'Raid Test', src: '/media/warheim/playlist/raid-test.ogg' }
-	] as const;
-
-	let audio: HTMLAudioElement;
 	let trackIndex = $state(0);
 	let playing = $state(false);
 	let muted = $state(false);
 
-	function play() {
-		void audio
-			?.play()
-			.then(() => (playing = true))
-			.catch(() => (playing = false));
-	}
-
-	function pause() {
-		audio?.pause();
-		playing = false;
-	}
-
-	function togglePlayback() {
-		if (playing) pause();
-		else play();
-	}
-
-	function changeTrack(direction: number) {
-		trackIndex = (trackIndex + direction + tracks.length) % tracks.length;
-		if (audio) {
-			audio.src = tracks[trackIndex].src;
-			audio.load();
-			play();
-		}
-	}
-
-	function toggleMute() {
-		muted = !muted;
-		if (audio) audio.muted = muted;
-	}
-
 	onMount(() => {
-		if (!audio) return;
-		audio.volume = 0.2;
-		audio.muted = muted;
-		audio.addEventListener('ended', () => changeTrack(1));
-		const handleGateOpen = () => play();
+		const sync = () => {
+			const state = getRadioState();
+			trackIndex = state.trackIndex;
+			playing = state.playing;
+			muted = state.muted;
+		};
+		const unsubscribe = subscribeRadio(sync);
+		const handleGateOpen = () => playRadio();
 		window.addEventListener('wolves:gate-open', handleGateOpen);
-		play();
+		sync();
+		playRadio();
 
 		return () => {
 			window.removeEventListener('wolves:gate-open', handleGateOpen);
-			audio.pause();
+			unsubscribe();
 		};
 	});
 </script>
@@ -83,9 +45,9 @@
 		<strong title={tracks[trackIndex].title}>{tracks[trackIndex].title}</strong>
 	</div>
 	<div class="player-controls">
-		<button
+			<button
 			type="button"
-			onclick={() => changeTrack(-1)}
+				onclick={() => changeRadioTrack(-1)}
 			aria-label="Previous track"
 			title="Previous track"
 		>
@@ -94,7 +56,7 @@
 		<button
 			class="play-button"
 			type="button"
-			onclick={togglePlayback}
+			onclick={toggleRadio}
 			aria-label={playing ? 'Pause radio' : 'Play radio'}
 			title={playing ? 'Pause radio' : 'Play radio'}
 		>
@@ -104,12 +66,12 @@
 					aria-hidden="true"
 				/>{/if}
 		</button>
-		<button type="button" onclick={() => changeTrack(1)} aria-label="Next track" title="Next track">
+			<button type="button" onclick={() => changeRadioTrack(1)} aria-label="Next track" title="Next track">
 			<ChevronRight size={14} aria-hidden="true" />
 		</button>
 		<button
 			type="button"
-			onclick={toggleMute}
+			onclick={toggleRadioMute}
 			aria-label={muted ? 'Unmute radio' : 'Mute radio'}
 			title={muted ? 'Unmute radio' : 'Mute radio'}
 		>
@@ -120,7 +82,6 @@
 		</button>
 	</div>
 </div>
-<audio bind:this={audio} src={tracks[0].src} preload="auto" autoplay></audio>
 
 <style>
 	.radio-player {

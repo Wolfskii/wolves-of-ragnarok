@@ -27,8 +27,8 @@
 		{#if body}
 			<div class="full-body">
 				{#each body.split('\n') as line, index (index)}
-					{#if line.startsWith('## ') || line.startsWith('# ')}
-						<h4>{line.replace(/^##?\s/, '')}</h4>
+					{#if /^#{1,3}\s/.test(line)}
+						<h4>{line.replace(/^#{1,3}\s/, '')}</h4>
 					{:else if line.startsWith('- ')}
 						<p class="bullet"><span aria-hidden="true">ᛟ</span>{line.slice(2)}</p>
 					{:else if line.trim()}
