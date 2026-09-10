@@ -59,6 +59,13 @@ export function playRadio() {
 	void player.play().then(notify).catch(notify);
 }
 
+export function initializeRadio() {
+	const wasInitialized = Boolean(audio);
+	ensureAudio();
+	if (!wasInitialized) playRadio();
+	notify();
+}
+
 export function pauseRadio() {
 	ensureAudio()?.pause();
 	notify();

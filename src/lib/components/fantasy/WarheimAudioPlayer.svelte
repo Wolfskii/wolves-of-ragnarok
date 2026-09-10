@@ -4,6 +4,7 @@
 	import {
 		changeRadioTrack,
 		getRadioState,
+		initializeRadio,
 		playRadio,
 		radioTracks,
 		subscribeRadio,
@@ -26,7 +27,7 @@
 		const handleGateOpen = () => playRadio();
 		window.addEventListener('wolves:gate-open', handleGateOpen);
 		sync();
-		playRadio();
+		initializeRadio();
 
 		return () => {
 			window.removeEventListener('wolves:gate-open', handleGateOpen);
@@ -42,7 +43,7 @@
 	</div>
 	<div class="track-status" aria-live="polite">
 		<small>Now playing</small>
-		<strong title={tracks[trackIndex].title}>{tracks[trackIndex].title}</strong>
+		<strong title={radioTracks[trackIndex].title}>{radioTracks[trackIndex].title}</strong>
 	</div>
 	<div class="player-controls">
 			<button
@@ -178,10 +179,6 @@
 		border: 1px solid rgba(168, 59, 67, 0.72);
 		background: rgba(104, 31, 41, 0.48);
 		color: var(--frost-100);
-	}
-
-	audio {
-		display: none;
 	}
 
 	@media (max-width: 62rem) {
