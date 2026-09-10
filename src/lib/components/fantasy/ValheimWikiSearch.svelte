@@ -1,4 +1,5 @@
 <script lang="ts">
+	/* eslint-disable svelte/no-at-html-tags -- article HTML is sanitized by the wiki proxy. */
 	type WikiResult = {
 		title: string;
 		excerpt: string;
@@ -137,7 +138,7 @@
 						loading="lazy"
 					/>{/if}
 			</div>
-			<p class="selected-content">{selectedResult.content}</p>
+			<div class="selected-content">{@html selectedResult.content}</div>
 			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 			<a href={selectedResult.url} target="_blank" rel="noreferrer">Open source article ↗</a>
 		</article>
@@ -358,7 +359,47 @@
 		color: var(--text);
 		font-size: 0.78rem;
 		line-height: 1.8;
-		white-space: pre-line;
+	}
+
+	.selected-content :global(p) {
+		margin: 0 0 1rem;
+	}
+
+	.selected-content :global(h2),
+	.selected-content :global(h3),
+	.selected-content :global(h4) {
+		margin: 1.6rem 0 0.55rem;
+		color: var(--frost-100);
+		font-family: var(--display);
+		line-height: 1.15;
+		text-transform: uppercase;
+	}
+
+	.selected-content :global(h2) {
+		font-size: 1.2rem;
+	}
+
+	.selected-content :global(h3) {
+		color: var(--brass-400);
+		font-size: 1rem;
+	}
+
+	.selected-content :global(ul),
+	.selected-content :global(ol) {
+		display: grid;
+		gap: 0.45rem;
+		margin: 0.75rem 0 1.25rem;
+		padding: 0.85rem 1rem 0.85rem 2rem;
+		border-left: 2px solid var(--rune-400);
+		background: rgba(143, 17, 25, 0.08);
+	}
+
+	.selected-content :global(li) {
+		padding-left: 0.25rem;
+	}
+
+	.selected-content :global(strong) {
+		color: var(--brass-400);
 	}
 
 	.selected-result > a {

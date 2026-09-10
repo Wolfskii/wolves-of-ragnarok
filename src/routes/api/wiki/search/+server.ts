@@ -27,6 +27,13 @@ function plainText(html: string): string {
 	return sanitizeHtml(html, { allowedTags: [], allowedAttributes: {} }).replace(/\s+/g, ' ').trim();
 }
 
+function safeArticleHtml(html: string): string {
+	return sanitizeHtml(html, {
+		allowedTags: ['p', 'br', 'h2', 'h3', 'h4', 'ul', 'ol', 'li', 'strong', 'em', 'b', 'i'],
+		allowedAttributes: {}
+	});
+}
+
 async function getPageDetails(page: SearchPage) {
 	const parsed = (await fetchWiki(
 		new URLSearchParams({
@@ -37,7 +44,9 @@ async function getPageDetails(page: SearchPage) {
 			disablelimitreport: '1'
 		})
 	)) as ParseResponse;
-	const content = plainText(parsed.parse?.text?.['*'] ?? '').slice(0, 12000);
+	const rawContent = parsed.parse?.text?.['*'] ?? '';
+	const content = plainText(rawContent).slice(0, 12000);
+	const contentHtml = safeArticleHtml(rawContent);
 	const excerpt = content.slice(0, 520);
 	let imageUrl: string | null = null;
 	const imageName = parsed.parse?.images?.find((image) => !/\.svg$/i.test(image));
@@ -60,7 +69,7 @@ async function getPageDetails(page: SearchPage) {
 	return {
 		title: page.title,
 		excerpt: excerpt || 'Open the Valheim Wiki article for the full field guide entry.',
-		content: content || excerpt,
+		content: contentHtml || `<p>${content || excerpt}</p>`,
 		imageUrl,
 		url: `${WIKI_ORIGIN}/wiki/${encodeURIComponent(page.title.replace(/ /g, '_'))}`
 	};

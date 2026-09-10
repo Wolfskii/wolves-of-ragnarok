@@ -21,7 +21,7 @@
 		position: relative;
 		z-index: 3;
 		padding: 4rem 1rem 2rem;
-		background: linear-gradient(180deg, transparent, rgba(2, 5, 7, 0.94) 35%);
+		background: linear-gradient(180deg, #020507 0%, #020507 100%);
 		text-align: center;
 	}
 

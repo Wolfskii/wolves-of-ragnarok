@@ -9,6 +9,7 @@
 		playRadio,
 		radioTracks,
 		subscribeRadio,
+		shouldAutoPlayRadio,
 		toggleRadio,
 		toggleRadioMute
 	} from '$lib/client/radio';
@@ -27,7 +28,9 @@
 			muted = state.muted;
 		};
 		const unsubscribe = subscribeRadio(sync);
-		const handleGateOpen = () => playRadio();
+		const handleGateOpen = () => {
+			if (shouldAutoPlayRadio()) playRadio();
+		};
 		window.addEventListener('wolves:gate-open', handleGateOpen);
 		initializeRadio();
 		sync();

@@ -294,7 +294,7 @@
 	.door {
 		background-image: url('/media/warheim/valhalla-gates.webp');
 		background-repeat: no-repeat;
-		background-size: auto 100%;
+		background-size: 200% 100%;
 		background-color: #050807;
 		transition:
 			transform 2.45s cubic-bezier(0.72, 0.01, 0.18, 1),
@@ -343,7 +343,7 @@
 		}
 
 		.door {
-			background-size: auto 125%;
+			background-size: 200% 125%;
 			background-position-y: center;
 		}
 	}

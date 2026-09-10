@@ -15,12 +15,16 @@ export const radioTracks = [
 ] as const;
 
 type RadioListener = () => void;
+type RadioPreference = { playing: boolean; muted: boolean };
 
 let audio: HTMLAudioElement | null = null;
 let trackIndex = 0;
 let muted = false;
+let stoppedByUser = false;
+let preferenceLoaded = false;
 let shuffledTracks: readonly RadioTrack[] | null = null;
 const listeners = new Set<RadioListener>();
+const preferenceKey = 'wolves-of-ragnarok-radio';
 
 type RadioTrack = (typeof radioTracks)[number];
 
@@ -38,14 +42,41 @@ function notify() {
 	for (const listener of listeners) listener();
 }
 
+function loadPreference() {
+	if (preferenceLoaded || typeof localStorage === 'undefined') return;
+	preferenceLoaded = true;
+	try {
+		const stored = localStorage.getItem(preferenceKey);
+		if (!stored) return;
+		const preference = JSON.parse(stored) as Partial<RadioPreference>;
+		muted = preference.muted === true;
+		stoppedByUser = preference.playing === false;
+	} catch {
+		preferenceLoaded = true;
+	}
+}
+
+function savePreference() {
+	if (typeof localStorage === 'undefined') return;
+	try {
+		localStorage.setItem(
+			preferenceKey,
+			JSON.stringify({ playing: !stoppedByUser, muted } satisfies RadioPreference)
+		);
+	} catch {
+		return;
+	}
+}
+
 function ensureAudio(): HTMLAudioElement | null {
 	if (typeof document === 'undefined') return null;
+	loadPreference();
 	if (audio) return audio;
 	shuffledTracks ??= createShuffledPlaylist();
 
 	audio = document.createElement('audio');
 	audio.preload = 'auto';
-	audio.autoplay = true;
+	audio.autoplay = !stoppedByUser;
 	audio.volume = 0.2;
 	audio.muted = muted;
 	audio.src = shuffledTracks[trackIndex].src;
@@ -60,6 +91,7 @@ export function subscribeRadio(listener: RadioListener) {
 }
 
 export function getRadioState() {
+	loadPreference();
 	return {
 		trackIndex,
 		playing: Boolean(audio && !audio.paused),
@@ -73,19 +105,25 @@ export function getRadioPlaylist() {
 }
 
 export function playRadio() {
+	loadPreference();
+	stoppedByUser = false;
+	savePreference();
 	const player = ensureAudio();
 	if (!player) return;
 	void player.play().then(notify).catch(notify);
 }
 
 export function initializeRadio() {
+	loadPreference();
 	const wasInitialized = Boolean(audio);
 	ensureAudio();
-	if (!wasInitialized) playRadio();
+	if (!wasInitialized && !stoppedByUser) playRadio();
 	notify();
 }
 
 export function pauseRadio() {
+	stoppedByUser = true;
+	savePreference();
 	ensureAudio()?.pause();
 	notify();
 }
@@ -111,8 +149,15 @@ export function nextTrack() {
 }
 
 export function toggleRadioMute() {
+	loadPreference();
 	muted = !muted;
+	savePreference();
 	const player = ensureAudio();
 	if (player) player.muted = muted;
 	notify();
+}
+
+export function shouldAutoPlayRadio() {
+	loadPreference();
+	return !stoppedByUser;
 }

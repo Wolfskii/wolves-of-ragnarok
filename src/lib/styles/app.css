@@ -265,7 +265,7 @@ label,
 .site-world::after {
 	content: '';
 	pointer-events: none;
-	position: fixed;
+	position: absolute;
 	inset: 0;
 	z-index: 0;
 }
@@ -289,7 +289,7 @@ label,
 	background-repeat: repeat;
 	mix-blend-mode: screen;
 	opacity: 0.42;
-	transform: rotate(-58deg) scale(1.08);
+	transform: rotate(-48deg) scale(1.08);
 	transform-origin: center;
 	animation: blizzard-drift 8s linear infinite;
 }
@@ -310,10 +310,10 @@ label,
 	}
 	to {
 		background-position:
-			300px 620px,
-			400px 780px,
-			480px 700px,
-			360px 860px;
+			120px 720px,
+			180px 900px,
+			220px 820px,
+			150px 980px;
 	}
 }
 

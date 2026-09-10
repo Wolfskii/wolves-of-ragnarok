@@ -26,6 +26,34 @@ test('opens the Wolves gate with its one-shot opening sound', async ({ page }) =
 	await expect(page.getByRole('button', { name: 'Open the gates' })).toHaveCount(0);
 });
 
+test('persists radio mute and stop choices between visits', async ({ page }) => {
+	await enterThroughGate(page);
+
+	await page.getByRole('button', { name: 'Mute radio' }).click();
+	await expect
+		.poll(() =>
+			page.evaluate(() => JSON.parse(localStorage.getItem('wolves-of-ragnarok-radio') ?? '{}'))
+		)
+		.toMatchObject({ playing: true, muted: true });
+	await page.getByRole('button', { name: 'Pause radio' }).click();
+	await expect
+		.poll(() =>
+			page.evaluate(() => JSON.parse(localStorage.getItem('wolves-of-ragnarok-radio') ?? '{}'))
+		)
+		.toMatchObject({ playing: false, muted: true });
+
+	await page.reload();
+	await expect(page.getByRole('button', { name: 'Play radio' })).toBeVisible();
+	await expect(page.getByRole('button', { name: 'Unmute radio' })).toBeVisible();
+	await page.getByRole('button', { name: 'Play radio' }).click();
+	await page.getByRole('button', { name: 'Unmute radio' }).click();
+	await expect
+		.poll(() =>
+			page.evaluate(() => JSON.parse(localStorage.getItem('wolves-of-ragnarok-radio') ?? '{}'))
+		)
+		.toMatchObject({ playing: true, muted: false });
+});
+
 test('renders the fantasy portal without broken artwork or overflow', async ({
 	page
 }, testInfo) => {

@@ -129,7 +129,7 @@
 					<div>ᛉ · THE FIRST LAW</div>
 					<img
 						class="manifesto-warrior"
-						src="/images/characters/viking-warrior-right.webp"
+						src="/images/characters/shieldmaiden-left.webp"
 						alt=""
 						width="1024"
 						height="1536"
@@ -211,7 +211,7 @@
 	}
 
 	.world-art--male-warrior {
-		top: 18rem;
+		top: calc(29rem + clamp(20rem, 29vw, 30rem) - clamp(25.5rem, 36vw, 37.5rem) + 0.5rem);
 		left: clamp(-25rem, -21vw, -14rem);
 		z-index: 3;
 		width: clamp(17rem, 24vw, 25rem);
@@ -317,7 +317,7 @@
 		grid-template-columns: repeat(3, 1fr);
 		margin: 0 auto;
 		border-block: 1px solid rgba(197, 174, 112, 0.38);
-		background: rgba(3, 6, 7, 0.84);
+		background: #030607;
 		box-shadow: 0 18px 32px rgba(0, 0, 0, 0.46);
 	}
 
@@ -354,12 +354,15 @@
 	}
 
 	.manifesto-section {
+		position: relative;
+		z-index: 5;
 		display: grid;
 		grid-template-columns: minmax(18rem, 0.8fr) minmax(0, 1.8fr) minmax(10rem, 0.8fr);
 		gap: 2rem;
 		align-items: end;
 		padding: 7rem 1rem 5rem;
 		border-bottom: 1px solid rgba(197, 174, 112, 0.22);
+		background: #030607;
 	}
 
 	.manifesto-index,
@@ -434,6 +437,10 @@
 		.world-art--wolf {
 			top: 33rem;
 			left: -9rem;
+		}
+
+		.world-art--male-warrior {
+			top: calc(33rem + clamp(20rem, 29vw, 30rem) - clamp(25.5rem, 36vw, 37.5rem) + 0.5rem);
 		}
 	}
 
