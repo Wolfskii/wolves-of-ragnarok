@@ -17,10 +17,10 @@
 		unixMs: number;
 	};
 
-	let { user }: { user: { username: string } | null } = $props();
 	let events = $state<ActivityEvent[]>([]);
 	let chats = $state<ChatMessage[]>([]);
 	let cursor = $state<number | null>(null);
+	let name = $state('Wanderer');
 	let message = $state('');
 	let loading = $state(false);
 	let sending = $state(false);
@@ -67,7 +67,7 @@
 	}
 
 	async function refresh() {
-		if (!user || loading) return;
+		if (loading) return;
 		loading = true;
 		try {
 			const query = cursor === null ? '' : `?cursor=${encodeURIComponent(String(cursor))}`;
@@ -92,15 +92,16 @@
 
 	async function sendChat(event: SubmitEvent) {
 		event.preventDefault();
+		const displayName = name.trim();
 		const text = message.trim();
-		if (!text || sending || !user) return;
+		if (!displayName || !text || sending) return;
 		sending = true;
 		error = '';
 		try {
 			const response = await fetch('/api/servers/featured/chat', {
 				method: 'POST',
 				headers: { 'content-type': 'application/json' },
-				body: JSON.stringify({ text })
+				body: JSON.stringify({ name: displayName, text })
 			});
 			if (!response.ok) {
 				const result = (await response.json().catch(() => null)) as { error?: string } | null;
@@ -116,10 +117,14 @@
 	}
 
 	onMount(() => {
-		if (!user) return;
+		name = window.localStorage.getItem('wolves-server-name') ?? 'Wanderer';
 		void refresh();
 		const timer = window.setInterval(() => void refresh(), 5000);
 		return () => window.clearInterval(timer);
+	});
+
+	$effect(() => {
+		if (name.trim()) window.localStorage?.setItem('wolves-server-name', name.trim());
 	});
 </script>
 
@@ -129,57 +134,61 @@
 			<p class="section-kicker"><Activity size={14} aria-hidden="true" /> Server chronicle</p>
 			<h2 id="server-activity-title">The hall remembers</h2>
 		</div>
-		{#if user}<span class="live-mark">Live</span>{/if}
+		<span class="live-mark">Live</span>
 	</header>
 
-	{#if !user}
-		<p class="activity-gate">
-			Sign in to read the server history and speak to players from the site.
-		</p>
-	{:else}
-		<div class="activity-columns">
-			<div class="activity-list" aria-live="polite">
-				<div class="column-heading">
-					<Activity size={15} aria-hidden="true" /><span>Recent events</span>
-				</div>
-				{#if events.length}
-					<ol>
-						{#each events as event (event.id)}
-							<li class={eventClass(event.type)}>
-								<time datetime={new Date(event.unixMs).toISOString()}
-									>{formatTime(event.unixMs)}</time
-								>
-								<span>{eventLabel(event)}</span>
-							</li>
-						{/each}
-					</ol>
-				{:else}
-					<p class="empty">Waiting for the first recorded event.</p>
-				{/if}
+	<div class="activity-columns">
+		<div class="activity-list" aria-live="polite">
+			<div class="column-heading">
+				<Activity size={15} aria-hidden="true" /><span>Recent events</span>
 			</div>
-
-			<div class="chat-list">
-				<div class="column-heading">
-					<MessageCircle size={15} aria-hidden="true" /><span>Server chat</span>
-				</div>
-				{#if chats.length}
-					<ol>
-						{#each chats as chat (chat.sequence)}
-							<li class:shout={chat.shout}>
-								<time datetime={new Date(chat.unixMs).toISOString()}>{formatTime(chat.unixMs)}</time
-								>
-								<div><strong>{chat.playerName || 'Server'}</strong><span>{chat.text}</span></div>
-							</li>
-						{/each}
-					</ol>
-				{:else}
-					<p class="empty">No recent messages.</p>
-				{/if}
-			</div>
+			{#if events.length}
+				<ol>
+					{#each events as event (event.id)}
+						<li class={eventClass(event.type)}>
+							<time datetime={new Date(event.unixMs).toISOString()}>{formatTime(event.unixMs)}</time
+							>
+							<span>{eventLabel(event)}</span>
+						</li>
+					{/each}
+				</ol>
+			{:else}
+				<p class="empty">Waiting for the first recorded event.</p>
+			{/if}
 		</div>
 
-		<form class="chat-form" onsubmit={sendChat}>
-			<label for="server-chat">Speak as <strong>{user.username}</strong></label>
+		<div class="chat-list">
+			<div class="column-heading">
+				<MessageCircle size={15} aria-hidden="true" /><span>Server chat</span>
+			</div>
+			{#if chats.length}
+				<ol>
+					{#each chats as chat (chat.sequence)}
+						<li class:shout={chat.shout}>
+							<time datetime={new Date(chat.unixMs).toISOString()}>{formatTime(chat.unixMs)}</time>
+							<div><strong>{chat.playerName || 'Server'}</strong><span>{chat.text}</span></div>
+						</li>
+					{/each}
+				</ol>
+			{:else}
+				<p class="empty">No recent messages.</p>
+			{/if}
+		</div>
+	</div>
+
+	<form class="chat-form" onsubmit={sendChat}>
+		<div class="chat-identity">
+			<label for="server-name">Name</label>
+			<input
+				id="server-name"
+				bind:value={name}
+				maxlength="32"
+				placeholder="Your name"
+				autocomplete="nickname"
+			/>
+		</div>
+		<div class="chat-message">
+			<label for="server-chat">Message</label>
 			<div class="chat-input-row">
 				<input
 					id="server-chat"
@@ -190,16 +199,16 @@
 				/>
 				<button
 					type="submit"
-					disabled={sending || !message.trim()}
+					disabled={sending || !name.trim() || !message.trim()}
 					aria-label="Send server chat"
 					title="Send server chat"
 				>
 					<Send size={16} aria-hidden="true" />
 				</button>
 			</div>
-		</form>
-		{#if error}<p class="activity-error" role="alert">{error}</p>{/if}
-	{/if}
+		</div>
+	</form>
+	{#if error}<p class="activity-error" role="alert">{error}</p>{/if}
 </section>
 
 <style>
@@ -242,7 +251,6 @@
 		letter-spacing: 0.14em;
 		text-transform: uppercase;
 	}
-	.activity-gate,
 	.empty,
 	.activity-error {
 		margin: 1rem 0 0;
@@ -317,17 +325,20 @@
 	}
 	.chat-form {
 		display: grid;
-		gap: 0.45rem;
+		grid-template-columns: minmax(7rem, 0.32fr) minmax(0, 1fr);
+		gap: 0.8rem;
 		margin-top: 1rem;
 		padding-top: 0.8rem;
 		border-top: 1px solid rgba(197, 174, 112, 0.2);
 	}
+	.chat-identity,
+	.chat-message {
+		display: grid;
+		gap: 0.45rem;
+	}
 	.chat-form label {
 		color: var(--text-muted);
 		font-size: 0.7rem;
-	}
-	.chat-form label strong {
-		color: var(--frost-100);
 	}
 	.chat-input-row {
 		display: flex;
@@ -358,6 +369,11 @@
 	}
 	.activity-error {
 		color: #f0a6a6;
+	}
+	@media (max-width: 42rem) {
+		.chat-form {
+			grid-template-columns: 1fr;
+		}
 	}
 	@media (max-width: 42rem) {
 		.activity-columns {

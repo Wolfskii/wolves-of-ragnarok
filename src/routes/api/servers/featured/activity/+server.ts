@@ -5,13 +5,11 @@ import {
 	ValheimOneControlError
 } from '$lib/server/server-status/valheimone-control';
 
-export const GET: RequestHandler = async ({ locals, url, setHeaders }) => {
+export const GET: RequestHandler = async ({ url, setHeaders }) => {
 	setHeaders({
 		'cache-control': 'private, no-store',
 		vary: 'Cookie'
 	});
-
-	if (!locals.user) return json({ error: 'Authentication required.' }, { status: 401 });
 
 	const rawCursor = url.searchParams.get('cursor');
 	const cursor = rawCursor === null ? null : Number(rawCursor);

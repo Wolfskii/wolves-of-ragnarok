@@ -11,15 +11,15 @@ The live adapter reads ValheimOne's `/api/status` endpoint for health, world, an
 - `SERVER_STATUS_MODE=mock`: deterministic local data, no database or network required
 - `SERVER_STATUS_MODE=live`: loads the first enabled server from PostgreSQL, queries ValheimOne, and persists a status snapshot
 
-Live configuration uses `VALHEIM_STATUS_URL`, `VALHEIM_PLAYERS_URL`, `VALHEIM_PLAYERS_TOKEN`, `VALHEIMONE_ADMIN_TOKEN`, `VALHEIM_MAP_URL`, `VALHEIM_JOIN_ADDRESS`, `VALHEIM_JOIN_PORT`, and `VALHEIM_SERVER_PASSWORD`. Keep the ValheimOne tokens and server password in the server environment only. `VALHEIMONE_ADMIN_TOKEN` should match ValheimOne's `AccessToken`; it falls back to `VALHEIM_PLAYERS_TOKEN` for existing deployments. Authenticated members can read the filtered ValheimOne activity feed and recent chat through the server page, and can send a server shout prefixed with their Wolves username. The password endpoint accepts authenticated `POST` requests only and disables response caching.
+Live configuration uses `VALHEIM_STATUS_URL`, `VALHEIM_PLAYERS_URL`, `VALHEIM_PLAYERS_TOKEN`, `VALHEIMONE_ADMIN_TOKEN`, `VALHEIM_MAP_URL`, `VALHEIM_JOIN_ADDRESS`, `VALHEIM_JOIN_PORT`, and `VALHEIM_SERVER_PASSWORD`. Keep the ValheimOne tokens and server password in the server environment only. `VALHEIMONE_ADMIN_TOKEN` should match ValheimOne's `AccessToken`; it falls back to `VALHEIM_PLAYERS_TOKEN` for existing deployments. Visitors can read the filtered ValheimOne activity feed and send a server shout using a chosen display name; the name is prefixed to the message and is not an authenticated identity. The password endpoint accepts authenticated `POST` requests only and disables response caching.
 
-The activity panel uses ValheimOne's persisted recent activity feed for joins, leaves, deaths, raids, saves, day changes, and server lifecycle events. It does not expose the raw console log or any admin commands. ValheimOne retains the activity history according to its own activity-log retention settings, while the live chat ring is intentionally short.
+The activity panel uses ValheimOne's persisted recent activity feed for joins, leaves, deaths, raids, saves, day changes, and server lifecycle events. It does not expose the raw console log or any admin commands. Anonymous chat is limited by ValheimOne's built-in admin-chat rate limit, while ValheimOne retains the activity history according to its own activity-log retention settings and keeps the live chat ring intentionally short.
 
 Results use an in-memory TTL and single-flight deduplication. `/api/servers/featured/status` exposes the normalized featured status and the homepage polls every 30 seconds.
 
 ## Security
 
-Hosts are resolved before querying. Loopback, private, and link-local addresses are blocked unless `SERVER_STATUS_ALLOW_PRIVATE_HOSTS=true`. Keep server mutation admin-only and rate-limit forced refresh behavior before exposing it.
+Hosts are resolved before querying. Loopback, private, and link-local addresses are blocked unless `SERVER_STATUS_ALLOW_PRIVATE_HOSTS=true`. Keep all server mutations other than the intended chat shout behind ValheimOne's own allowlist and rate limits; the site proxy exposes no console or admin action endpoints.
 
 ## Adding a Game
 

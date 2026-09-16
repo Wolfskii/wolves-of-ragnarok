@@ -20,7 +20,7 @@
 	{#if data.page.title === 'Game Servers'}
 		<div class="server-overview">
 			<ServerLiveMap immersive />
-			<ServerActivity user={data.user ?? null} />
+			<ServerActivity />
 		</div>
 	{:else if data.page.title === 'Guild Roster'}
 		<section class="member-list" aria-label="Guild members">
