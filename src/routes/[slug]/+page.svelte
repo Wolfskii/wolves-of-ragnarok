@@ -16,11 +16,15 @@
 </svelte:head>
 
 <PortalPageShell title={data.page.title} eyebrow={data.page.eyebrow}>
+	{#snippet below()}
+		{#if data.page.title === 'Game Servers'}
+			<ServerActivity />
+		{/if}
+	{/snippet}
 	<p class="intro">{data.page.intro}</p>
 	{#if data.page.title === 'Game Servers'}
 		<div class="server-overview">
 			<ServerLiveMap immersive />
-			<ServerActivity />
 		</div>
 	{:else if data.page.title === 'Guild Roster'}
 		<section class="member-list" aria-label="Guild members">

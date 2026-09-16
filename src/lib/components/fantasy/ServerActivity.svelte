@@ -128,106 +128,111 @@
 	});
 </script>
 
-<section class="server-activity" aria-labelledby="server-activity-title">
-	<header class="activity-heading">
-		<div>
-			<p class="section-kicker"><Activity size={14} aria-hidden="true" /> Server chronicle</p>
-			<h2 id="server-activity-title">The hall remembers</h2>
-		</div>
-		<span class="live-mark">Live</span>
-	</header>
-
-	<div class="activity-columns">
-		<div class="activity-list" aria-live="polite">
+<div class="server-activity" aria-label="Server chronicle">
+	<section
+		class="activity-panel activity-list"
+		aria-labelledby="server-events-title"
+		aria-live="polite"
+	>
+		<header class="panel-heading">
 			<div class="column-heading">
 				<Activity size={15} aria-hidden="true" /><span>Recent events</span>
 			</div>
-			{#if events.length}
-				<ol>
-					{#each events as event (event.id)}
-						<li class={eventClass(event.type)}>
-							<time datetime={new Date(event.unixMs).toISOString()}>{formatTime(event.unixMs)}</time
-							>
-							<span>{eventLabel(event)}</span>
-						</li>
-					{/each}
-				</ol>
-			{:else}
-				<p class="empty">Waiting for the first recorded event.</p>
-			{/if}
-		</div>
+			<span class="live-mark">Live</span>
+		</header>
+		{#if events.length}
+			<ol>
+				{#each events as event (event.id)}
+					<li class={eventClass(event.type)}>
+						<time datetime={new Date(event.unixMs).toISOString()}>{formatTime(event.unixMs)}</time>
+						<span>{eventLabel(event)}</span>
+					</li>
+				{/each}
+			</ol>
+		{:else}
+			<p class="empty">Waiting for the first recorded event.</p>
+		{/if}
+	</section>
 
-		<div class="chat-list">
+	<section class="activity-panel chat-list" aria-labelledby="server-chat-title">
+		<header class="panel-heading">
 			<div class="column-heading">
-				<MessageCircle size={15} aria-hidden="true" /><span>Server chat</span>
-			</div>
-			{#if chats.length}
-				<ol>
-					{#each chats as chat (chat.sequence)}
-						<li class:shout={chat.shout}>
-							<time datetime={new Date(chat.unixMs).toISOString()}>{formatTime(chat.unixMs)}</time>
-							<div><strong>{chat.playerName || 'Server'}</strong><span>{chat.text}</span></div>
-						</li>
-					{/each}
-				</ol>
-			{:else}
-				<p class="empty">No recent messages.</p>
-			{/if}
-		</div>
-	</div>
-
-	<form class="chat-form" onsubmit={sendChat}>
-		<div class="chat-identity">
-			<label for="server-name">Name</label>
-			<input
-				id="server-name"
-				bind:value={name}
-				maxlength="32"
-				placeholder="Your name"
-				autocomplete="nickname"
-			/>
-		</div>
-		<div class="chat-message">
-			<label for="server-chat">Message</label>
-			<div class="chat-input-row">
-				<input
-					id="server-chat"
-					bind:value={message}
-					maxlength="220"
-					placeholder="Send a server shout"
-					autocomplete="off"
-				/>
-				<button
-					type="submit"
-					disabled={sending || !name.trim() || !message.trim()}
-					aria-label="Send server chat"
-					title="Send server chat"
+				<MessageCircle size={15} aria-hidden="true" /><span id="server-chat-title">Server chat</span
 				>
-					<Send size={16} aria-hidden="true" />
-				</button>
 			</div>
-		</div>
-	</form>
+		</header>
+		{#if chats.length}
+			<ol>
+				{#each chats as chat (chat.sequence)}
+					<li class:shout={chat.shout}>
+						<time datetime={new Date(chat.unixMs).toISOString()}>{formatTime(chat.unixMs)}</time>
+						<div><strong>{chat.playerName || 'Server'}</strong><span>{chat.text}</span></div>
+					</li>
+				{/each}
+			</ol>
+		{:else}
+			<p class="empty">No recent messages.</p>
+		{/if}
+
+		<form class="chat-form" onsubmit={sendChat}>
+			<div class="chat-identity">
+				<label for="server-name">Name</label>
+				<input
+					id="server-name"
+					bind:value={name}
+					maxlength="32"
+					placeholder="Your name"
+					autocomplete="nickname"
+				/>
+			</div>
+			<div class="chat-message">
+				<label for="server-chat">Message</label>
+				<div class="chat-input-row">
+					<input
+						id="server-chat"
+						bind:value={message}
+						maxlength="220"
+						placeholder="Send a server shout"
+						autocomplete="off"
+					/>
+					<button
+						type="submit"
+						disabled={sending || !name.trim() || !message.trim()}
+						aria-label="Send server chat"
+						title="Send server chat"
+					>
+						<Send size={16} aria-hidden="true" />
+					</button>
+				</div>
+			</div>
+		</form>
+	</section>
 	{#if error}<p class="activity-error" role="alert">{error}</p>{/if}
-</section>
+</div>
 
 <style>
 	.server-activity {
-		margin-top: 1.5rem;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: 1.25rem;
+		width: 100%;
+		margin-top: 1.25rem;
+	}
+	.activity-panel {
+		min-width: 0;
 		padding: 1.15rem;
 		border: 1px solid rgba(137, 115, 69, 0.55);
 		background: rgba(4, 10, 13, 0.74);
 		box-shadow: inset 0 0 24px rgba(111, 133, 140, 0.06);
 	}
-	.activity-heading {
+	.panel-heading {
 		display: flex;
-		align-items: flex-start;
+		align-items: center;
 		justify-content: space-between;
 		gap: 1rem;
 		padding-bottom: 0.8rem;
 		border-bottom: 1px solid rgba(197, 174, 112, 0.2);
 	}
-	.section-kicker,
 	.column-heading {
 		display: flex;
 		align-items: center;
@@ -237,12 +242,6 @@
 		font-family: var(--display);
 		font-size: 0.66rem;
 		letter-spacing: 0.12em;
-		text-transform: uppercase;
-	}
-	h2 {
-		margin: 0.35rem 0 0;
-		color: var(--frost-100);
-		font-size: 1.25rem;
 		text-transform: uppercase;
 	}
 	.live-mark {
@@ -258,18 +257,17 @@
 		font-size: 0.78rem;
 		line-height: 1.6;
 	}
-	.activity-columns {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-		gap: 1rem;
+	ol {
 		margin-top: 1rem;
 	}
-	.activity-list,
+	.chat-list ol {
+		max-height: 16rem;
+	}
 	.chat-list {
 		min-width: 0;
 	}
 	.column-heading {
-		margin-bottom: 0.55rem;
+		margin: 0;
 		color: var(--frost-200);
 		font-family: inherit;
 		font-size: 0.66rem;
@@ -333,6 +331,7 @@
 	}
 	.chat-identity,
 	.chat-message {
+		min-width: 0;
 		display: grid;
 		gap: 0.45rem;
 	}
@@ -344,8 +343,11 @@
 		display: flex;
 		gap: 0.45rem;
 	}
+	.chat-form input,
 	.chat-input-row input {
+		box-sizing: border-box;
 		min-width: 0;
+		width: 100%;
 		flex: 1;
 		padding: 0.7rem 0.75rem;
 		border: 1px solid rgba(197, 174, 112, 0.32);
@@ -371,12 +373,10 @@
 		color: #f0a6a6;
 	}
 	@media (max-width: 42rem) {
-		.chat-form {
+		.server-activity {
 			grid-template-columns: 1fr;
 		}
-	}
-	@media (max-width: 42rem) {
-		.activity-columns {
+		.chat-form {
 			grid-template-columns: 1fr;
 		}
 	}

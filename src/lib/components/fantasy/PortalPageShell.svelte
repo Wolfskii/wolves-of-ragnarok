@@ -7,8 +7,12 @@
 	import RealmSystems from './RealmSystems.svelte';
 	import ServerStatus from './ServerStatus.svelte';
 
-	let { title, eyebrow, children }: { title: string; eyebrow: string; children: Snippet } =
-		$props();
+	let {
+		title,
+		eyebrow,
+		children,
+		below
+	}: { title: string; eyebrow: string; children: Snippet; below?: Snippet } = $props();
 </script>
 
 <div class="site-world interior-world">
@@ -32,6 +36,11 @@
 				<ServerStatus />
 			</aside>
 		</div>
+		{#if below}
+			<div class="below-columns">
+				{@render below()}
+			</div>
+		{/if}
 	</main>
 	<FantasyFooter />
 </div>
@@ -51,8 +60,14 @@
 	}
 
 	.content,
-	.page-sidebar {
+	.page-sidebar,
+	.below-columns {
 		min-width: 0;
+	}
+
+	.below-columns {
+		width: min(100%, var(--portal-width));
+		margin: 0 auto 2rem;
 	}
 
 	.page-sidebar {
