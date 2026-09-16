@@ -1,6 +1,7 @@
 <script lang="ts">
 	/* eslint-disable svelte/no-at-html-tags -- member bios are sanitized by the server loader. */
 	import PortalPageShell from '$lib/components/fantasy/PortalPageShell.svelte';
+	import ServerActivity from '$lib/components/fantasy/ServerActivity.svelte';
 	import ServerLiveMap from '$lib/components/fantasy/ServerLiveMap.svelte';
 	import ValheimWikiSearch from '$lib/components/fantasy/ValheimWikiSearch.svelte';
 	import { resolve } from '$app/paths';
@@ -19,6 +20,7 @@
 	{#if data.page.title === 'Game Servers'}
 		<div class="server-overview">
 			<ServerLiveMap immersive />
+			<ServerActivity user={data.user ?? null} />
 		</div>
 	{:else if data.page.title === 'Guild Roster'}
 		<section class="member-list" aria-label="Guild members">
