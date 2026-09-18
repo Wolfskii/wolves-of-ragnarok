@@ -173,8 +173,7 @@ a:hover {
 }
 
 .war-hero-panel .section-heading strong,
-.realm-page-heading h2 strong,
-.manifesto-copy h2 strong {
+.realm-page-heading h2 strong {
 	animation: ember-heading-pulse 4.8s ease-in-out infinite;
 }
 
@@ -183,8 +182,7 @@ a:hover {
 	.discord-action::before,
 	.nav-cta::before,
 	.war-hero-panel .section-heading strong,
-	.realm-page-heading h2 strong,
-	.manifesto-copy h2 strong {
+	.realm-page-heading h2 strong {
 		animation: none;
 	}
 }
@@ -420,116 +418,6 @@ label,
 	filter: drop-shadow(0 20px 30px #000);
 }
 
-.portal-home .threat-strip {
-	position: relative;
-	z-index: 5;
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	margin: 0 auto;
-	border-block: 1px solid rgba(197, 174, 112, 0.38);
-	background: #030607;
-	box-shadow: 0 18px 32px rgba(0, 0, 0, 0.46);
-}
-
-.portal-home .threat-strip > div {
-	display: grid;
-	grid-template-columns: 2.3rem minmax(0, 1fr);
-	column-gap: 0.65rem;
-	align-items: center;
-	padding: 1rem 1.25rem;
-}
-
-.portal-home .threat-strip > div + div {
-	border-left: 1px solid rgba(197, 174, 112, 0.22);
-}
-
-.portal-home .threat-strip span {
-	grid-row: span 2;
-	color: var(--rune-300);
-	font-family: var(--display);
-	font-size: 0.72rem;
-}
-
-.portal-home .threat-strip strong {
-	color: var(--frost-100);
-	font-family: var(--display);
-	font-size: 0.74rem;
-	letter-spacing: 0.12em;
-	text-transform: uppercase;
-}
-
-.portal-home .threat-strip small {
-	color: var(--text-muted);
-	font-size: 0.62rem;
-}
-
-.portal-home .manifesto-section {
-	position: relative;
-	z-index: 5;
-	display: grid;
-	grid-template-columns: minmax(18rem, 0.8fr) minmax(0, 1.8fr) minmax(10rem, 0.8fr);
-	gap: 2rem;
-	align-items: end;
-	padding: 7rem 1rem 5rem;
-	border-bottom: 1px solid rgba(197, 174, 112, 0.22);
-	background: #030607;
-}
-
-.portal-home .manifesto-index,
-.portal-home .manifesto-aside {
-	color: var(--rune-300);
-	font-family: var(--display);
-	font-size: 0.62rem;
-	letter-spacing: 0.14em;
-	line-height: 1.7;
-	text-transform: uppercase;
-}
-
-.portal-home .manifesto-warrior {
-	display: block;
-	width: min(100%, 19rem);
-	max-width: 19rem;
-	height: 25rem;
-	margin: 1rem auto -5rem;
-	object-fit: contain;
-	object-position: center bottom;
-	filter: drop-shadow(0 20px 28px #000);
-	pointer-events: none;
-	user-select: none;
-}
-
-.portal-home .manifesto-copy h2 {
-	max-width: 15ch;
-	margin: 0 0 1rem;
-	color: var(--frost-100);
-	font-size: clamp(2rem, 5vw, 4.3rem);
-	line-height: 0.98;
-	text-transform: uppercase;
-}
-
-.portal-home .manifesto-copy h2 span,
-.portal-home .manifesto-copy h2 strong {
-	display: block;
-}
-
-.portal-home .manifesto-copy h2 strong {
-	color: var(--rune-300);
-	font-weight: 400;
-}
-
-.portal-home .manifesto-copy > p:last-child {
-	max-width: 52ch;
-	margin: 0;
-	color: var(--text-muted);
-	font-size: 0.86rem;
-	line-height: 1.8;
-}
-
-.portal-home .manifesto-aside {
-	color: var(--brass-400);
-	text-align: right;
-}
-
 .brand-tagline {
 	margin: 0.5rem 0 1.25rem;
 	color: var(--brass-400);
@@ -641,29 +529,6 @@ label,
 	}
 
 	.world-art {
-		display: none;
-	}
-
-	.portal-home .threat-strip {
-		grid-template-columns: 1fr;
-	}
-
-	.portal-home .threat-strip > div + div {
-		border-top: 1px solid rgba(197, 174, 112, 0.22);
-		border-left: 0;
-	}
-
-	.portal-home .manifesto-section {
-		grid-template-columns: 1fr;
-		gap: 1.25rem;
-		padding: 4rem 0.5rem 3rem;
-	}
-
-	.portal-home .manifesto-aside {
-		text-align: left;
-	}
-
-	.portal-home .manifesto-warrior {
 		display: none;
 	}
 

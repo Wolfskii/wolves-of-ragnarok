@@ -107,40 +107,6 @@
 					</aside>
 				</div>
 			</div>
-
-			<section class="threat-strip" aria-label="The Wolves of Ragnarok way">
-				<div><span>01</span><strong>Survive</strong><small>Preparation is power.</small></div>
-				<div><span>02</span><strong>Learn</strong><small>Every death leaves a map.</small></div>
-				<div>
-					<span>03</span><strong>Conquer</strong><small>No one holds the line alone.</small>
-				</div>
-			</section>
-
-			<section class="manifesto-section" aria-labelledby="manifesto-heading">
-				<div class="manifesto-index">
-					<div>ᛉ · THE FIRST LAW</div>
-					<img
-						class="manifesto-warrior"
-						src="/images/characters/shieldmaiden-left.webp"
-						alt=""
-						width="1024"
-						height="1536"
-						loading="lazy"
-						aria-hidden="true"
-					/>
-				</div>
-				<div class="manifesto-copy">
-					<p class="section-kicker">A realm for the relentless</p>
-					<h2 id="manifesto-heading">
-						<span>The brutal road is better</span><strong>with a pack.</strong>
-					</h2>
-					<p>
-						Bosses, raids, weather, distance, and the long walk home give every expedition a cost.
-						Bring a plan, bring a friend, and leave the realm changed.
-					</p>
-				</div>
-				<div class="manifesto-aside">CONCEIVED FOR SURVIVAL.<br />NOT FOR SIGHTSEEING.</div>
-			</section>
 		</main>
 
 		<FantasyFooter />
