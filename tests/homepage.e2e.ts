@@ -89,6 +89,7 @@ test('renders the fantasy portal without broken artwork or overflow', async ({
 	await expect(page.locator('a[href="/news/valheim-1-0-has-arrived"]')).toHaveCount(0);
 	await expect(page.getByRole('heading', { name: 'Yggdrasil', exact: true })).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Survival Systems' })).toHaveCount(0);
+	await expect(page.getByRole('heading', { name: 'Leaderboard' })).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Recent events' })).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Server chat' })).toBeVisible();
 	await expect(page.locator('.chat-scroll')).toBeVisible();
@@ -110,6 +111,7 @@ test('renders the fantasy portal without broken artwork or overflow', async ({
 	await expect(page.getByRole('heading', { name: 'Game Servers' })).toHaveCount(0);
 	await expect(page.locator('.sidebar-minimap')).toBeVisible();
 	await expect(page.locator('.sidebar-minimap iframe.public-map')).toBeVisible();
+	await expect(page.locator('.sidebar-minimap .fullscreen-button')).toBeVisible();
 	await expect(page.getByRole('link', { name: 'Open the Yggdrasil world map' })).toHaveAttribute(
 		'href',
 		'https://valheim-map.webble.se/'
@@ -191,7 +193,9 @@ test('keeps server join details and the live map on the homepage', async ({
 
 	await expect(page.locator('.sidebar-minimap')).toBeVisible();
 	await expect(page.locator('.sidebar-minimap iframe.public-map')).toBeVisible();
+	await expect(page.getByRole('button', { name: 'Open map fullscreen' })).toBeVisible();
 	await expect(page.locator('#sidebar-map-title')).toHaveText('World map');
+	await expect(page.getByRole('heading', { name: 'Leaderboard' })).toHaveCount(1);
 	await expect(page.getByRole('heading', { name: 'Recent events' })).toHaveCount(1);
 	await expect(page.getByRole('heading', { name: 'Server chat' })).toHaveCount(1);
 	await expect(page.locator('iframe.public-map')).toHaveCount(1);
@@ -244,11 +248,13 @@ test('serves public destinations, auth entry, status data, and guards administra
 	await page.goto('/members');
 	await expect(page.getByRole('heading', { name: 'Guild Roster' })).toBeVisible();
 	await expect(page.locator('.sidebar-minimap')).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'Leaderboard' })).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Recent events' })).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Server chat' })).toBeVisible();
 	await page.goto('/about');
 	await expect(page.getByRole('heading', { name: 'About Us' })).toBeVisible();
 	await expect(page.locator('.sidebar-minimap')).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'Leaderboard' })).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Recent events' })).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Server chat' })).toBeVisible();
 	await expect((await request.get('/news')).status()).toBe(404);

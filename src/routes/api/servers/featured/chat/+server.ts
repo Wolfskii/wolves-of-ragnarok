@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { RequestHandler } from './$types';
+import { mergeAndPersistChatArchive } from '$lib/server/server-status/chat-archive';
 import {
 	sendValheimChat,
 	ValheimOneControlError
@@ -37,6 +38,15 @@ export const POST: RequestHandler = async ({ request, setHeaders }) => {
 
 	try {
 		await sendValheimChat(text, operatorName);
+		await mergeAndPersistChatArchive([
+			{
+				sequence: Date.now(),
+				playerName: 'Server',
+				text,
+				shout: true,
+				unixMs: Date.now()
+			}
+		]).catch(() => undefined);
 		return json({ ok: true });
 	} catch (error) {
 		const status = error instanceof ValheimOneControlError && error.status === 429 ? 429 : 503;

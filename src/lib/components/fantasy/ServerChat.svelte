@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { Send } from '@lucide/svelte';
 	import { loadAdventurerName } from '$lib/client/adventurer-name';
+	import { formatDayMonthClock } from '$lib/client/format-stamp';
 
 	type ChatMessage = {
 		sequence: number;
@@ -33,10 +34,6 @@
 	let error = $state('');
 	let chatLog = $state<HTMLOListElement | undefined>(undefined);
 
-	function formatTime(unixMs: number): string {
-		return new Date(unixMs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-	}
-
 	function playerInk(playerName: string): string {
 		const displayName = playerName.trim();
 		if (!displayName || displayName === 'Server') return '#9f1239';
@@ -47,6 +44,10 @@
 
 	function speaker(playerName: string): string {
 		return playerName.trim() || 'Server';
+	}
+
+	function chatKey(chat: ChatMessage): string {
+		return `${chat.unixMs}|${chat.playerName}|${chat.text}|${chat.shout ? 1 : 0}|${chat.sequence}`;
 	}
 
 	async function refresh() {
@@ -106,8 +107,8 @@
 	});
 
 	$effect(() => {
-		const latest = chats.at(-1)?.sequence;
-		if (!chatLog || latest === undefined) return;
+		const latest = chats.at(-1);
+		if (!chatLog || !latest) return;
 		chatLog.scrollTop = chatLog.scrollHeight;
 	});
 </script>
@@ -121,24 +122,20 @@
 		<div class="chat-log" aria-label="Server chat">
 			{#if chats.length}
 				<ol bind:this={chatLog}>
-					{#each chats as chat (chat.sequence)}
-						<li class:shout={chat.shout} class:system={!chat.playerName.trim()}>
-							<time datetime={new Date(chat.unixMs).toISOString()}>{formatTime(chat.unixMs)}</time>
+					{#each chats as chat (chatKey(chat))}
+						<li class:shout={chat.shout} class:system={!speaker(chat.playerName).trim()}>
+							<time datetime={new Date(chat.unixMs).toISOString()}
+								>{formatDayMonthClock(chat.unixMs)}</time
+							>
 							<p>
-								<strong style:color={chat.shout ? '#b42318' : playerInk(chat.playerName)}
-									>{speaker(chat.playerName)}</strong
-								>
-								{#if chat.shout}
-									<span class="yell">shouts: {chat.text}</span>
-								{:else}
-									<span class="said">: {chat.text}</span>
-								{/if}
+								<strong style:color={playerInk(chat.playerName)}>[{speaker(chat.playerName)}]</strong
+								><span class:yell={chat.shout} class:said={!chat.shout}>: {chat.text}</span>
 							</p>
 						</li>
 					{/each}
 				</ol>
 			{:else}
-				<p class="empty">{error || 'The scroll is waiting for the first shout.'}</p>
+				<p class="empty">{error || 'The scroll is waiting for the first word.'}</p>
 			{/if}
 		</div>
 
@@ -276,9 +273,7 @@
 
 	li {
 		display: grid;
-		grid-template-columns: 2.55rem minmax(0, 1fr);
-		gap: 0.35rem;
-		align-items: baseline;
+		gap: 0.08rem;
 	}
 
 	time {

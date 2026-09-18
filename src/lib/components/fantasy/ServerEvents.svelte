@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { formatClock, formatDayMonth } from '$lib/client/format-stamp';
 	import FantasyPanel from './FantasyPanel.svelte';
 
 	type ActivityEvent = {
@@ -60,10 +61,6 @@
 		return eventLooks[type] ?? { icon: '•', tone: 'other' };
 	}
 
-	function formatTime(unixMs: number): string {
-		return new Date(unixMs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-	}
-
 	function mergeEvents(incoming: ActivityEvent[]): ActivityEvent[] {
 		const byId = new Map(events.map((event) => [event.id, event]));
 		for (const event of incoming) byId.set(event.id, event);
@@ -107,7 +104,10 @@
 				{#each events as event (event.id)}
 					{@const look = eventLook(event.type)}
 					<li class={look.tone}>
-						<time datetime={new Date(event.unixMs).toISOString()}>{formatTime(event.unixMs)}</time>
+						<time datetime={new Date(event.unixMs).toISOString()}>
+							<span class="stamp-date">{formatDayMonth(event.unixMs)}</span>
+							<span class="stamp-time">{formatClock(event.unixMs)}</span>
+						</time>
 						<span class="event-body">
 							<span class="event-icon" aria-hidden="true">{look.icon}</span>
 							<span class="event-text">{eventLabel(event)}</span>
@@ -138,9 +138,9 @@
 
 	li {
 		display: grid;
-		grid-template-columns: 2.7rem minmax(0, 1fr);
+		grid-template-columns: 2.4rem minmax(0, 1fr);
 		gap: 0.4rem;
-		align-items: baseline;
+		align-items: start;
 		padding: 0.22rem 0;
 		border-bottom: 1px solid rgba(184, 197, 198, 0.08);
 		color: var(--text-muted);
@@ -209,9 +209,17 @@
 	}
 
 	time {
+		display: flex;
+		flex-direction: column;
+		gap: 0.05rem;
 		color: var(--brass-400);
 		font-variant-numeric: tabular-nums;
 		font-size: 0.58rem;
+		line-height: 1.2;
+	}
+
+	.stamp-date {
+		font-weight: 700;
 	}
 
 	.empty {

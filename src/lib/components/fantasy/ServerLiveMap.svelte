@@ -96,20 +96,18 @@
 		{:else}
 			<p role="status">The world map is unavailable.</p>
 		{/if}
-		{#if !compact}
-			<button
-				class="fullscreen-button"
-				type="button"
-				onclick={() => void toggleFullscreen()}
-				aria-label={isFullscreen ? 'Exit fullscreen map' : 'Open map fullscreen'}
-				title={isFullscreen ? 'Exit fullscreen map' : 'Open map fullscreen'}
-			>
-				{#if isFullscreen}<Minimize2 size={17} aria-hidden="true" />{:else}<Maximize2
-						size={17}
-						aria-hidden="true"
-					/>{/if}
-			</button>
-		{/if}
+		<button
+			class="fullscreen-button"
+			type="button"
+			onclick={() => void toggleFullscreen()}
+			aria-label={isFullscreen ? 'Exit fullscreen map' : 'Open map fullscreen'}
+			title={isFullscreen ? 'Exit fullscreen map' : 'Open map fullscreen'}
+		>
+			{#if isFullscreen}<Minimize2 size={compact ? 18 : 17} aria-hidden="true" />{:else}<Maximize2
+					size={compact ? 18 : 17}
+					aria-hidden="true"
+				/>{/if}
+		</button>
 	</div>
 	<figcaption>
 		{#if compact}
@@ -136,6 +134,10 @@
 		margin: 0;
 	}
 
+	.compact.live-map {
+		overflow: visible;
+	}
+
 	.map-frame {
 		position: relative;
 		display: grid;
@@ -150,6 +152,7 @@
 	}
 
 	.map-frame:fullscreen {
+		overflow: hidden;
 		width: 100vw;
 		height: 100vh;
 		aspect-ratio: auto;
@@ -203,6 +206,25 @@
 		background: rgba(143, 17, 25, 0.82);
 	}
 
+	.compact .fullscreen-button {
+		top: -0.55rem;
+		right: -0.5rem;
+		z-index: 6;
+		width: 2.55rem;
+		height: 2.55rem;
+		border-width: 1.5px;
+		box-shadow:
+			0 8px 16px rgba(0, 0, 0, 0.55),
+			0 0 0 1px rgba(5, 8, 7, 0.45);
+	}
+
+	.map-frame:fullscreen .fullscreen-button {
+		top: 0.7rem;
+		right: 0.7rem;
+		width: 2.35rem;
+		height: 2.35rem;
+	}
+
 	.map-frame p {
 		margin: 0;
 		padding: 2rem;
@@ -239,6 +261,7 @@
 	}
 
 	.compact .map-frame {
+		overflow: visible;
 		box-shadow:
 			inset 0 0 24px rgba(0, 0, 0, 0.5),
 			0 14px 24px rgba(0, 0, 0, 0.38);
