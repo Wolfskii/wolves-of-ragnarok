@@ -1,6 +1,17 @@
 <!doctype html>
 <html lang="en">
 	<head>
+		<script>
+			(function () {
+				try {
+					if (localStorage.getItem('wolves-of-ragnarok:gate-open:v1') === 'true') {
+						document.documentElement.classList.add('gate-already-open');
+					}
+				} catch (error) {
+					/* private mode still shows the gate once */
+				}
+			})();
+		</script>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="text-scale" content="scale" />

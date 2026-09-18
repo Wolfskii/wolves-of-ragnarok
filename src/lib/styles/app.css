@@ -266,11 +266,14 @@ label,
 	content: '';
 	pointer-events: none;
 	position: absolute;
-	inset: 0;
 	z-index: 0;
 }
 
 .site-world::before {
+	top: 50%;
+	left: 50%;
+	width: 240%;
+	height: 240%;
 	background:
 		radial-gradient(ellipse 1.4px 8px at 50% 50%, rgba(229, 216, 187, 0.62) 0 45%, transparent 56%),
 		radial-gradient(ellipse 1px 5px at 50% 50%, rgba(201, 185, 149, 0.46) 0 48%, transparent 59%),
@@ -289,12 +292,13 @@ label,
 	background-repeat: repeat;
 	mix-blend-mode: screen;
 	opacity: 0.42;
-	transform: rotate(-48deg) scale(1.08);
+	transform: translate(-50%, -50%) rotate(-48deg);
 	transform-origin: center;
 	animation: blizzard-drift 8s linear infinite;
 }
 
 .site-world::after {
+	inset: 0;
 	opacity: 0.18;
 	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.2'/%3E%3C/svg%3E");
 	mix-blend-mode: soft-light;
@@ -344,6 +348,186 @@ label,
 		transparent
 	);
 	filter: blur(18px);
+}
+
+.portal-home.site-world {
+	background:
+		linear-gradient(180deg, rgba(3, 5, 5, 0.18) 0 24rem, rgba(3, 5, 5, 0.88) 48rem),
+		url('/media/warheim/warheim-hero.webp') center top / max(120rem, 100vw) 48rem no-repeat,
+		url('/images/backgrounds/background-main.png') center 42rem / max(100rem, 100vw) auto
+			no-repeat,
+		#030608;
+}
+
+.portal-home .portal-grid {
+	margin-top: 2.25rem;
+}
+
+.portal-crown {
+	position: absolute;
+	z-index: 5;
+	top: 18.2rem;
+	left: 50%;
+	display: grid;
+	grid-template-columns: auto minmax(3rem, 12rem) auto minmax(3rem, 12rem) auto;
+	align-items: center;
+	gap: 0.75rem;
+	width: min(78%, 38rem);
+	color: var(--brass-400);
+	font-family: var(--display);
+	transform: translateX(-50%);
+	pointer-events: none;
+}
+
+.portal-crown i {
+	height: 1px;
+	background: linear-gradient(90deg, transparent, var(--steel-500), var(--brass-400), transparent);
+}
+
+.portal-crown b {
+	display: grid;
+	place-items: center;
+	width: 3rem;
+	aspect-ratio: 1;
+	border: 1px solid var(--brass-600);
+	background: rgba(5, 10, 12, 0.94);
+	box-shadow:
+		inset 0 0 12px rgba(168, 59, 67, 0.18),
+		var(--glow-rune);
+	transform: rotate(45deg);
+}
+
+.world-art {
+	position: absolute;
+	z-index: 2;
+	height: auto;
+	pointer-events: none;
+	user-select: none;
+}
+
+.world-art--wolf {
+	top: 29rem;
+	left: clamp(-17rem, -14vw, -9rem);
+	width: clamp(20rem, 29vw, 30rem);
+	filter: drop-shadow(0 20px 30px #000);
+}
+
+.world-art--male-warrior {
+	top: calc(29rem + clamp(20rem, 29vw, 30rem) - clamp(25.5rem, 36vw, 37.5rem) + 0.5rem);
+	left: clamp(-25rem, -21vw, -14rem);
+	z-index: 3;
+	width: clamp(17rem, 24vw, 25rem);
+	filter: drop-shadow(0 20px 30px #000);
+}
+
+.portal-home .threat-strip {
+	position: relative;
+	z-index: 5;
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	margin: 0 auto;
+	border-block: 1px solid rgba(197, 174, 112, 0.38);
+	background: #030607;
+	box-shadow: 0 18px 32px rgba(0, 0, 0, 0.46);
+}
+
+.portal-home .threat-strip > div {
+	display: grid;
+	grid-template-columns: 2.3rem minmax(0, 1fr);
+	column-gap: 0.65rem;
+	align-items: center;
+	padding: 1rem 1.25rem;
+}
+
+.portal-home .threat-strip > div + div {
+	border-left: 1px solid rgba(197, 174, 112, 0.22);
+}
+
+.portal-home .threat-strip span {
+	grid-row: span 2;
+	color: var(--rune-300);
+	font-family: var(--display);
+	font-size: 0.72rem;
+}
+
+.portal-home .threat-strip strong {
+	color: var(--frost-100);
+	font-family: var(--display);
+	font-size: 0.74rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.portal-home .threat-strip small {
+	color: var(--text-muted);
+	font-size: 0.62rem;
+}
+
+.portal-home .manifesto-section {
+	position: relative;
+	z-index: 5;
+	display: grid;
+	grid-template-columns: minmax(18rem, 0.8fr) minmax(0, 1.8fr) minmax(10rem, 0.8fr);
+	gap: 2rem;
+	align-items: end;
+	padding: 7rem 1rem 5rem;
+	border-bottom: 1px solid rgba(197, 174, 112, 0.22);
+	background: #030607;
+}
+
+.portal-home .manifesto-index,
+.portal-home .manifesto-aside {
+	color: var(--rune-300);
+	font-family: var(--display);
+	font-size: 0.62rem;
+	letter-spacing: 0.14em;
+	line-height: 1.7;
+	text-transform: uppercase;
+}
+
+.portal-home .manifesto-warrior {
+	display: block;
+	width: min(100%, 19rem);
+	max-width: 19rem;
+	height: 25rem;
+	margin: 1rem auto -5rem;
+	object-fit: contain;
+	object-position: center bottom;
+	filter: drop-shadow(0 20px 28px #000);
+	pointer-events: none;
+	user-select: none;
+}
+
+.portal-home .manifesto-copy h2 {
+	max-width: 15ch;
+	margin: 0 0 1rem;
+	color: var(--frost-100);
+	font-size: clamp(2rem, 5vw, 4.3rem);
+	line-height: 0.98;
+	text-transform: uppercase;
+}
+
+.portal-home .manifesto-copy h2 span,
+.portal-home .manifesto-copy h2 strong {
+	display: block;
+}
+
+.portal-home .manifesto-copy h2 strong {
+	color: var(--rune-300);
+	font-weight: 400;
+}
+
+.portal-home .manifesto-copy > p:last-child {
+	max-width: 52ch;
+	margin: 0;
+	color: var(--text-muted);
+	font-size: 0.86rem;
+	line-height: 1.8;
+}
+
+.portal-home .manifesto-aside {
+	color: var(--brass-400);
+	text-align: right;
 }
 
 .brand-tagline {
@@ -400,6 +584,16 @@ label,
 	color: var(--text-muted);
 }
 
+@media (max-width: 75rem) {
+	.world-art {
+		opacity: 0.54;
+	}
+
+	.world-art--wolf {
+		left: -13rem;
+	}
+}
+
 @media (max-width: 64rem) {
 	.portal-grid {
 		grid-template-columns: minmax(12.5rem, 0.72fr) minmax(23rem, 1.5fr);
@@ -409,12 +603,68 @@ label,
 		grid-column: 1 / -1;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
+
+	.portal-crown {
+		top: 17rem;
+	}
+
+	.world-art--wolf {
+		top: 33rem;
+		left: -9rem;
+	}
+
+	.world-art--male-warrior {
+		top: calc(33rem + clamp(20rem, 29vw, 30rem) - clamp(25.5rem, 36vw, 37.5rem) + 0.5rem);
+	}
 }
 
 @media (max-width: 47.99rem) {
 	.site-world {
 		background-position: 42% top;
 		background-size: auto 52rem;
+	}
+
+	.portal-home.site-world {
+		background-size:
+			auto 38rem,
+			auto 38rem,
+			auto 52rem;
+		background-position:
+			58% top,
+			58% top,
+			42% 38rem;
+	}
+
+	.portal-crown {
+		top: 14.25rem;
+		width: 70%;
+	}
+
+	.world-art {
+		display: none;
+	}
+
+	.portal-home .threat-strip {
+		grid-template-columns: 1fr;
+	}
+
+	.portal-home .threat-strip > div + div {
+		border-top: 1px solid rgba(197, 174, 112, 0.22);
+		border-left: 0;
+	}
+
+	.portal-home .manifesto-section {
+		grid-template-columns: 1fr;
+		gap: 1.25rem;
+		padding: 4rem 0.5rem 3rem;
+	}
+
+	.portal-home .manifesto-aside {
+		text-align: left;
+	}
+
+	.portal-home .manifesto-warrior {
+		display: none;
 	}
 
 	.portal-shell {

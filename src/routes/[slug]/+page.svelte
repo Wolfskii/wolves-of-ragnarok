@@ -1,8 +1,6 @@
 <script lang="ts">
 	/* eslint-disable svelte/no-at-html-tags -- member bios are sanitized by the server loader. */
 	import PortalPageShell from '$lib/components/fantasy/PortalPageShell.svelte';
-	import ServerActivity from '$lib/components/fantasy/ServerActivity.svelte';
-	import ServerLiveMap from '$lib/components/fantasy/ServerLiveMap.svelte';
 	import ValheimWikiSearch from '$lib/components/fantasy/ValheimWikiSearch.svelte';
 	import { resolve } from '$app/paths';
 	import type { PageData, PageServerData } from './$types';
@@ -16,17 +14,8 @@
 </svelte:head>
 
 <PortalPageShell title={data.page.title} eyebrow={data.page.eyebrow}>
-	{#snippet below()}
-		{#if data.page.title === 'Game Servers'}
-			<ServerActivity />
-		{/if}
-	{/snippet}
 	<p class="intro">{data.page.intro}</p>
-	{#if data.page.title === 'Game Servers'}
-		<div class="server-overview">
-			<ServerLiveMap immersive />
-		</div>
-	{:else if data.page.title === 'Guild Roster'}
+	{#if data.page.title === 'Guild Roster'}
 		<section class="member-list" aria-label="Guild members">
 			{#if data.members?.length}
 				{#each data.members as member (member.username)}
@@ -145,10 +134,6 @@
 	.intro {
 		color: #becbc8;
 		font-size: 0.88rem;
-	}
-	.server-overview {
-		display: block;
-		margin: 2rem auto;
 	}
 	ul {
 		display: grid;

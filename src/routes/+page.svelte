@@ -4,11 +4,9 @@
 	import FantasyPanel from '$lib/components/fantasy/FantasyPanel.svelte';
 	import NewsCard from '$lib/components/fantasy/NewsCard.svelte';
 	import PortalBrand from '$lib/components/fantasy/PortalBrand.svelte';
+	import PortalStatusRail from '$lib/components/fantasy/PortalStatusRail.svelte';
+	import PortalSystemsRail from '$lib/components/fantasy/PortalSystemsRail.svelte';
 	import RagnarokGate from '$lib/components/fantasy/RagnarokGate.svelte';
-	import RealmSystems from '$lib/components/fantasy/RealmSystems.svelte';
-	import ServerStatus from '$lib/components/fantasy/ServerStatus.svelte';
-	import { resolve } from '$app/paths';
-	import { ArrowRight } from '@lucide/svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -50,7 +48,7 @@
 </svelte:head>
 
 <RagnarokGate>
-	<div class="site-world">
+	<div class="site-world portal-home">
 		<main>
 			<div class="portal-shell">
 				<header>
@@ -79,8 +77,8 @@
 					aria-hidden="true"
 				/>
 				<div class="portal-grid">
-					<aside class="portal-sidebar portal-sidebar--left" aria-label="Realm systems">
-						<RealmSystems />
+					<aside class="portal-sidebar portal-sidebar--left" aria-label="Realm chronicle">
+						<PortalSystemsRail />
 					</aside>
 
 					<div class="portal-main">
@@ -92,12 +90,6 @@
 									release and all its new content. It is a persistent world for builders, explorers,
 									and groups looking for their next adventure together.
 								</p>
-								<div class="welcome-actions">
-									<a class="primary-action" href={resolve('/servers')}
-										>Enter Yggdrasil <ArrowRight size={16} /></a
-									>
-									<a class="secondary-action" href={resolve('/about')}>Know the realm</a>
-								</div>
 							</div>
 						</FantasyPanel>
 
@@ -111,7 +103,7 @@
 					</div>
 
 					<aside class="portal-sidebar portal-sidebar--right" aria-label="Server status">
-						<ServerStatus showInfoLink />
+						<PortalStatusRail />
 					</aside>
 				</div>
 			</div>
@@ -156,126 +148,17 @@
 </RagnarokGate>
 
 <style>
-	.portal-crown {
-		position: absolute;
-		z-index: 5;
-		top: 18.2rem;
-		left: 50%;
-		display: grid;
-		grid-template-columns: auto minmax(3rem, 12rem) auto minmax(3rem, 12rem) auto;
-		align-items: center;
-		gap: 0.75rem;
-		width: min(78%, 38rem);
-		color: var(--brass-400);
-		font-family: var(--display);
-		transform: translateX(-50%);
-	}
-
-	.portal-crown i {
-		height: 1px;
-		background: linear-gradient(
-			90deg,
-			transparent,
-			var(--steel-500),
-			var(--brass-400),
-			transparent
-		);
-	}
-
-	.portal-crown b {
-		display: grid;
-		place-items: center;
-		width: 3rem;
-		aspect-ratio: 1;
-		border: 1px solid var(--brass-600);
-		background: rgba(5, 10, 12, 0.94);
-		box-shadow:
-			inset 0 0 12px rgba(168, 59, 67, 0.18),
-			var(--glow-rune);
-		transform: rotate(45deg);
-	}
-
-	.world-art {
-		position: absolute;
-		z-index: 2;
-		height: auto;
-		pointer-events: none;
-		user-select: none;
-	}
-
-	.world-art--wolf {
-		top: 29rem;
-		left: clamp(-17rem, -14vw, -9rem);
-		width: clamp(20rem, 29vw, 30rem);
-		filter: drop-shadow(0 20px 30px #000);
-	}
-
-	.world-art--male-warrior {
-		top: calc(29rem + clamp(20rem, 29vw, 30rem) - clamp(25.5rem, 36vw, 37.5rem) + 0.5rem);
-		left: clamp(-25rem, -21vw, -14rem);
-		z-index: 3;
-		width: clamp(17rem, 24vw, 25rem);
-		filter: drop-shadow(0 20px 30px #000);
-	}
-
 	:global(.welcome-panel) {
 		margin-bottom: 1.5rem;
 	}
 
-	.welcome {
+	:global(.portal-home .welcome) {
 		padding: 0.5rem 0.25rem 0.35rem;
 	}
 
-	.welcome > p:not(.section-kicker) {
+	:global(.portal-home .welcome > p:not(.section-kicker)) {
 		color: #bbc9c6;
 		font-size: 0.83rem;
-	}
-
-	.welcome-actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.75rem;
-		margin-top: 1.25rem;
-	}
-
-	.primary-action,
-	.secondary-action {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		gap: 0.5rem;
-		min-height: 2.6rem;
-		padding-inline: 1rem;
-		font-family: var(--display);
-		font-size: 0.62rem;
-		font-weight: 600;
-		text-decoration: none;
-		text-transform: uppercase;
-	}
-
-	.primary-action {
-		color: var(--frost-100);
-		clip-path: polygon(
-			0.5rem 0,
-			calc(100% - 0.5rem) 0,
-			100% 50%,
-			calc(100% - 0.5rem) 100%,
-			0.5rem 100%,
-			0 50%
-		);
-	}
-
-	.site-world {
-		background:
-			linear-gradient(180deg, rgba(3, 5, 5, 0.18) 0 24rem, rgba(3, 5, 5, 0.88) 48rem),
-			url('/media/warheim/warheim-hero.webp') center top / max(120rem, 100vw) 48rem no-repeat,
-			url('/images/backgrounds/background-main.png') center 42rem / max(100rem, 100vw) auto
-				no-repeat,
-			#030608;
-	}
-
-	.portal-grid {
-		margin-top: 2.25rem;
 	}
 
 	:global(.war-hero-panel) {
@@ -308,184 +191,5 @@
 		max-width: 52ch;
 		font-size: 0.9rem;
 		line-height: 1.8;
-	}
-
-	.threat-strip {
-		position: relative;
-		z-index: 5;
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		margin: 0 auto;
-		border-block: 1px solid rgba(197, 174, 112, 0.38);
-		background: #030607;
-		box-shadow: 0 18px 32px rgba(0, 0, 0, 0.46);
-	}
-
-	.threat-strip > div {
-		display: grid;
-		grid-template-columns: 2.3rem 1fr;
-		column-gap: 0.65rem;
-		align-items: center;
-		padding: 1rem 1.25rem;
-	}
-
-	.threat-strip > div + div {
-		border-left: 1px solid rgba(197, 174, 112, 0.22);
-	}
-
-	.threat-strip span {
-		grid-row: span 2;
-		color: var(--rune-300);
-		font-family: var(--display);
-		font-size: 0.72rem;
-	}
-
-	.threat-strip strong {
-		color: var(--frost-100);
-		font-family: var(--display);
-		font-size: 0.74rem;
-		letter-spacing: 0.12em;
-		text-transform: uppercase;
-	}
-
-	.threat-strip small {
-		color: var(--text-muted);
-		font-size: 0.62rem;
-	}
-
-	.manifesto-section {
-		position: relative;
-		z-index: 5;
-		display: grid;
-		grid-template-columns: minmax(18rem, 0.8fr) minmax(0, 1.8fr) minmax(10rem, 0.8fr);
-		gap: 2rem;
-		align-items: end;
-		padding: 7rem 1rem 5rem;
-		border-bottom: 1px solid rgba(197, 174, 112, 0.22);
-		background: #030607;
-	}
-
-	.manifesto-index,
-	.manifesto-aside {
-		color: var(--rune-300);
-		font-family: var(--display);
-		font-size: 0.62rem;
-		letter-spacing: 0.14em;
-		line-height: 1.7;
-		text-transform: uppercase;
-	}
-
-	.manifesto-warrior {
-		display: block;
-		width: min(100%, 19rem);
-		height: 25rem;
-		margin: 1rem auto -5rem;
-		object-fit: contain;
-		object-position: center bottom;
-		filter: drop-shadow(0 20px 28px #000);
-		pointer-events: none;
-		user-select: none;
-	}
-
-	.manifesto-copy h2 {
-		max-width: 15ch;
-		margin: 0 0 1rem;
-		color: var(--frost-100);
-		font-size: clamp(2rem, 5vw, 4.3rem);
-		line-height: 0.98;
-		text-transform: uppercase;
-	}
-
-	.manifesto-copy h2 span,
-	.manifesto-copy h2 strong {
-		display: block;
-	}
-
-	.manifesto-copy h2 strong {
-		color: var(--rune-300);
-		font-weight: 400;
-	}
-
-	.manifesto-copy > p:last-child {
-		max-width: 52ch;
-		margin: 0;
-		color: var(--text-muted);
-		font-size: 0.86rem;
-		line-height: 1.8;
-	}
-
-	.manifesto-aside {
-		color: var(--brass-400);
-		text-align: right;
-	}
-
-	@media (max-width: 75rem) {
-		.world-art {
-			opacity: 0.54;
-		}
-
-		.world-art--wolf {
-			left: -13rem;
-		}
-	}
-
-	@media (max-width: 64rem) {
-		.portal-crown {
-			top: 17rem;
-		}
-
-		.world-art--wolf {
-			top: 33rem;
-			left: -9rem;
-		}
-
-		.world-art--male-warrior {
-			top: calc(33rem + clamp(20rem, 29vw, 30rem) - clamp(25.5rem, 36vw, 37.5rem) + 0.5rem);
-		}
-	}
-
-	@media (max-width: 47.99rem) {
-		.portal-crown {
-			top: 14.25rem;
-			width: 70%;
-		}
-
-		.site-world {
-			background-size:
-				auto 38rem,
-				auto 38rem,
-				auto 52rem;
-			background-position:
-				58% top,
-				58% top,
-				42% 38rem;
-		}
-
-		.world-art {
-			display: none;
-		}
-
-		.threat-strip {
-			grid-template-columns: 1fr;
-		}
-
-		.threat-strip > div + div {
-			border-top: 1px solid rgba(197, 174, 112, 0.22);
-			border-left: 0;
-		}
-
-		.manifesto-section {
-			grid-template-columns: 1fr;
-			gap: 1.25rem;
-			padding: 4rem 0.5rem 3rem;
-		}
-
-		.manifesto-aside {
-			text-align: left;
-		}
-
-		.manifesto-warrior {
-			display: none;
-		}
 	}
 </style>

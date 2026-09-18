@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { resolve } from '$app/paths';
-	import { ArrowRight, Check, Copy } from '@lucide/svelte';
+	import { Check, Copy, Eye, EyeOff } from '@lucide/svelte';
 	import type { ServerStatusResult } from '$lib/server/server-status/types';
 
 	let {
@@ -17,8 +16,7 @@
 		version = null,
 		snapshotAgeMs = null,
 		queriedAt = null,
-		detailed = false,
-		showInfoLink = false
+		detailed = false
 	}: {
 		name?: string;
 		online?: boolean;
@@ -33,7 +31,6 @@
 		snapshotAgeMs?: number | null;
 		queriedAt?: string | null;
 		detailed?: boolean;
-		showInfoLink?: boolean;
 	} = $props();
 
 	let current = $state({
@@ -52,6 +49,7 @@
 	});
 	let receivedLiveStatus = $state(false);
 	let addressCopied = $state(false);
+	let passwordRevealed = $state(false);
 	let copyResetTimer: number | undefined;
 
 	async function copyJoinAddress() {
@@ -120,13 +118,13 @@
 </script>
 
 <section class="status-card" aria-labelledby="server-name">
-	<a class="shield-wrap" href={resolve('/servers')} aria-label="Open Yggdrasil server information">
+	<div class="shield-wrap">
 		<img src="/images/ui/server-shield.webp" alt="" width="1024" height="1024" />
 		<span class:offline={!current.online}></span>
-	</a>
+	</div>
 
 	<div class="status-slab">
-		<a class="server-identity" href={resolve('/servers')} aria-labelledby="server-name">
+		<div class="server-identity">
 			<p class="game">Valheim</p>
 			<h2 id="server-name">{current.name}</h2>
 			{#if current.worldName || current.day !== null}
@@ -136,7 +134,7 @@
 						: ''}
 				</p>
 			{/if}
-		</a>
+		</div>
 		<p class="state" class:offline={!current.online}>
 			<span aria-hidden="true"></span>{current.online ? 'Online' : 'Offline'}
 		</p>
@@ -177,30 +175,47 @@
 
 		{#if current.joinAddress}
 			<div class="join-details">
-				<span>Join address</span>
-				<div class="join-code-box">
-					<code>{current.joinAddress}</code>
-					<button
-						class="reveal-button"
-						type="button"
-						onclick={copyJoinAddress}
-						aria-label={addressCopied ? 'Join address copied' : 'Copy join address'}
-						title={addressCopied ? 'Copied' : 'Copy join address'}
-					>
-						{#if addressCopied}<Check size={15} />{:else}<Copy size={15} />{/if}
-					</button>
+				<div class="join-field">
+					<span>Join address</span>
+					<div class="join-code-box">
+						<code>{current.joinAddress}</code>
+						<button
+							class="reveal-button"
+							type="button"
+							onclick={copyJoinAddress}
+							aria-label={addressCopied ? 'Join address copied' : 'Copy join address'}
+							title={addressCopied ? 'Copied' : 'Copy join address'}
+						>
+							{#if addressCopied}<Check size={15} />{:else}<Copy size={15} />{/if}
+						</button>
+					</div>
+				</div>
+				<div class="join-field">
+					<span>Password</span>
+					<div class="join-code-box">
+						{#if passwordRevealed}
+							<a
+								href="https://discord.com/channels/136893132716376075/1547308102007783515/1547969996397744259"
+								target="_blank"
+								rel="noreferrer">Get on Discord</a
+							>
+							>
+						{:else}
+							<code aria-hidden="true">••••••••</code>
+						{/if}
+						<button
+							class="reveal-button"
+							type="button"
+							onclick={() => (passwordRevealed = !passwordRevealed)}
+							aria-label={passwordRevealed ? 'Hide password' : 'Reveal password'}
+							title={passwordRevealed ? 'Hide' : 'Reveal password'}
+							aria-pressed={passwordRevealed}
+						>
+							{#if passwordRevealed}<EyeOff size={15} />{:else}<Eye size={15} />{/if}
+						</button>
+					</div>
 				</div>
 			</div>
-		{/if}
-
-		{#if showInfoLink}
-			<a class="server-info-link" href={resolve('/servers')}>
-				<span>Server information</span><ArrowRight size={14} aria-hidden="true" />
-			</a>
-		{/if}
-
-		{#if detailed}
-			<p class="password-note">Server password is handed out in Discord.</p>
 		{/if}
 	</div>
 </section>
@@ -222,8 +237,6 @@
 		aspect-ratio: 1;
 		transform: translateX(-50%);
 		filter: drop-shadow(0 0 16px rgba(168, 59, 67, 0.34));
-		cursor: pointer;
-		text-decoration: none;
 	}
 
 	.shield-wrap img {
@@ -291,12 +304,6 @@
 	.server-identity {
 		display: block;
 		color: inherit;
-		text-decoration: none;
-	}
-
-	.server-identity:hover h2,
-	.server-identity:focus-visible h2 {
-		color: var(--rune-300);
 	}
 
 	.world-details {
@@ -368,14 +375,19 @@
 
 	.join-details {
 		display: grid;
-		gap: 0.25rem;
+		gap: 0.7rem;
 		margin-top: 0.9rem;
 		padding-top: 0.7rem;
 		border-top: 1px solid rgba(137, 115, 69, 0.32);
 		text-align: left;
 	}
 
-	.join-details span {
+	.join-field {
+		display: grid;
+		gap: 0.25rem;
+	}
+
+	.join-field > span {
 		color: var(--text-muted);
 		font-size: 0.62rem;
 		text-transform: uppercase;
@@ -400,6 +412,26 @@
 		white-space: nowrap;
 	}
 
+	.join-code-box a {
+		display: block;
+		overflow: hidden;
+		padding: 0.62rem 2.65rem 0.62rem 0.55rem;
+		color: var(--brass-400);
+		font-family: var(--display);
+		font-size: 0.62rem;
+		letter-spacing: 0.08em;
+		line-height: 1;
+		text-decoration: none;
+		text-overflow: ellipsis;
+		text-transform: uppercase;
+		white-space: nowrap;
+	}
+
+	.join-code-box a:hover,
+	.join-code-box a:focus-visible {
+		color: var(--frost-100);
+	}
+
 	.join-code-box button {
 		position: absolute;
 		top: 0;
@@ -418,35 +450,6 @@
 	.join-code-box button:hover,
 	.join-code-box button:focus-visible {
 		color: var(--frost-100);
-	}
-
-	.server-info-link {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		gap: 0.45rem;
-		margin-top: 0.8rem;
-		color: var(--brass-400);
-		font-family: var(--display);
-		font-size: 0.62rem;
-		text-decoration: none;
-		text-transform: uppercase;
-	}
-
-	.server-info-link:hover,
-	.server-info-link:focus-visible {
-		color: var(--frost-100);
-	}
-
-	.password-note {
-		margin: 0.85rem 0 0;
-		padding-top: 0.7rem;
-		border-top: 1px solid rgba(137, 115, 69, 0.32);
-		color: var(--brass-400);
-		font-family: var(--ui);
-		font-size: 0.68rem;
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
 	}
 
 	@media (max-width: 47.99rem) {

@@ -1,10 +1,16 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Maximize2, Minimize2 } from '@lucide/svelte';
+	import { ExternalLink, Maximize2, Minimize2 } from '@lucide/svelte';
 	import type { ServerStatusResult } from '$lib/server/server-status/types';
 
-	let { title = 'Live world chart', immersive = false }: { title?: string; immersive?: boolean } =
-		$props();
+	let {
+		title = 'World map',
+		immersive = false,
+		compact = false
+	}: { title?: string; immersive?: boolean; compact?: boolean } = $props();
+
+	const publicMapUrl = 'https://valheim-map.webble.se/';
+	const titleId = $derived(compact ? 'sidebar-map-title' : 'live-map-title');
 
 	let mapUrl = $state<string | null>(null);
 	let worldName = $state('Yggdrasil');
@@ -51,7 +57,7 @@
 				mapUrl = result.mapUrl;
 				worldName = result.worldName ?? result.name;
 			} catch {
-				// Keep the last rendered chart when a refresh fails.
+				// Keep the last rendered map when a refresh fails.
 				scheduleRetry();
 			}
 		};
@@ -71,28 +77,55 @@
 	});
 </script>
 
-<figure class="live-map" class:immersive aria-labelledby="live-map-title">
+<figure
+	class="live-map"
+	class:immersive
+	class:compact
+	class:sidebar-minimap={compact}
+	aria-labelledby={titleId}
+>
 	<div class="map-frame" bind:this={mapFrame}>
 		{#if mapUrl}
-			<iframe class="public-map" src={mapUrl} title={`Public Valheim map of ${worldName}`}></iframe>
+			<iframe
+				class="public-map"
+				src={mapUrl}
+				title={compact
+					? `Public Valheim world map of ${worldName}`
+					: `Public Valheim map of ${worldName}`}
+			></iframe>
 		{:else}
-			<p role="status">The world chart is unavailable.</p>
+			<p role="status">The world map is unavailable.</p>
 		{/if}
-		<button
-			class="fullscreen-button"
-			type="button"
-			onclick={() => void toggleFullscreen()}
-			aria-label={isFullscreen ? 'Exit fullscreen map' : 'Open map fullscreen'}
-			title={isFullscreen ? 'Exit fullscreen map' : 'Open map fullscreen'}
-		>
-			{#if isFullscreen}<Minimize2 size={17} aria-hidden="true" />{:else}<Maximize2
-					size={17}
-					aria-hidden="true"
-				/>{/if}
-		</button>
+		{#if !compact}
+			<button
+				class="fullscreen-button"
+				type="button"
+				onclick={() => void toggleFullscreen()}
+				aria-label={isFullscreen ? 'Exit fullscreen map' : 'Open map fullscreen'}
+				title={isFullscreen ? 'Exit fullscreen map' : 'Open map fullscreen'}
+			>
+				{#if isFullscreen}<Minimize2 size={17} aria-hidden="true" />{:else}<Maximize2
+						size={17}
+						aria-hidden="true"
+					/>{/if}
+			</button>
+		{/if}
 	</div>
 	<figcaption>
-		<strong id="live-map-title">{title}</strong>
+		{#if compact}
+			<a
+				class="map-title-link"
+				href={publicMapUrl}
+				target="_blank"
+				rel="noreferrer"
+				aria-label="Open the Yggdrasil world map"
+			>
+				<strong id={titleId}>{title}</strong>
+				<ExternalLink size={12} aria-hidden="true" />
+			</a>
+		{:else}
+			<strong id={titleId}>{title}</strong>
+		{/if}
 		<span>{worldName} · public fog map</span>
 	</figcaption>
 </figure>
@@ -203,6 +236,60 @@
 
 	.immersive figcaption {
 		display: none;
+	}
+
+	.compact .map-frame {
+		box-shadow:
+			inset 0 0 24px rgba(0, 0, 0, 0.5),
+			0 14px 24px rgba(0, 0, 0, 0.38);
+	}
+
+	.compact .map-frame::after {
+		border-width: 4px;
+		box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.42);
+	}
+
+	.compact figcaption {
+		gap: 0.75rem;
+		padding: 0.55rem 0.1rem 0;
+	}
+
+	.map-title-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		min-width: 0;
+		color: var(--brass-400);
+		text-decoration: none;
+	}
+
+	.map-title-link:hover,
+	.map-title-link:focus-visible {
+		color: var(--frost-100);
+	}
+
+	.map-title-link strong {
+		color: inherit;
+	}
+
+	.compact figcaption strong {
+		font-size: 0.62rem;
+	}
+
+	.compact figcaption span {
+		font-size: 0.58rem;
+	}
+
+	.compact .map-frame p {
+		padding: 1.25rem;
+		font-size: 0.68rem;
+	}
+
+	@media (max-width: 47.99rem) {
+		.compact {
+			width: min(100%, 24rem);
+			margin-inline: auto;
+		}
 	}
 
 	@media (max-width: 35rem) {

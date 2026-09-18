@@ -4,8 +4,8 @@
 	import FantasyNavigation from './FantasyNavigation.svelte';
 	import FantasyPanel from './FantasyPanel.svelte';
 	import PortalBrand from './PortalBrand.svelte';
-	import RealmSystems from './RealmSystems.svelte';
-	import ServerStatus from './ServerStatus.svelte';
+	import PortalStatusRail from './PortalStatusRail.svelte';
+	import PortalSystemsRail from './PortalSystemsRail.svelte';
 
 	let {
 		title,
@@ -22,8 +22,8 @@
 			<FantasyNavigation />
 		</header>
 		<div class="page-layout">
-			<aside class="page-sidebar page-sidebar--left" aria-label="Realm systems">
-				<RealmSystems />
+			<aside class="page-sidebar page-sidebar--left" aria-label="Realm chronicle">
+				<PortalSystemsRail />
 			</aside>
 
 			<div class="content">
@@ -33,7 +33,7 @@
 			</div>
 
 			<aside class="page-sidebar page-sidebar--right" aria-label="Realm status">
-				<ServerStatus />
+				<PortalStatusRail />
 			</aside>
 		</div>
 		{#if below}

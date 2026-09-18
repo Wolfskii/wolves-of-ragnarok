@@ -26,6 +26,20 @@ test('opens the Wolves gate with its one-shot opening sound', async ({ page }) =
 	await expect(page.locator('.gate-site-reveal')).toHaveClass(/fully-open/);
 	await page.reload();
 	await expect(page.getByRole('button', { name: 'Open the gates' })).toHaveCount(0);
+	await expect
+		.poll(() => page.evaluate(() => localStorage.getItem('wolves-of-ragnarok:gate-open:v1')))
+		.toBe('true');
+});
+
+test('skips the gate on later visits once it has been opened', async ({ page }) => {
+	await page.addInitScript(() => {
+		localStorage.setItem('wolves-of-ragnarok:gate-open:v1', 'true');
+	});
+	await page.goto('/');
+	await expect(page.getByRole('button', { name: 'Open the gates' })).toHaveCount(0);
+	await expect(page.locator('.gate-site-reveal')).toHaveClass(/fully-open/);
+	await expect(page.getByRole('heading', { name: 'Yggdrasil', exact: true })).toBeVisible();
+	await expect(page.locator('.gate')).toHaveCount(0);
 });
 
 test('persists radio mute and stop choices between visits', async ({ page }) => {
@@ -74,12 +88,48 @@ test('renders the fantasy portal without broken artwork or overflow', async ({
 	await expect(page.getByRole('heading', { name: 'New Members Enter the Hall' })).toHaveCount(0);
 	await expect(page.locator('a[href="/news/valheim-1-0-has-arrived"]')).toHaveCount(0);
 	await expect(page.getByRole('heading', { name: 'Yggdrasil', exact: true })).toBeVisible();
-	await expect(page.getByRole('link', { name: 'Server information', exact: true })).toHaveAttribute(
-		'href',
-		'/servers'
+	await expect(page.getByRole('heading', { name: 'Survival Systems' })).toHaveCount(0);
+	await expect(page.getByRole('heading', { name: 'Recent events' })).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'Server chat' })).toBeVisible();
+	await expect(page.locator('.chat-scroll')).toBeVisible();
+	await expect(page.getByPlaceholder('Your name')).toHaveCount(0);
+	await expect(page.locator('input#server-name')).toHaveCount(0);
+	await expect(page.locator('.chat-speaker')).toContainText('Speaking as');
+	await expect
+		.poll(() => page.evaluate(() => localStorage.getItem('wolves-of-ragnarok:chat-name:v1')))
+		.toBeTruthy();
+	const adventurerName = await page.evaluate(() =>
+		localStorage.getItem('wolves-of-ragnarok:chat-name:v1')
 	);
+	expect(adventurerName?.length).toBeGreaterThanOrEqual(4);
+	expect(adventurerName?.length).toBeLessThanOrEqual(32);
+	await expect(page.locator('.chat-speaker strong')).toHaveText(adventurerName ?? '');
+	await expect(page.getByRole('link', { name: 'Enter Yggdrasil' })).toHaveCount(0);
+	await expect(page.getByRole('link', { name: 'Know the realm' })).toHaveCount(0);
+	await expect(page.getByRole('link', { name: 'Server information', exact: true })).toHaveCount(0);
+	await expect(page.getByRole('heading', { name: 'Game Servers' })).toHaveCount(0);
+	await expect(page.locator('.sidebar-minimap')).toBeVisible();
+	await expect(page.locator('.sidebar-minimap iframe.public-map')).toBeVisible();
+	await expect(page.getByRole('link', { name: 'Open the Yggdrasil world map' })).toHaveAttribute(
+		'href',
+		'https://valheim-map.webble.se/'
+	);
+	await expect(page.getByRole('link', { name: 'Open the Yggdrasil world map' })).toHaveAttribute(
+		'target',
+		'_blank'
+	);
+	await expect(page.locator('#sidebar-map-title')).toHaveText('World map');
+	await expect(page.getByText('World chart', { exact: true })).toHaveCount(0);
+	await expect(page.locator('iframe.public-map')).toHaveCount(1);
+	await expect(page.getByRole('button', { name: 'Reveal password' })).toBeVisible();
+	await expect(page.getByRole('link', { name: 'Get on Discord' })).toHaveCount(0);
+	await expect(page.locator('.threat-strip')).toHaveCSS('display', 'grid');
+	await expect(page.locator('.manifesto-section')).toHaveCSS('display', 'grid');
 	const warriorBox = await page.locator('.manifesto-warrior').boundingBox();
 	expect(warriorBox).not.toBeNull();
+	expect(warriorBox?.width ?? 0).toBeGreaterThan(120);
+	expect(warriorBox?.width ?? 0).toBeLessThan(400);
+	expect(warriorBox?.height ?? 0).toBeGreaterThan(200);
 	await expect(page.locator('.manifesto-section .manifesto-warrior')).toBeVisible();
 	const portalHeading = page.locator('.portal-brand h1');
 	await expect(portalHeading).toHaveText('WOLVES OFRAGNAROK');
@@ -131,46 +181,36 @@ test('stacks the portal and exposes mobile navigation', async ({ page }, testInf
 	await page.screenshot({ path: testInfo.outputPath('homepage-mobile.png'), fullPage: true });
 });
 
-test('shows the map-only live world chart on the servers page', async ({
+test('keeps server join details and the live map on the homepage', async ({
 	page,
 	context
 }, testInfo) => {
 	await context.grantPermissions(['clipboard-read', 'clipboard-write']);
 	await page.setViewportSize({ width: 1440, height: 1000 });
-	await page.goto('/servers');
+	await enterThroughGate(page);
 
-	const liveMap = page.locator('.live-map');
-	await expect(liveMap).toBeVisible();
-	await expect(liveMap.locator('iframe.public-map')).toBeVisible();
-	await expect(page.locator('.content .status-card')).toHaveCount(0);
-	await expect(page.locator('iframe')).toHaveCount(1);
+	await expect(page.locator('.sidebar-minimap')).toBeVisible();
+	await expect(page.locator('.sidebar-minimap iframe.public-map')).toBeVisible();
+	await expect(page.locator('#sidebar-map-title')).toHaveText('World map');
+	await expect(page.getByRole('heading', { name: 'Recent events' })).toHaveCount(1);
+	await expect(page.getByRole('heading', { name: 'Server chat' })).toHaveCount(1);
+	await expect(page.locator('iframe.public-map')).toHaveCount(1);
 	await expect(page.getByText('valheim.webble.se', { exact: true }).first()).toBeVisible();
 	await expect(page.locator('.population').first()).toHaveText('0 / 10 players');
-	await expect(page.getByText('Player names unavailable')).toHaveCount(0);
-	await expect(page.getByText('External health')).toHaveCount(0);
-	await expect(page.getByRole('link', { name: 'Open live map' })).toHaveCount(0);
-	await expect(page.getByText('Reported version')).toHaveCount(0);
-	await page
-		.locator('.status-card')
-		.first()
-		.getByRole('button', { name: 'Copy join address' })
-		.click();
+	await expect(page.getByRole('button', { name: 'Copy join address' }).first()).toBeVisible();
+	await expect(page.getByRole('button', { name: 'Reveal password' })).toBeVisible();
+	await expect(page.getByRole('link', { name: 'Get on Discord' })).toHaveCount(0);
+	await page.getByRole('button', { name: 'Reveal password' }).click();
+	await expect(page.getByRole('link', { name: 'Get on Discord' })).toHaveAttribute(
+		'href',
+		'https://discord.com/channels/136893132716376075/1547308102007783515/1547969996397744259'
+	);
+	await page.getByRole('button', { name: 'Copy join address' }).first().click();
 	await expect(page.getByRole('button', { name: 'Join address copied' }).first()).toBeVisible();
 	await expect
 		.poll(() => page.evaluate(() => navigator.clipboard.readText()))
 		.toBe('valheim.webble.se');
-	await page.screenshot({ path: testInfo.outputPath('servers-live-map.png'), fullPage: true });
-
-	await page.setViewportSize({ width: 390, height: 844 });
-	await expect(liveMap).toBeVisible();
-	const hasHorizontalOverflow = await page.evaluate(
-		() => document.documentElement.scrollWidth > document.documentElement.clientWidth
-	);
-	expect(hasHorizontalOverflow).toBe(false);
-	await page.screenshot({
-		path: testInfo.outputPath('servers-live-map-mobile.png'),
-		fullPage: true
-	});
+	await page.screenshot({ path: testInfo.outputPath('homepage-server-status.png'), fullPage: true });
 });
 
 test('serves public destinations, auth entry, status data, and guards administration', async ({
@@ -189,17 +229,28 @@ test('serves public destinations, auth entry, status data, and guards administra
 	expect(passwordResponse.status()).toBe(401);
 	expect(passwordResponse.headers()['cache-control']).toContain('no-store');
 
-	for (const path of ['/servers', '/members', '/about', '/merch', '/wiki', '/rules', '/register']) {
+	for (const path of ['/members', '/about', '/merch', '/wiki', '/rules', '/register']) {
 		const response = await request.get(path);
 		expect(response.status(), `${path} should resolve`).toBe(200);
+	}
+	for (const path of ['/servers', '/server']) {
+		const response = await request.get(path, { maxRedirects: 0 });
+		expect(response.status(), `${path} should redirect home`).toBe(308);
+		expect(response.headers()['location']).toBe('/');
 	}
 	const removedSurviveResponse = await request.get('/survive');
 	expect(removedSurviveResponse.status()).toBe(404);
 
 	await page.goto('/members');
 	await expect(page.getByRole('heading', { name: 'Guild Roster' })).toBeVisible();
+	await expect(page.locator('.sidebar-minimap')).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'Recent events' })).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'Server chat' })).toBeVisible();
 	await page.goto('/about');
 	await expect(page.getByRole('heading', { name: 'About Us' })).toBeVisible();
+	await expect(page.locator('.sidebar-minimap')).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'Recent events' })).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'Server chat' })).toBeVisible();
 	await expect((await request.get('/news')).status()).toBe(404);
 	await expect((await request.get('/chronicles')).status()).toBe(404);
 	await expect((await request.get('/arsenal')).status()).toBe(404);
@@ -226,7 +277,11 @@ test('serves public destinations, auth entry, status data, and guards administra
 	await page.goto('/admin');
 	await expect(page).toHaveURL('/');
 	await page.goto('/servers');
-	await expect(page.getByText('Ask in the Discord server for the password')).toBeVisible();
+	await expect(page).toHaveURL('/');
+	await expect(page.getByRole('heading', { name: 'Yggdrasil is waiting.' })).toBeVisible();
+	await expect(page.getByText('Ask in the Discord server for the password')).toHaveCount(0);
+	await page.goto('/server');
+	await expect(page).toHaveURL('/');
 	await page.goto('/register');
 	await expect(page.getByRole('heading', { name: 'Join the Guild' })).toBeVisible();
 });

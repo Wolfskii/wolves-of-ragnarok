@@ -2,9 +2,9 @@
 	import { onMount } from 'svelte';
 	import type { Snippet } from 'svelte';
 	import { DoorOpen } from '@lucide/svelte';
+	import { hasOpenedGate, rememberOpenedGate } from '$lib/client/gate';
 
 	type GateStage = 'checking' | 'ready' | 'opening' | 'revealed';
-	const gateSessionKey = 'wolves-of-ragnarok:gate-open:v1';
 
 	let { children }: { children: Snippet } = $props();
 
@@ -19,7 +19,7 @@
 	}
 
 	function finishReveal() {
-		window.sessionStorage.setItem(gateSessionKey, 'true');
+		rememberOpenedGate();
 		stage = 'revealed';
 	}
 
@@ -42,8 +42,8 @@
 	onMount(() => {
 		const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 		reducedMotion = motionQuery.matches;
-		audio.volume = 0.5;
-		const alreadyOpened = window.sessionStorage.getItem(gateSessionKey) === 'true';
+		if (audio) audio.volume = 0.5;
+		const alreadyOpened = hasOpenedGate();
 		animateReveal = !alreadyOpened;
 		stage = alreadyOpened ? 'revealed' : 'ready';
 		if (!alreadyOpened) resetPageScroll();
@@ -101,11 +101,22 @@
 {/if}
 
 <style>
-	:global(html:has(.gate)),
-	:global(body:has(.gate)) {
+	:global(html:has(.gate):not(.gate-already-open)),
+	:global(body:has(.gate):not(.gate-already-open)) {
 		height: 100%;
 		overflow: hidden;
 		overscroll-behavior: none;
+	}
+
+	:global(html.gate-already-open .gate) {
+		display: none;
+	}
+
+	:global(html.gate-already-open .gate-site-reveal) {
+		opacity: 1;
+		filter: none;
+		transform: none;
+		transition: none;
 	}
 
 	:global(html),

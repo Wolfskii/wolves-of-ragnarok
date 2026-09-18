@@ -10,7 +10,8 @@ export default defineConfig({
 				runes: ({ filename }) =>
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
-			adapter: adapter()
+			adapter: adapter(),
+			version: { name: '0.0.1' }
 		})
 	],
 	test: {

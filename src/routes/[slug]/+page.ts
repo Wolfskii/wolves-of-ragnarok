@@ -2,13 +2,6 @@ import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 const pages = {
-	servers: {
-		title: 'Game Servers',
-		eyebrow: 'Yggdrasil under our banner',
-		intro:
-			'Yggdrasil is our Valheim world. Join at valheim.webble.se. Ask in the Discord server for the password, then use the live map below to find your way.',
-		items: []
-	},
 	members: {
 		title: 'Guild Roster',
 		eyebrow: 'Members of every rank',
