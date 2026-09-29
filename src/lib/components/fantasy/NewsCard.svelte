@@ -20,7 +20,7 @@
 
 <article class:ember={tone === 'ember'}>
 	<div class="sigil" aria-hidden="true">{tone === 'ember' ? 'ᚲ' : 'ᛞ'}</div>
-	<div>
+	<div class="content">
 		<p class="meta"><time>{date}</time><span>by {author}</span></p>
 		<h3>{title}</h3>
 		{#if imageUrl}<img class="news-art" src={imageUrl} alt="" loading="lazy" />{/if}
@@ -80,6 +80,10 @@
 		text-shadow: 0 0 12px var(--ember-500);
 	}
 
+	.content {
+		min-width: 0;
+	}
+
 	.meta {
 		display: flex;
 		flex-wrap: wrap;
@@ -111,6 +115,7 @@
 		color: #b2c1bf;
 		font-size: 0.75rem;
 		line-height: 1.65;
+		overflow-wrap: anywhere;
 	}
 
 	.full-body p {
