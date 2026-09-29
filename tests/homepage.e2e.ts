@@ -87,6 +87,12 @@ test('renders the fantasy portal without broken artwork or overflow', async ({
 	await expect(page.getByRole('heading', { name: 'Ashlands Expedition Muster' })).toHaveCount(0);
 	await expect(page.getByRole('heading', { name: 'New Members Enter the Hall' })).toHaveCount(0);
 	await expect(page.locator('a[href="/news/valheim-1-0-has-arrived"]')).toHaveCount(0);
+	await expect(
+		page.getByRole('link', { name: 'https://www.valheimgame.com/news/valheim-1-0-has-arrived-/' })
+	).toBeVisible();
+	await expect(
+		page.getByRole('link', { name: 'https://www.valheimgame.com/support/valheim-1-0-faq' })
+	).toHaveAttribute('target', '_blank');
 	await expect(page.getByRole('heading', { name: 'Yggdrasil', exact: true })).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Survival Systems' })).toHaveCount(0);
 	await expect(page.getByRole('heading', { name: 'Leaderboard' })).toBeVisible();

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import PlainTextLinks from '$lib/components/fantasy/PlainTextLinks.svelte';
+
 	let {
 		title,
 		excerpt,
@@ -20,7 +22,7 @@
 
 <article class:ember={tone === 'ember'}>
 	<div class="sigil" aria-hidden="true">{tone === 'ember' ? 'ᚲ' : 'ᛞ'}</div>
-	<div>
+	<div class="content">
 		<p class="meta"><time>{date}</time><span>by {author}</span></p>
 		<h3>{title}</h3>
 		{#if imageUrl}<img class="news-art" src={imageUrl} alt="" loading="lazy" />{/if}
@@ -30,14 +32,17 @@
 					{#if /^#{1,3}\s/.test(line)}
 						<h4>{line.replace(/^#{1,3}\s/, '')}</h4>
 					{:else if line.startsWith('- ')}
-						<p class="bullet"><span aria-hidden="true">ᛟ</span>{line.slice(2)}</p>
+						<p class="bullet">
+							<span aria-hidden="true">ᛟ</span>
+							<span><PlainTextLinks text={line.slice(2)} /></span>
+						</p>
 					{:else if line.trim()}
-						<p>{line}</p>
+						<p><PlainTextLinks text={line} /></p>
 					{/if}
 				{/each}
 			</div>
 		{:else}
-			<p class="excerpt">{excerpt}</p>
+			<p class="excerpt"><PlainTextLinks text={excerpt} /></p>
 		{/if}
 	</div>
 </article>
@@ -80,6 +85,10 @@
 		text-shadow: 0 0 12px var(--ember-500);
 	}
 
+	.content {
+		min-width: 0;
+	}
+
 	.meta {
 		display: flex;
 		flex-wrap: wrap;
@@ -111,6 +120,7 @@
 		color: #b2c1bf;
 		font-size: 0.75rem;
 		line-height: 1.65;
+		overflow-wrap: anywhere;
 	}
 
 	.full-body p {
@@ -131,6 +141,19 @@
 	}
 	.bullet span {
 		color: var(--rune-300);
+	}
+
+	.excerpt :global(a),
+	.full-body :global(a) {
+		color: var(--rune-300);
+		text-decoration: underline;
+		text-decoration-color: rgba(220, 129, 120, 0.42);
+		text-underline-offset: 0.24em;
+	}
+
+	.excerpt :global(a:hover),
+	.full-body :global(a:hover) {
+		color: var(--frost-100);
 	}
 
 	@media (max-width: 26rem) {
