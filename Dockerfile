@@ -3,7 +3,13 @@ FROM cgr.dev/chainguard/node:latest-dev AS build
 USER root
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN attempt=1; \
+	until npm ci; do \
+		if [ "$attempt" -ge 5 ]; then exit 1; fi; \
+		echo "npm ci failed (attempt ${attempt}), retrying..."; \
+		sleep $((attempt * 5)); \
+		attempt=$((attempt + 1)); \
+	done
 
 COPY . .
 RUN npm run db:generate && npm run build
@@ -13,12 +19,12 @@ ENTRYPOINT []
 FROM build AS migration
 CMD ["sh", "-c", "npx prisma migrate deploy && npm run db:seed"]
 
-FROM cgr.dev/chainguard/node:latest-dev AS production-dependencies
+# Prune the install the build stage already completed. A second npm ci has to
+# reach the registry, and one DNS failure there aborts the web image.
+FROM build AS production-dependencies
 
 ENV NODE_ENV=production
-WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev && npm cache clean --force
+RUN npm prune --omit=dev --offline && npm cache clean --force
 
 FROM cgr.dev/chainguard/node:latest AS runtime
 
