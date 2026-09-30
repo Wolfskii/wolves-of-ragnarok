@@ -17,7 +17,7 @@ RUN mkdir -p /app/uploads && chown -R node:node /app/uploads
 ENTRYPOINT []
 
 FROM build AS migration
-CMD ["sh", "-c", "npx prisma migrate deploy && npm run db:seed"]
+CMD ["sh", "-c", "./node_modules/.bin/prisma migrate deploy && npm run db:seed"]
 
 # Prune the install the build stage already completed. A second npm ci has to
 # reach the registry, and one DNS failure there aborts the web image.

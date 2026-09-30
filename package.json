@@ -3,6 +3,11 @@
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
+	"allowScripts": {
+		"@prisma/engines": true,
+		"esbuild": true,
+		"prisma": true
+	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
