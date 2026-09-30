@@ -51,38 +51,62 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === 'object' && value !== null;
 
 function controlToken(): string {
-	return (env.VALHEIMONE_ADMIN_TOKEN ?? env.VALHEIM_PLAYERS_TOKEN ?? '').trim();
+	return (env.VALHEIMONE_ADMIN_TOKEN?.trim() || env.VALHEIM_PLAYERS_TOKEN?.trim() || '').trim();
 }
 
-function apiUrl(path: string): string {
-	const base = (env.VALHEIM_MAP_URL ?? 'https://valheim-map.webble.se').replace(/\/+$/, '');
-	return new URL(path, `${base}/`).toString();
+function mapOrigins(): string[] {
+	const primary = (env.VALHEIM_MAP_URL?.trim() || 'https://valheim-map.webble.se').replace(
+		/\/+$/,
+		''
+	);
+	const internal = (env.VALHEIM_MAP_INTERNAL_URL ?? '').trim().replace(/\/+$/, '');
+	if (!internal || internal === primary) return [primary];
+	return [primary, internal];
+}
+
+function apiUrl(origin: string, path: string): string {
+	return new URL(path, `${origin}/`).toString();
 }
 
 async function request(path: string, init: RequestInit = {}): Promise<Response> {
 	const token = controlToken();
-	if (!token) throw new ValheimOneControlError(503, 'ValheimOne access is not configured');
-
-	const controller = new AbortController();
-	const timeout = setTimeout(() => controller.abort(), 5000);
-	try {
-		const response = await fetch(apiUrl(path), {
-			...init,
-			signal: controller.signal,
-			headers: {
-				accept: 'application/json',
-				'x-livemap-token': token,
-				...(init.headers ?? {})
-			}
-		});
-		if (!response.ok) throw new ValheimOneControlError(response.status);
-		return response;
-	} catch (error) {
-		if (error instanceof ValheimOneControlError) throw error;
-		throw new ValheimOneControlError(503, 'ValheimOne is unreachable');
-	} finally {
-		clearTimeout(timeout);
+	const method = (init.method ?? 'GET').toUpperCase();
+	if (method !== 'GET' && !token) {
+		throw new ValheimOneControlError(503, 'ValheimOne access is not configured');
 	}
+
+	const origins = mapOrigins();
+	let lastStatus = 503;
+	for (let index = 0; index < origins.length; index++) {
+		const controller = new AbortController();
+		const timeout = setTimeout(() => controller.abort(), 5000);
+		try {
+			const response = await fetch(apiUrl(origins[index] ?? '', path), {
+				...init,
+				signal: controller.signal,
+				headers: {
+					accept: 'application/json',
+					...(token ? { 'x-livemap-token': token } : {}),
+					...(init.headers ?? {})
+				}
+			});
+			if (response.ok) return response;
+			lastStatus = response.status;
+			await response.body?.cancel().catch(() => undefined);
+			if (response.status < 500 || index === origins.length - 1) {
+				throw new ValheimOneControlError(response.status);
+			}
+		} catch (error) {
+			if (error instanceof ValheimOneControlError) throw error;
+			if (index === origins.length - 1) {
+				throw new ValheimOneControlError(503, 'ValheimOne is unreachable');
+			}
+		} finally {
+			clearTimeout(timeout);
+		}
+	}
+
+	throw new ValheimOneControlError(lastStatus, 'ValheimOne is unreachable');
 }
 
 function asActivityEvent(value: unknown): ValheimActivityEvent | null {
@@ -121,15 +145,22 @@ async function liveChatMessages(): Promise<ValheimChatMessage[]> {
 }
 
 export async function getValheimActivity(cursor: number | null) {
-	const activityUrl = new URL(apiUrl('/api/activity'));
-	if (cursor !== null) activityUrl.searchParams.set('cursor', String(cursor));
+	const activityPath =
+		cursor === null
+			? '/api/activity'
+			: `/api/activity?cursor=${encodeURIComponent(String(cursor))}`;
 
 	try {
-		const [activityResponse, liveChats] = await Promise.all([
-			request(activityUrl.pathname + activityUrl.search),
+		const [activityResult, liveChats] = await Promise.all([
+			request(activityPath)
+				.then(async (activityResponse) => (await activityResponse.json()) as unknown)
+				.catch((error: unknown) => {
+					if (error instanceof ValheimOneControlError && error.status === 404) return null;
+					throw error;
+				}),
 			liveChatMessages().catch(() => [] as ValheimChatMessage[])
 		]);
-		const activityPayload = (await activityResponse.json()) as unknown;
+		const activityPayload = activityResult;
 		const chats = presentWebsiteChats(
 			await mergeAndPersistChatArchive(liveChats).catch(async () =>
 				mergeChatHistories(await loadChatArchive(), liveChats)

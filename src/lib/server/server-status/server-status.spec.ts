@@ -89,4 +89,71 @@ describe('server status adapters', () => {
 		});
 		expect(fetchMock.mock.calls[1]?.[0]).toBe('https://map.test/api/players?token=secret-token');
 	});
+
+	it('keeps a live status when the configured map URL cannot build asset links', async () => {
+		const fetchMock = vi
+			.fn()
+			.mockResolvedValueOnce(
+				new Response(JSON.stringify({ serverName: 'Yggdrasil', players: 1, maxPlayers: 10 }), {
+					status: 200
+				})
+			)
+			.mockResolvedValueOnce(new Response(JSON.stringify({ players: [] }), { status: 200 }));
+		vi.stubGlobal('fetch', fetchMock);
+
+		const adapter = new ValheimOneAdapter({
+			statusUrl: 'https://map.test/api/status',
+			playersUrl: 'https://map.test/api/players',
+			playersToken: '',
+			mapUrl: 'not a url',
+			joinAddress: 'valheim.test',
+			joinPort: 2456
+		});
+		const result = await adapter.query({ ...target, timeoutMs: 1000 });
+
+		expect(result).toMatchObject({
+			state: 'online',
+			playerCount: 1,
+			mapUrl: 'not a url',
+			mapImageUrl: null,
+			mapTileUrl: null
+		});
+	});
+
+	it('uses the internal status URL when the public one is unreachable', async () => {
+		const fetchMock = vi
+			.fn()
+			.mockRejectedValueOnce(new Error('connect ECONNREFUSED'))
+			.mockResolvedValueOnce(
+				new Response(
+					JSON.stringify({
+						serverName: 'Yggdrasil',
+						players: 4,
+						maxPlayers: 10,
+						worldName: 'Yggdrasil'
+					}),
+					{ status: 200 }
+				)
+			)
+			.mockResolvedValueOnce(
+				new Response(JSON.stringify({ players: [{ name: 'Freydis' }] }), { status: 200 })
+			);
+		vi.stubGlobal('fetch', fetchMock);
+
+		const adapter = new ValheimOneAdapter({
+			statusUrl: 'https://map.test/api/status',
+			playersUrl: 'https://map.test/api/players',
+			playersToken: '',
+			mapUrl: 'https://map.test',
+			joinAddress: 'valheim.test',
+			joinPort: 2456,
+			fallbackStatusUrl: 'http://valheim:28080/api/status',
+			fallbackPlayersUrl: 'http://valheim:28080/api/players'
+		});
+		const result = await adapter.query({ ...target, timeoutMs: 1000 });
+
+		expect(result).toMatchObject({ state: 'online', playerCount: 4, playerNames: ['Freydis'] });
+		expect(fetchMock.mock.calls[1]?.[0]).toBe('http://valheim:28080/api/status');
+		expect(fetchMock.mock.calls[2]?.[0]).toBe('https://map.test/api/players');
+	});
 });

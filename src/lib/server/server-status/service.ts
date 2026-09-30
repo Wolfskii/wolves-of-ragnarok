@@ -16,15 +16,22 @@ const mockTarget: ServerQueryTarget = {
 	timeoutMs: 3000
 };
 
+function internalMapOrigin(): string {
+	return (env.VALHEIM_MAP_INTERNAL_URL ?? '').trim().replace(/\/+$/, '');
+}
+
 function valheimOneConfig(): ValheimOneConfig {
 	const joinPort = Number(env.VALHEIM_JOIN_PORT ?? 2456);
+	const internal = internalMapOrigin();
 	return {
 		statusUrl: env.VALHEIM_STATUS_URL ?? 'https://valheim-map.webble.se/api/status',
 		playersUrl: env.VALHEIM_PLAYERS_URL ?? 'https://valheim-map.webble.se/api/players',
 		playersToken: env.VALHEIM_PLAYERS_TOKEN ?? '',
 		mapUrl: env.VALHEIM_MAP_URL ?? 'https://valheim-map.webble.se',
 		joinAddress: env.VALHEIM_JOIN_ADDRESS ?? 'valheim.webble.se',
-		joinPort: Number.isInteger(joinPort) && joinPort > 0 && joinPort <= 65535 ? joinPort : 2456
+		joinPort: Number.isInteger(joinPort) && joinPort > 0 && joinPort <= 65535 ? joinPort : 2456,
+		fallbackStatusUrl: internal ? `${internal}/api/status` : undefined,
+		fallbackPlayersUrl: internal ? `${internal}/api/players` : undefined
 	};
 }
 
@@ -42,11 +49,15 @@ async function querySingleFlight(target: ServerQueryTarget, mode: 'mock' | 'live
 
 	const adapter =
 		mode === 'mock' ? new MockServerAdapter() : new ValheimOneAdapter(valheimOneConfig());
-	const query = adapter.query(target).then((result) => {
-		cache.set(target.id, { result, expiresAt: Date.now() + cacheSeconds() * 1000 });
-		pending.delete(target.id);
-		return result;
-	});
+	const query = adapter
+		.query(target)
+		.then((result) => {
+			cache.set(target.id, { result, expiresAt: Date.now() + cacheSeconds() * 1000 });
+			return result;
+		})
+		.finally(() => {
+			pending.delete(target.id);
+		});
 	pending.set(target.id, query);
 	return query;
 }
@@ -56,10 +67,19 @@ export async function getFeaturedServerStatus(): Promise<ServerStatusResult> {
 	if (mode === 'mock') return querySingleFlight(mockTarget, mode);
 
 	const config = valheimOneConfig();
-	const server = await getDatabase().server.findFirst({
-		where: { enabled: true },
-		orderBy: { displayOrder: 'asc' }
-	});
+	let server: { id: string; name: string; queryTimeoutMs: number } | null = null;
+	try {
+		server = await getDatabase().server.findFirst({
+			where: { enabled: true },
+			orderBy: { displayOrder: 'asc' },
+			select: { id: true, name: true, queryTimeoutMs: true }
+		});
+	} catch (error) {
+		console.error(
+			'Featured server lookup failed; serving live ValheimOne status without a snapshot',
+			error
+		);
+	}
 
 	const result = await querySingleFlight(
 		server
@@ -76,19 +96,23 @@ export async function getFeaturedServerStatus(): Promise<ServerStatusResult> {
 	);
 
 	if (server) {
-		await getDatabase().serverStatusSnapshot.create({
-			data: {
-				serverId: server.id,
-				online: result.state === 'online',
-				playerCount: result.playerCount,
-				maxPlayers: result.maxPlayers,
-				playerNames: result.playerNames,
-				pingMs: result.pingMs,
-				worldName: result.worldName,
-				version: result.version,
-				errorCode: result.errorCode
-			}
-		});
+		try {
+			await getDatabase().serverStatusSnapshot.create({
+				data: {
+					serverId: server.id,
+					online: result.state === 'online',
+					playerCount: result.playerCount,
+					maxPlayers: result.maxPlayers,
+					playerNames: result.playerNames,
+					pingMs: result.pingMs,
+					worldName: result.worldName,
+					version: result.version,
+					errorCode: result.errorCode
+				}
+			});
+		} catch (error) {
+			console.error('Featured server snapshot failed', error);
+		}
 	}
 	return result;
 }

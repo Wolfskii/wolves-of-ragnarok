@@ -12,7 +12,7 @@
 	const publicMapUrl = 'https://valheim-map.webble.se/';
 	const titleId = $derived(compact ? 'sidebar-map-title' : 'live-map-title');
 
-	let mapUrl = $state<string | null>(null);
+	let mapUrl = $state(publicMapUrl);
 	let worldName = $state('Yggdrasil');
 	let isFullscreen = $state(false);
 	let mapFrame: HTMLDivElement;

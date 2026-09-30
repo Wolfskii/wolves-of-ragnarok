@@ -7,6 +7,8 @@ export type ValheimOneConfig = {
 	mapUrl: string;
 	joinAddress: string;
 	joinPort: number;
+	fallbackStatusUrl?: string;
+	fallbackPlayersUrl?: string;
 };
 
 type StatusPayload = {
@@ -44,17 +46,36 @@ function playersUrlWithToken(url: string, token: string): string {
 	return authenticatedUrl.toString();
 }
 
-function versionedMapUrl(mapUrl: string, path: string, map: unknown): string {
-	const assetUrl = new URL(path, mapUrl);
-	if (isRecord(map)) {
-		const revision = asString(map.renderRevision);
-		if (revision) assetUrl.searchParams.set('v', revision);
+function versionedMapUrl(mapUrl: string, path: string, map: unknown): string | null {
+	try {
+		const assetUrl = new URL(path, mapUrl);
+		if (isRecord(map)) {
+			const revision = asString(map.renderRevision);
+			if (revision) assetUrl.searchParams.set('v', revision);
+		}
+		return assetUrl
+			.toString()
+			.replaceAll('%7Bz%7D', '{z}')
+			.replaceAll('%7Bx%7D', '{x}')
+			.replaceAll('%7By%7D', '{y}');
+	} catch {
+		return null;
 	}
-	return assetUrl
-		.toString()
-		.replaceAll('%7Bz%7D', '{z}')
-		.replaceAll('%7Bx%7D', '{x}')
-		.replaceAll('%7By%7D', '{y}');
+}
+
+async function fetchJsonFromAny<T>(urls: Array<string | undefined>, timeoutMs: number): Promise<T> {
+	const candidates = urls.filter((url): url is string => Boolean(url));
+	let lastError: unknown;
+	for (let index = 0; index < candidates.length; index++) {
+		try {
+			return await fetchJson<T>(candidates[index], timeoutMs);
+		} catch (error) {
+			lastError = error;
+			const unreachable = error instanceof Error && error.message === 'UNREACHABLE';
+			if (!unreachable || index === candidates.length - 1) throw error;
+		}
+	}
+	throw lastError instanceof Error ? lastError : new Error('UNREACHABLE');
 }
 
 async function fetchJson<T>(url: string, timeoutMs: number): Promise<T> {
@@ -66,7 +87,7 @@ async function fetchJson<T>(url: string, timeoutMs: number): Promise<T> {
 			signal: controller.signal,
 			headers: { accept: 'application/json' }
 		});
-		if (!response.ok) throw new Error('QUERY_FAILED');
+		if (!response.ok) throw new Error(response.status >= 500 ? 'UNREACHABLE' : 'QUERY_FAILED');
 		return (await response.json()) as T;
 	} catch (error) {
 		if (error instanceof Error && error.message === 'QUERY_FAILED') throw error;
@@ -110,7 +131,10 @@ export class ValheimOneAdapter implements GameServerAdapter {
 	async query(target: ServerQueryTarget): Promise<ServerStatusResult> {
 		let status: StatusPayload;
 		try {
-			const payload = await fetchJson<unknown>(this.config.statusUrl, target.timeoutMs);
+			const payload = await fetchJsonFromAny<unknown>(
+				[this.config.statusUrl, this.config.fallbackStatusUrl],
+				target.timeoutMs
+			);
 			if (!isRecord(payload)) throw new Error('QUERY_FAILED');
 			status = payload as StatusPayload;
 		} catch (error) {
@@ -121,8 +145,13 @@ export class ValheimOneAdapter implements GameServerAdapter {
 
 		let playerNames: string[] = [];
 		try {
-			const payload = await fetchJson<PlayersPayload>(
-				playersUrlWithToken(this.config.playersUrl, this.config.playersToken),
+			const payload = await fetchJsonFromAny<PlayersPayload>(
+				[
+					playersUrlWithToken(this.config.playersUrl, this.config.playersToken),
+					this.config.fallbackPlayersUrl
+						? playersUrlWithToken(this.config.fallbackPlayersUrl, this.config.playersToken)
+						: undefined
+				],
 				target.timeoutMs
 			);
 			if (Array.isArray(payload.players)) {
