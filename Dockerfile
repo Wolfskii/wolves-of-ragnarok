@@ -27,7 +27,7 @@ RUN mkdir -p /app/uploads && chown -R node:node /app/uploads
 ENTRYPOINT []
 
 FROM build AS migration
-CMD ["sh", "-c", "i=1; while [ \"$$i\" -le 10 ]; do node ./node_modules/prisma/build/index.js migrate deploy && npm run db:seed && exit 0; echo \"Database migrate failed (attempt $$i), retrying...\"; i=$$((i+1)); sleep 3; done; exit 1"]
+CMD ["sh", "-c", "i=1; while [ \"$i\" -le 10 ]; do node ./node_modules/prisma/build/index.js migrate deploy && npm run db:seed && exit 0; echo \"Database migrate failed (attempt $i), retrying...\"; i=$((i+1)); sleep 3; done; exit 1"]
 
 # Prune the install the build stage already completed. A second npm ci has to
 # reach the registry, and one DNS failure there aborts the web image.
