@@ -36,8 +36,10 @@ services:
     expose:
       - '3000'
     networks:
-      - app-network
-      - dokploy-network
+      dokploy-network:
+        gw_priority: 100
+      app-network:
+        gw_priority: 0
     volumes:
       - uploads:/app/uploads
     healthcheck:
@@ -93,8 +95,10 @@ volumes:
   uploads:
 
 networks:
+  # A normal bridge, with no published Postgres port. Marking this network
+  # internal breaks DNS for the web container, which is also on dokploy-network,
+  # and `postgres` then fails with EAI_AGAIN.
   app-network:
     driver: bridge
-    internal: true
   dokploy-network:
     external: true

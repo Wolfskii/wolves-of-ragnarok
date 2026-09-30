@@ -14,7 +14,7 @@ The `migrate` service applies checked-in migrations, runs the idempotent seed wi
 
 ## Reverse Proxy
 
-The production Compose file exposes the web process internally on container port `3000` and attaches it to Dokploy's external `dokploy-network`; it intentionally does not publish host port `3000`. Configure the Dokploy application/proxy target to container port `3000`. PostgreSQL is internal-only. This avoids collisions with other Dokploy projects already using host port `3000`.
+The production Compose file exposes the web process internally on container port `3000` and attaches it to Dokploy's external `dokploy-network`; it intentionally does not publish host port `3000`. Configure the Dokploy application/proxy target to container port `3000`. PostgreSQL has no published port and is reachable only as `postgres` on this Compose file's `app-network`. That network is a normal bridge: marking it `internal` makes the web container, which is also attached to `dokploy-network`, fail hostname lookups with `EAI_AGAIN`. `dokploy-network` keeps the higher gateway priority so public map requests still leave through Dokploy. This avoids collisions with other Dokploy projects already using host port `3000`.
 
 For local browser development, use `npm run dev`; do not add a production host-port mapping to the Dokploy Compose file. Terminate TLS in Caddy, Nginx, or Traefik and forward host/protocol headers. `PROTOCOL_HEADER` and `HOST_HEADER` must only be enabled behind a trusted proxy. Set `ADDRESS_HEADER` and `XFF_DEPTH` to the known proxy topology before using client IPs for rate limiting.
 
