@@ -12,12 +12,22 @@ RUN attempt=1; \
 	done
 
 COPY . .
+# The engines package hides a failed schema-engine download. Generate does not
+# need that binary; migrate deploy does, and then the container exits 1.
+RUN if [ ! -e /usr/lib/libssl.so.3 ] && [ ! -e /lib/libssl.so.3 ]; then apk add --no-cache libssl3; fi
+RUN attempt=1; \
+	until node scripts/ensure-prisma-engine.mjs; do \
+		if [ "$attempt" -ge 5 ]; then exit 1; fi; \
+		echo "Prisma schema engine unavailable (attempt ${attempt}), retrying..."; \
+		sleep $((attempt * 5)); \
+		attempt=$((attempt + 1)); \
+	done
 RUN npm run db:generate && npm run build
 RUN mkdir -p /app/uploads && chown -R node:node /app/uploads
 ENTRYPOINT []
 
 FROM build AS migration
-CMD ["sh", "-c", "./node_modules/.bin/prisma migrate deploy && npm run db:seed"]
+CMD ["sh", "-c", "node ./node_modules/prisma/build/index.js migrate deploy && npm run db:seed"]
 
 # Prune the install the build stage already completed. A second npm ci has to
 # reach the registry, and one DNS failure there aborts the web image.
