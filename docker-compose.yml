@@ -60,16 +60,18 @@ services:
       context: .
       target: migration
     restart: 'no'
+    # Share Postgres' network namespace. The schema engine could not open a
+    # connection to the Docker DNS name `postgres` (P1001, and Postgres never
+    # logged a client), so migrate talks to 127.0.0.1 inside that namespace.
+    network_mode: service:postgres
     depends_on:
       postgres:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-wolves}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-wolves}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-wolves}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@127.0.0.1:5432/${POSTGRES_DB:-wolves}
       ADMIN_EMAIL: ${ADMIN_EMAIL:?Set ADMIN_EMAIL}
       ADMIN_USERNAME: ${ADMIN_USERNAME:?Set ADMIN_USERNAME}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD}
-    networks:
-      - app-network
     volumes:
       - uploads:/app/uploads
 
