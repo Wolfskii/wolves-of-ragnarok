@@ -65,6 +65,7 @@
 		const byId = new Map(events.map((event) => [event.id, event]));
 		for (const event of incoming) byId.set(event.id, event);
 		return [...byId.values()]
+			.filter((event) => event.type !== 'world.save')
 			.sort((left, right) => right.unixMs - left.unixMs || right.id - left.id)
 			.slice(0, 100);
 	}
