@@ -1,6 +1,8 @@
 import { env } from '$env/dynamic/private';
 import { mergeAndPersistChatArchive, loadChatArchive } from './chat-archive';
 import { mergeChatHistories, presentWebsiteChats } from './chat-history';
+import { loadChronicleArchive, persistChronicle } from './chronicle-archive';
+import { chronicleSince } from './chronicle';
 
 export type ValheimActivityEvent = {
 	id: number;
@@ -144,50 +146,109 @@ async function liveChatMessages(): Promise<ValheimChatMessage[]> {
 		: [];
 }
 
-export async function getValheimActivity(cursor: number | null) {
-	const activityPath =
-		cursor === null
-			? '/api/activity'
-			: `/api/activity?cursor=${encodeURIComponent(String(cursor))}`;
+async function savedChronicle(cursor: number | null): Promise<{
+	cursor: number;
+	events: ValheimActivityEvent[];
+}> {
+	const archive = await loadChronicleArchive().catch(() => ({
+		valheimCursor: 0,
+		events: [] as ValheimActivityEvent[]
+	}));
+	return {
+		cursor: archive.events.at(-1)?.id ?? cursor ?? 0,
+		events: chronicleSince(archive.events, cursor)
+	};
+}
 
+async function collectLiveActivity(): Promise<{
+	enabled: boolean;
+	valheimCursor: number;
+	events: ValheimActivityEvent[];
+}> {
+	const archive = await loadChronicleArchive().catch(() => ({
+		valheimCursor: 0,
+		events: [] as ValheimActivityEvent[]
+	}));
+	let valheimCursor = archive.valheimCursor;
+	let enabled = false;
+	const events: ValheimActivityEvent[] = [];
+	for (let page = 0; page < 50; page += 1) {
+		const payload = (await request(
+			`/api/activity?cursor=${encodeURIComponent(String(valheimCursor))}&order=asc`
+		).then((response) => response.json())) as unknown;
+		if (!isRecord(payload)) break;
+		enabled = payload.enabled === true;
+		const batch = Array.isArray(payload.events)
+			? payload.events
+					.map(asActivityEvent)
+					.filter((event): event is ValheimActivityEvent => event !== null)
+			: [];
+		const nextCursor = typeof payload.cursor === 'number' ? payload.cursor : valheimCursor;
+		if (batch.length === 0 && valheimCursor > 0 && page === 0) {
+			const restarted = await activityFeedRestarted(valheimCursor);
+			if (restarted) {
+				valheimCursor = 0;
+				continue;
+			}
+		}
+		events.push(...batch);
+		if (batch.length === 0 || nextCursor <= valheimCursor) {
+			valheimCursor = Math.max(valheimCursor, nextCursor);
+			break;
+		}
+		valheimCursor = nextCursor;
+	}
+	return { enabled, valheimCursor, events };
+}
+
+async function activityFeedRestarted(storedCursor: number): Promise<boolean> {
+	const payload = (await request('/api/activity?cursor=0').then((response) => response.json())) as unknown;
+	if (!isRecord(payload) || !Array.isArray(payload.events)) return false;
+	const newest = payload.events.reduce((max, event) => {
+		const id = isRecord(event) && typeof event.id === 'number' ? event.id : 0;
+		return Math.max(max, id);
+	}, 0);
+	return newest > 0 && newest < storedCursor;
+}
+
+export async function getValheimActivity(cursor: number | null) {
 	try {
 		const [activityResult, liveChats] = await Promise.all([
-			request(activityPath)
-				.then(async (activityResponse) => (await activityResponse.json()) as unknown)
-				.catch((error: unknown) => {
-					if (error instanceof ValheimOneControlError && error.status === 404) return null;
-					throw error;
-				}),
+			collectLiveActivity().catch((error: unknown) => {
+				if (error instanceof ValheimOneControlError && error.status === 404) return null;
+				throw error;
+			}),
 			liveChatMessages().catch(() => [] as ValheimChatMessage[])
 		]);
-		const activityPayload = activityResult;
 		const chats = presentWebsiteChats(
 			await mergeAndPersistChatArchive(liveChats).catch(async () =>
 				mergeChatHistories(await loadChatArchive(), liveChats)
 			)
 		);
-
+		const saved = activityResult
+			? await persistChronicle(activityResult.events, activityResult.valheimCursor).catch(() =>
+					loadChronicleArchive().then((archive) => archive.events)
+				)
+			: await loadChronicleArchive()
+					.then((archive) => archive.events)
+					.catch(() => [] as ValheimActivityEvent[]);
 		return {
-			enabled: isRecord(activityPayload) && activityPayload.enabled === true,
-			cursor:
-				isRecord(activityPayload) && typeof activityPayload.cursor === 'number'
-					? activityPayload.cursor
-					: (cursor ?? 0),
-			events:
-				isRecord(activityPayload) && Array.isArray(activityPayload.events)
-					? activityPayload.events
-							.map(asActivityEvent)
-							.filter((event): event is ValheimActivityEvent => event !== null)
-					: [],
+			enabled: activityResult?.enabled === true || saved.length > 0,
+			cursor: saved.at(-1)?.id ?? cursor ?? 0,
+			events: chronicleSince(saved, cursor),
 			chats
 		};
 	} catch (error) {
-		const chats = presentWebsiteChats(await loadChatArchive());
-		if (chats.length === 0) throw error;
-		return {
-			enabled: false,
+		const chats = presentWebsiteChats(await loadChatArchive().catch(() => []));
+		const saved = await savedChronicle(cursor).catch(() => ({
 			cursor: cursor ?? 0,
-			events: [],
+			events: [] as ValheimActivityEvent[]
+		}));
+		if (chats.length === 0 && saved.events.length === 0) throw error;
+		return {
+			enabled: saved.events.length > 0,
+			cursor: saved.cursor,
+			events: saved.events,
 			chats
 		};
 	}

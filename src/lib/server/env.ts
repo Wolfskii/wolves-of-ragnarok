@@ -9,6 +9,7 @@ const privateEnvSchema = z.object({
 	SERVER_STATUS_CACHE_SECONDS: z.coerce.number().int().min(5).max(600).default(30),
 	SERVER_STATUS_TIMEOUT_MS: z.coerce.number().int().min(500).max(15_000).default(3000),
 	SERVER_STATUS_ALLOW_PRIVATE_HOSTS: z.stringbool().default(false),
+	CHRONICLE_RETENTION_DAYS: z.coerce.number().int().min(1).max(3650).default(7),
 	UPLOAD_DIR: z.string().default('./uploads'),
 	MAX_UPLOAD_BYTES: z.coerce
 		.number()

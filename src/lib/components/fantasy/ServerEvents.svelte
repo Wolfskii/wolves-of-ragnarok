@@ -66,8 +66,7 @@
 		for (const event of incoming) byId.set(event.id, event);
 		return [...byId.values()]
 			.filter((event) => event.type !== 'world.save')
-			.sort((left, right) => right.unixMs - left.unixMs || right.id - left.id)
-			.slice(0, 100);
+			.sort((left, right) => right.unixMs - left.unixMs || right.id - left.id);
 	}
 
 	async function refresh() {
