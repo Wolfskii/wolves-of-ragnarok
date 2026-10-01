@@ -32,9 +32,42 @@ export function mergeChatHistories(
 	const byKey = new Map<string, ValheimChatMessage>();
 	for (const chat of archived) byKey.set(chatFingerprint(chat), chat);
 	for (const chat of live) byKey.set(chatFingerprint(chat), chat);
-	return [...byKey.values()]
-		.sort((left, right) => left.unixMs - right.unixMs || left.sequence - right.sequence)
-		.slice(-CHAT_ARCHIVE_CAPACITY);
+	return dedupeHallEchoes(
+		[...byKey.values()].sort(
+			(left, right) => left.unixMs - right.unixMs || left.sequence - right.sequence
+		)
+	).slice(-CHAT_ARCHIVE_CAPACITY);
+}
+
+const HALL_ECHO_WINDOW_MS = 15_000;
+
+function hallBody(chat: ValheimChatMessage): { name: string; text: string } | null {
+	if (!chat.shout) return null;
+	if ((chat.playerName.trim() || 'Server') !== 'Server') return null;
+	const match = chat.text.match(/^\[([^\]]{1,32})\]\s+([\s\S]+)$/);
+	if (!match) return null;
+	return { name: match[1], text: match[2] };
+}
+
+/** The site used to archive a hall line and ValheimOne recorded the same shout. */
+function dedupeHallEchoes(chats: ValheimChatMessage[]): ValheimChatMessage[] {
+	const kept: ValheimChatMessage[] = [];
+	for (const chat of chats) {
+		const body = hallBody(chat);
+		const echo =
+			body !== null &&
+			kept.some((existing) => {
+				const previous = hallBody(existing);
+				return (
+					previous !== null &&
+					previous.name === body.name &&
+					previous.text === body.text &&
+					Math.abs(existing.unixMs - chat.unixMs) <= HALL_ECHO_WINDOW_MS
+				);
+			});
+		if (!echo) kept.push(chat);
+	}
+	return kept;
 }
 
 export function presentWebsiteChat(chat: ValheimChatMessage): ValheimChatMessage {

@@ -40,6 +40,16 @@ describe('chat history', () => {
 		});
 	});
 
+	it('collapses the website archive and the ValheimOne echo of one hall line', () => {
+		const echo = { ...shout, sequence: 8, unixMs: shout.unixMs + 400 };
+		expect(mergeChatHistories([shout], [echo])).toEqual([shout]);
+	});
+
+	it('keeps a repeated hall line that is not the immediate echo', () => {
+		const later = { ...shout, sequence: 8, unixMs: shout.unixMs + 20_000 };
+		expect(mergeChatHistories([shout], [later])).toEqual([shout, later]);
+	});
+
 	it('merges live chat over archived lines without duplicating fingerprints', () => {
 		const older = { ...say, sequence: 9, unixMs: say.unixMs - 5_000 };
 		const merged = presentWebsiteChats(mergeChatHistories([shout, older], [shout, say]));
